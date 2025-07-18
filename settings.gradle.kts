@@ -4,6 +4,8 @@ include(
     ":common:data-serializer",
     ":service:hexagonal",
     ":service:layered",
+    ":product-service:hexagonal",
+    ":product-service:layered",
 )
 
 // configurations
@@ -25,4 +27,7 @@ pluginManagement {
             }
         }
     }
+}
+plugins {
+    id("org.gradle.toolchains.foojay-resolver-convention") version "0.8.0"
 }
