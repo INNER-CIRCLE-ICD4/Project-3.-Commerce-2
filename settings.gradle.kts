@@ -4,8 +4,7 @@ include(
     ":common:data-serializer",
     ":service:hexagonal",
     ":service:layered",
-    ":product-service:hexagonal",
-    ":product-service:layered",
+    ":service:product",
 )
 
 // configurations
