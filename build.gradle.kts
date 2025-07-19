@@ -31,6 +31,7 @@ subprojects {
     dependencies {
         implementation ("ch.qos.logback:logback-classic")
         implementation("org.projectlombok:lombok")
+        implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 
         annotationProcessor("org.projectlombok:lombok")
 
