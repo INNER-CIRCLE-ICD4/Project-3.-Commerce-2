@@ -1,4 +1,9 @@
 package org.icd4.commerce.domain.product;
 
-public class Product {
+@Entity
+@Table(name = "orders")
+@EntityListeners(AuditingEntityListener.class)
+public class Order implements Serializable {
+
+
 }
