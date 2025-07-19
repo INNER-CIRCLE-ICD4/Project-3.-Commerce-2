@@ -35,7 +35,7 @@ public record ProductResponse(
                 product.getPrice().getAmount(),
                 product.getPrice().getCurrency(),
                 product.getOptions().stream()
-                        .map(opt -> new ProductOptionResponse(opt.getName(), opt.getValue()))
+                        .map(opt -> new ProductOptionResponse(opt.getName(), opt.getDescription()))
                         .collect(Collectors.toList()),
                 product.getStatus(),
                 product.getIsDeleted(),
