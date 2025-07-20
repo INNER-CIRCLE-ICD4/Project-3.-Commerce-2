@@ -5,6 +5,7 @@ include(
     ":service:hexagonal",
     ":service:layered",
     ":service:product",
+    ":service:stock"
 )
 
 // configurations
