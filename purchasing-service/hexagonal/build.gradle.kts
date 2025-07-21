@@ -22,3 +22,8 @@ dependencies {
     testImplementation("org.mockito:mockito-core")
     testRuntimeOnly("com.h2database:h2")
 }
+
+// Mockito inline mock maker를 위한 설정
+tasks.test {
+    jvmArgs("-javaagent:${configurations.testRuntimeClasspath.get().files.find { it.name.startsWith("byte-buddy-agent") }}")
+}
