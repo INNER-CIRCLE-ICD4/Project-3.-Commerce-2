@@ -7,13 +7,13 @@ import lombok.Getter;
 @Getter
 public class ProductOption {
     private String name;
-    private String value;
+    private String description;
 
     protected ProductOption() {}
 
-    public ProductOption(String name, String value) {
+    public ProductOption(String name, String description) {
         this.name = name;
-        this.value = value;
+        this.description = description;
     }
 
 }

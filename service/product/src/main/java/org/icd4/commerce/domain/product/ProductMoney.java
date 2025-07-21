@@ -1,10 +1,12 @@
 package org.icd4.commerce.domain.product;
 
+import jakarta.persistence.Embeddable;
 import lombok.Getter;
 
 import java.math.BigDecimal;
 
 @Getter
+@Embeddable
 public class ProductMoney {
 
     private BigDecimal amount;
