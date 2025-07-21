@@ -1,0 +1,48 @@
+# 테스트 환경 설정
+spring:
+  # 테스트 데이터소스 설정
+  datasource:
+    url: jdbc:h2:mem:testdb;MODE=PostgreSQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    username: sa
+    password: 
+    driver-class-name: org.h2.Driver
+    
+  # JPA 설정
+  jpa:
+    hibernate:
+      ddl-auto: create-drop  # 테스트마다 스키마 재생성
+    show-sql: false  # 테스트 시 SQL 로그 비활성화
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+        format_sql: true
+        
+  # SQL 초기화 비활성화
+  sql:
+    init:
+      mode: never
+      
+  # H2 콘솔 비활성화
+  h2:
+    console:
+      enabled: false
+      
+# 로깅 설정
+logging:
+  level:
+    org.icd4.commerce: DEBUG
+    org.springframework.transaction: DEBUG
+    org.hibernate.SQL: DEBUG  # SQL 로깅이 필요한 경우 활성화
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE  # 파라미터 로깅
+    
+# 테스트 전용 설정
+test:
+  # 테스트 데이터 설정
+  data:
+    customer-id: "test-customer-123"
+    product-id: 1
+    
+  # 타임아웃 설정
+  timeout:
+    default: 5000  # 5초
+    long: 30000    # 30초
