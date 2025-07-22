@@ -2,7 +2,7 @@ package org.icd4.commerce.adapter.external;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.icd4.commerce.domain.cart.ProductId;
+import org.icd4.commerce.domain.cart.Cart;
 import org.icd4.commerce.domain.cart.ProductPriceProvider;
 import org.springframework.stereotype.Component;
 
@@ -25,7 +25,7 @@ public class ProductPriceProviderAdapter implements ProductPriceProvider {
     private final ProductServiceClient productServiceClient;
     
     @Override
-    public BigDecimal getPrice(ProductId productId) {
+    public BigDecimal getPrice(Cart.ProductId productId) {
         if (productId == null) {
             throw new NullPointerException("ProductId cannot be null");
         }

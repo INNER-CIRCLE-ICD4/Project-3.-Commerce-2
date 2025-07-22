@@ -11,9 +11,6 @@
  *     - 주문된 개별 상품 정보
  * - OrderStatus: 주문 상태 Enum
  *     - PENDING, PAID, SHIPPED, DELIVERED, CANCELLED
- * - DeliveryInfo: 배송 정보 Value Object
- *     - 수령인, 배송지 주소, 연락처
- * 
  * 도메인 이벤트:
  * - OrderCreatedEvent: 주문 생성 시 발행
  * - OrderStatusChangedEvent: 주문 상태 변경 시 발행
