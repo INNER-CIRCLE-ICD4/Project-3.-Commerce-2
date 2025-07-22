@@ -1,6 +1,7 @@
 package org.icd4.commerce.config;
 
 import org.icd4.commerce.domain.cart.TimeProvider;
+import org.icd4.commerce.infrastructure.time.SystemTimeProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -29,7 +30,7 @@ public class TimeProviderConfig {
     @Bean
     @Profile({"prod", "dev", "local", "default"})
     public TimeProvider systemTimeProvider() {
-        return new TimeProvider.SystemTimeProvider();
+        return new SystemTimeProvider();
     }
     
     /**
@@ -43,6 +44,6 @@ public class TimeProviderConfig {
     public TimeProvider testTimeProvider() {
         // 테스트 환경에서는 TestTimeProvider 구현체 사용
         // TestTimeProvider는 테스트 패키지에 별도 구현
-        return new TimeProvider.SystemTimeProvider(); // 임시로 SystemTimeProvider 반환
+        return new SystemTimeProvider(); // 임시로 SystemTimeProvider 반환
     }
 }
