@@ -1,159 +1,159 @@
 spring:
   application:
-    name: purchasing-service
+    name: purchasing-service  # 서비스 식별자 (서비스 디스커버리, 로깅 등에 사용)
     
   # 기본 프로파일 설정
   profiles:
-    default: local
+    default: local  # 프로파일을 명시하지 않으면 local 환경으로 실행
     
-  # JPA 공통 설정
+  # JPA 공통 설정 (모든 프로파일에 적용)
   jpa:
-    open-in-view: false  # OSIV 비활성화 (성능 최적화)
+    open-in-view: false  # OSIV 비활성화 - 영속성 컨텍스트를 뷰에서 사용하지 않음 (성능 최적화, LazyInitializationException 방지)
     properties:
       hibernate:
-        format_sql: true
-        default_batch_fetch_size: 100
+        format_sql: true  # SQL을 보기 좋게 포맷팅
+        default_batch_fetch_size: 100  # N+1 문제 해결을 위한 기본 배치 사이즈 (IN 쿼리 최적화)
         jdbc:
-          batch_size: 50
-        order_inserts: true
-        order_updates: true
+          batch_size: 50  # INSERT/UPDATE 배치 처리 크기 (대량 데이터 처리 성능 향상)
+        order_inserts: true  # INSERT 문을 테이블별로 정렬하여 배치 효율성 증가
+        order_updates: true  # UPDATE 문을 테이블별로 정렬하여 배치 효율성 증가
 
 server:
-  port: 8080
+  port: 8080  # 서버 기본 포트
 
-# OpenAPI/Swagger 설정
+# OpenAPI/Swagger 설정 (API 문서 자동 생성)
 springdoc:
   api-docs:
-    path: /api-docs
+    path: /api-docs  # OpenAPI 스펙 JSON 경로
   swagger-ui:
-    path: /swagger-ui.html
-    tags-sorter: alpha
-    operations-sorter: alpha
-  default-consumes-media-type: application/json
-  default-produces-media-type: application/json
+    path: /swagger-ui.html  # Swagger UI 접근 경로
+    tags-sorter: alpha  # API 태그를 알파벳순으로 정렬
+    operations-sorter: alpha  # API 작업을 알파벳순으로 정렬
+  default-consumes-media-type: application/json  # 기본 요청 Content-Type
+  default-produces-media-type: application/json  # 기본 응답 Content-Type
 
 # 외부 서비스 설정
 external:
   product-service:
-    base-url: ${PRODUCT_SERVICE_URL:http://localhost:8081}
+    base-url: ${PRODUCT_SERVICE_URL:http://localhost:8081}  # 상품 서비스 URL (환경변수 우선, 기본값 제공)
         
 ---
-# 로컬 개발 환경
+# 로컬 개발 환경 (개발자 로컬 PC에서 실행)
 spring:
   config:
     activate:
-      on-profile: local
+      on-profile: local  # --spring.profiles.active=local 또는 기본값
       
   datasource:
-    url: jdbc:h2:mem:purchasingdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    url: jdbc:h2:mem:purchasingdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE  # 인메모리 H2 DB (재시작시 초기화)
     username: sa
     password: 
     driver-class-name: org.h2.Driver
     
   jpa:
     hibernate:
-      ddl-auto: create-drop
-    show-sql: true
+      ddl-auto: create-drop  # 애플리케이션 시작시 테이블 생성, 종료시 삭제 (개발 편의성)
+    show-sql: true  # 콘솔에 SQL 출력 (디버깅용)
     
   h2:
     console:
-      enabled: true
-      path: /h2-console
+      enabled: true  # H2 웹 콘솔 활성화
+      path: /h2-console  # http://localhost:8080/h2-console 로 접근
       
 logging:
   level:
-    org.icd4.commerce: DEBUG
-    org.hibernate.SQL: DEBUG
-    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+    org.icd4.commerce: DEBUG  # 우리 패키지는 DEBUG 레벨로 상세 로깅
+    org.hibernate.SQL: DEBUG  # SQL 쿼리 로깅
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE  # 쿼리 파라미터 값 로깅
     
 ---
-# 개발 서버 환경
+# 개발 서버 환경 (개발/테스트 서버)
 spring:
   config:
     activate:
-      on-profile: dev
+      on-profile: dev  # --spring.profiles.active=dev
       
   datasource:
     url: ${DB_URL:jdbc:mysql://localhost:3306/purchasing_dev?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul&characterEncoding=UTF-8}
     username: ${DB_USERNAME:root}
     password: ${DB_PASSWORD:password}
     driver-class-name: com.mysql.cj.jdbc.Driver
-    hikari:
-      maximum-pool-size: 10
-      minimum-idle: 5
-      connection-timeout: 30000
+    hikari:  # HikariCP 커넥션 풀 설정
+      maximum-pool-size: 10  # 최대 커넥션 수 (개발 환경이므로 적절히 제한)
+      minimum-idle: 5  # 최소 유휴 커넥션 수
+      connection-timeout: 30000  # 커넥션 타임아웃 (30초)
       
   jpa:
     hibernate:
-      ddl-auto: validate
-    show-sql: false
+      ddl-auto: validate  # 엔티티와 DB 스키마 검증만 수행 (자동 변경 방지)
+    show-sql: false  # SQL 로깅 비활성화 (성능 고려)
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.MySQLDialect
+        dialect: org.hibernate.dialect.MySQLDialect  # MySQL 전용 SQL 생성
         
 logging:
   level:
-    org.icd4.commerce: INFO
+    org.icd4.commerce: INFO  # 일반적인 정보 레벨 로깅
     
 ---
-# 운영 환경
+# 운영 환경 (프로덕션)
 spring:
   config:
     activate:
-      on-profile: prod
+      on-profile: prod  # --spring.profiles.active=prod
       
   datasource:
-    url: ${DB_URL}
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
+    url: ${DB_URL}  # 환경변수로 주입 (보안상 하드코딩 금지)
+    username: ${DB_USERNAME}  # 환경변수로 주입
+    password: ${DB_PASSWORD}  # 환경변수로 주입
     driver-class-name: com.mysql.cj.jdbc.Driver
     hikari:
-      maximum-pool-size: 20
-      minimum-idle: 10
-      connection-timeout: 30000
-      max-lifetime: 1800000
-      connection-test-query: SELECT 1
+      maximum-pool-size: 20  # 최대 커넥션 수 (운영 트래픽 고려)
+      minimum-idle: 10  # 최소 유휴 커넥션 수 (빠른 응답을 위해 높게 설정)
+      connection-timeout: 30000  # 커넥션 타임아웃 (30초)
+      max-lifetime: 1800000  # 커넥션 최대 수명 (30분, MySQL wait_timeout 고려)
+      connection-test-query: SELECT 1  # 커넥션 유효성 검사 쿼리
       
   jpa:
     hibernate:
-      ddl-auto: validate
-    show-sql: false
+      ddl-auto: validate  # 스키마 검증만 수행 (운영 DB 보호)
+    show-sql: false  # SQL 로깅 비활성화 (성능 최적화)
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQLDialect
-        generate_statistics: false
+        generate_statistics: false  # 통계 수집 비활성화 (성능 최적화)
         
 logging:
   level:
-    org.icd4.commerce: WARN
-    root: INFO
+    org.icd4.commerce: WARN  # 경고 이상만 로깅 (로그 최소화)
+    root: INFO  # 전체 시스템은 INFO 레벨
     
 ---
-# 테스트 환경
+# 테스트 환경 (단위/통합 테스트)
 spring:
   config:
     activate:
-      on-profile: test
+      on-profile: test  # @ActiveProfiles("test")
       
   datasource:
-    url: jdbc:h2:mem:testdb;MODE=PostgreSQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    url: jdbc:h2:mem:testdb;MODE=PostgreSQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE  # PostgreSQL 호환 모드 (실제 DB와 유사한 동작)
     username: sa
     password: 
     driver-class-name: org.h2.Driver
     
   jpa:
     hibernate:
-      ddl-auto: create-drop
-    show-sql: false
+      ddl-auto: create-drop  # 테스트마다 깨끗한 DB 상태 보장
+    show-sql: false  # 테스트 속도를 위해 SQL 로깅 비활성화
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.H2Dialect
+        dialect: org.hibernate.dialect.H2Dialect  # H2 전용 방언
         
   sql:
     init:
-      mode: never
+      mode: never  # SQL 초기화 스크립트 실행 안함 (테스트 데이터는 코드로 관리)
       
 logging:
   level:
-    org.icd4.commerce: DEBUG
-    org.springframework.transaction: DEBUG
+    org.icd4.commerce: DEBUG  # 테스트 디버깅을 위한 상세 로깅
+    org.springframework.transaction: DEBUG  # 트랜잭션 경계 확인용
