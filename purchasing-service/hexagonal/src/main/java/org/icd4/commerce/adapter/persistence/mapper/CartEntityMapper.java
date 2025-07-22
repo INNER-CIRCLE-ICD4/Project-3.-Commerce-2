@@ -122,7 +122,7 @@ public class CartEntityMapper {
         
         return new CartItem(
             new CartItemId(entity.getId()),
-            new ProductId(Long.parseLong(entity.getProductId())),
+            new ProductId(entity.getProductId()),
             options,
             entity.getQuantity(),
             entity.getAddedAt(),

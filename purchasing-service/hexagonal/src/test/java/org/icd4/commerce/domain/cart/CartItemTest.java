@@ -24,7 +24,7 @@ class CartItemTest {
     @BeforeEach
     void setUp() {
         cartItemId = CartItemId.generate();
-        productId = ProductId.of(1L);
+        productId = ProductId.of("TEST-001");
         
         Map<String, String> optionMap = new HashMap<>();
         optionMap.put("size", "L");
@@ -155,7 +155,7 @@ class CartItemTest {
     void isSameProductWithDifferentProductId() {
         // given
         CartItem cartItem = new CartItem(cartItemId, productId, options, 5, timeProvider);
-        ProductId differentProductId = ProductId.of(2L);
+        ProductId differentProductId = ProductId.of("TEST-002");
         
         // when
         boolean result = cartItem.isSameProduct(differentProductId, options);
@@ -231,7 +231,7 @@ class CartItemTest {
     void equalsAndHashCode() {
         // given
         CartItem cartItem1 = new CartItem(cartItemId, productId, options, 5, timeProvider);
-        CartItem cartItem2 = new CartItem(cartItemId, ProductId.of(2L), ProductOptions.empty(), 10, timeProvider);
+        CartItem cartItem2 = new CartItem(cartItemId, ProductId.of("TEST-001"), ProductOptions.empty(), 10, timeProvider);
         CartItem cartItem3 = new CartItem(CartItemId.generate(), productId, options, 5, timeProvider);
         
         // then
