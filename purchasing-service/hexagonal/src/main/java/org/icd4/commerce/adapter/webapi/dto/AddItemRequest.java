@@ -8,6 +8,7 @@ import lombok.Builder;
 import org.icd4.commerce.application.provided.cart.AddItemToCartCommand;
 import org.icd4.commerce.domain.cart.Cart;
 import org.icd4.commerce.domain.cart.CartId;
+import org.icd4.commerce.domain.cart.ProductId;
 import org.icd4.commerce.domain.cart.ProductOptions;
 
 import java.util.Map;
@@ -36,7 +37,7 @@ public record AddItemRequest(
     public AddItemToCartCommand toCommand(String cartId) {
         return new AddItemToCartCommand(
             CartId.of(cartId),
-            Cart.ProductId.of(Long.parseLong(productId)),
+            ProductId.of(Long.parseLong(productId)),
             quantity,
             options != null ? ProductOptions.of(options) : ProductOptions.empty()
         );
