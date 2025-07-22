@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import static java.util.Objects.requireNonNull;
 
@@ -50,12 +51,11 @@ public class Product {
     }
 
     public void updateInfo(ProductInfoUpdateRequest request) {
-        Product product = new Product();
-        product.name = requireNonNull(request.name(), "Product name is required");
-        product.brand = requireNonNull(request.brand(), "Product brand is required");
-        product.description = requireNonNull(request.description(), "Product description is required");
+        this.name = requireNonNull(request.name(), "Product name is required");
+        this.brand = requireNonNull(request.brand(), "Product brand is required");
+        this.description = requireNonNull(request.description(), "Product description is required");
         if (request.priceAmount() != null && request.priceCurrency() != null) {
-            product.price = new ProductMoney(request.priceAmount(), request.priceCurrency());
+            this.price = new ProductMoney(request.priceAmount(), request.priceCurrency());
         }
 //        product.options = request.options().stream().map(ProductOption::of).toList();
 
