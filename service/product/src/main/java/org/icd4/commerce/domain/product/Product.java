@@ -2,8 +2,10 @@ package org.icd4.commerce.domain.product;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.Setter;
 import org.icd4.commerce.application.command.ProductCreationCommand;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
@@ -12,9 +14,11 @@ import java.util.Objects;
 import java.util.UUID;
 
 @Getter
+@Setter
 @Entity
 public class Product {
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private String id; // long 자동증가 -> 분산환경에서 중복될 가능성 있어서 UUID 형식으로 변경
     private String sellerId;
     private String name;
@@ -35,7 +39,6 @@ public class Product {
 
     public static Product create(ProductCreationCommand command) {
         Product product = new Product();
-        product.id = UUID.randomUUID().toString();
         product.sellerId = Objects.requireNonNull(command.sellerId(), "Seller ID is required");
         product.name = Objects.requireNonNull(command.name(), "Product name is required");
         product.brand = Objects.requireNonNull(command.brand(), "Product brand is required");
@@ -48,6 +51,14 @@ public class Product {
         product.createdAt = LocalDateTime.now(ZoneOffset.UTC);
         product.updatedAt = LocalDateTime.now(ZoneOffset.UTC);
         return product;
+    }
+
+    public void changePrice(ProductMoney newPrice) {
+        // 도메인 규칙에 따른 유효성 검사 (예: 가격이 0보다 작을 수 없음 등)
+        Objects.requireNonNull(newPrice, "New price cannot be null");
+
+        this.price = newPrice;
+        this.updatedAt = LocalDateTime.now(ZoneOffset.UTC); // 변경 시간 업데이트
     }
 
 }
