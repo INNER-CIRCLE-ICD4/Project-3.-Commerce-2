@@ -11,6 +11,10 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
 
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 /**
  * REST API를 통한 상품 서비스 클라이언트 구현.
  * 
@@ -73,6 +77,53 @@ public class ProductServiceRestClient implements ProductServiceClient {
         }
     }
     
+    /**
+     * 여러 상품을 배치로 조회합니다.
+     * 
+     * @param productIds 상품 ID 목록
+     * @return 상품 정보 목록
+     */
+    public List<ProductInfo> getProductsBatch(List<ProductId> productIds) {
+        log.debug("Fetching {} products in batch", productIds.size());
+        
+        try {
+            // 상품 ID 목록을 문자열로 변환
+            List<String> ids = productIds.stream()
+                .map(ProductId::value)
+                .toList();
+            
+            BatchProductRequest request = new BatchProductRequest(ids);
+            
+            BatchProductResponse response = getRestClient()
+                .post()
+                .uri("/api/v1/products/batch")
+                .body(request)
+                .retrieve()
+                .body(BatchProductResponse.class);
+            
+            if (response == null || response.products() == null) {
+                return List.of();
+            }
+            
+            log.debug("Batch fetch successful: {} products retrieved", response.products().size());
+            
+            return response.products().stream()
+                .map(this::mapToProductInfo)
+                .toList();
+            
+        } catch (HttpClientErrorException e) {
+            log.error("Failed to fetch products in batch", e);
+            throw new ProductServiceException(
+                "Failed to fetch products in batch", e
+            );
+        } catch (RestClientException e) {
+            log.error("Product service communication error during batch fetch", e);
+            throw new ProductServiceException(
+                "Product service communication error", e
+            );
+        }
+    }
+    
     @Override
     @Cacheable(value = "product-stock", key = "#productId.value()")
     public int getAvailableStock(ProductId productId) {
@@ -124,4 +175,32 @@ public class ProductServiceRestClient implements ProductServiceClient {
         int availableQuantity,
         int reservedQuantity
     ) {}
+    
+    /**
+     * 배치 상품 조회 요청 DTO.
+     */
+    private record BatchProductRequest(
+        List<String> productIds
+    ) {}
+    
+    /**
+     * 배치 상품 조회 응답 DTO.
+     */
+    private record BatchProductResponse(
+        List<ProductResponse> products,
+        List<String> notFoundIds  // 찾지 못한 상품 ID 목록
+    ) {}
+    
+    /**
+     * ProductResponse를 ProductInfo로 변환합니다.
+     */
+    private ProductInfo mapToProductInfo(ProductResponse response) {
+        return new ProductInfo(
+            response.id(),
+            response.name(),
+            response.price(),
+            response.stock(),
+            response.active()
+        );
+    }
 }

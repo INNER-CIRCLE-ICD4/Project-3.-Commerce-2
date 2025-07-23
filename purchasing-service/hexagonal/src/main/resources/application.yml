@@ -36,6 +36,12 @@ springdoc:
 external:
   product-service:
     base-url: ${PRODUCT_SERVICE_URL:http://localhost:8081}  # 상품 서비스 URL (환경변수 우선, 기본값 제공)
+
+# 비동기 처리 설정
+async:
+  product:
+    thread-pool-size: 20  # 비동기 처리를 위한 스레드풀 크기
+    timeout-seconds: 10   # 비동기 작업 타임아웃 (초)
         
 ---
 # 로컬 개발 환경 (개발자 로컬 PC에서 실행)
