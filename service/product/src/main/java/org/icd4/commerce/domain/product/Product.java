@@ -47,6 +47,7 @@ public class Product {
         product.status = ProductStatus.ON_SALE;
         product.isDeleted = false;
         product.createdAt = LocalDateTime.now(ZoneOffset.UTC);
+        product.updatedAt = LocalDateTime.now(ZoneOffset.UTC);
         return product;
     }
 
@@ -67,4 +68,12 @@ public class Product {
     public void changeStatusStopped() {
 
     }
+    public void changePrice(ProductMoney newPrice) {
+        // 도메인 규칙에 따른 유효성 검사 (예: 가격이 0보다 작을 수 없음 등)
+        Objects.requireNonNull(newPrice, "New price cannot be null");
+
+        this.price = newPrice;
+        this.updatedAt = LocalDateTime.now(ZoneOffset.UTC); // 변경 시간 업데이트
+    }
+
 }
