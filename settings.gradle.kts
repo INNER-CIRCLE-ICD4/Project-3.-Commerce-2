@@ -1,11 +1,14 @@
 rootProject.name = "commerce"
 
 include(
+    ":common:id-generator",
     ":common:data-serializer",
     ":common:event-contracts",
     ":service:hexagonal",
     ":service:layered",
     ":purchasing-service:hexagonal",
+    ":service:product",
+    ":service:stock"
 )
 
 // configurations
@@ -27,4 +30,7 @@ pluginManagement {
             }
         }
     }
+}
+plugins {
+    id("org.gradle.toolchains.foojay-resolver-convention") version "0.8.0"
 }
