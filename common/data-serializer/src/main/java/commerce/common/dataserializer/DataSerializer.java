@@ -1,4 +1,4 @@
-package board.common.dataserializer;
+package commerce.common.dataserializer;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
