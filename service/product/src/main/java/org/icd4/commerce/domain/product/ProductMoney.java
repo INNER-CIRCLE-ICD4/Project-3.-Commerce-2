@@ -5,8 +5,8 @@ import lombok.Getter;
 
 import java.math.BigDecimal;
 
-@Getter
 @Embeddable
+@Getter
 public class ProductMoney {
 
     private BigDecimal amount;
