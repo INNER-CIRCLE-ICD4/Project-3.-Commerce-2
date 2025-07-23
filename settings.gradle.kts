@@ -1,6 +1,7 @@
 rootProject.name = "commerce"
 
 include(
+    ":common:id-generator",
     ":common:data-serializer",
     ":service:hexagonal",
     ":service:layered",
