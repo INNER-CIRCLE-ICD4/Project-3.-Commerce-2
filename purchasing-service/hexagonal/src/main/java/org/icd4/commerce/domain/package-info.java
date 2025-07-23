@@ -5,12 +5,6 @@
  * 
  * Aggregate 구조:
  * - cart: 장바구니 Aggregate
- *     - Cart (Aggregate Root)
- *     - CartItem
  * - order: 주문 Aggregate
- *     - Order (Aggregate Root)
- *     - OrderItem
- *     - Value Objects
- *     - Domain Events
  */
 package org.icd4.commerce.domain;
