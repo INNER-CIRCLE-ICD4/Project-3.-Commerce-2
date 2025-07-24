@@ -1,4 +1,5 @@
 dependencies {
+    implementation(project(":common:data-serializer"))
     // add your dependencies here
     implementation("org.springframework.boot:spring-boot-starter")
     implementation("org.springframework.boot:spring-boot-starter-web")

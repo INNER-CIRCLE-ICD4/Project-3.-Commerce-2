@@ -3,7 +3,7 @@ package org.icd4.commerce.application;
 import lombok.RequiredArgsConstructor;
 import org.icd4.commerce.application.provided.ProductFinder;
 import org.icd4.commerce.application.required.ProductRepository;
-import org.icd4.commerce.domain.product.Product;
+import org.icd4.commerce.domain.product.model.Product;
 import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
@@ -13,6 +13,7 @@ public class ProductQueryService implements ProductFinder {
 
     @Override
     public Product findById(String productId) {
-        return productRepository.findById(productId).orElseThrow(() -> new IllegalArgumentException("상품을 찾을 수 없습니다. productId::" + productId));
+        return productRepository.findById(productId)
+                .orElseThrow(() -> new IllegalArgumentException("상품을 찾을 수 없습니다. productId::" + productId));
     }
 }

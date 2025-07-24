@@ -4,7 +4,7 @@ package org.icd4.commerce.adapter.webapi;
 import lombok.RequiredArgsConstructor;
 import org.icd4.commerce.adapter.webapi.dto.ProductResponse;
 import org.icd4.commerce.application.command.ProductCommandService;
-import org.icd4.commerce.domain.product.ProductCreateRequest;
+import org.icd4.commerce.domain.product.request.ProductCreateRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;

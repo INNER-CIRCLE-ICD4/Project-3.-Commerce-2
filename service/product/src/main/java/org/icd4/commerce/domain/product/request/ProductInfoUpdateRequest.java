@@ -1,4 +1,4 @@
-package org.icd4.commerce.domain.product;
+package org.icd4.commerce.domain.product.request;
 
 import java.math.BigDecimal;
 

@@ -1,5 +1,6 @@
 package org.icd4.commerce.domain.product;
 
+import org.icd4.commerce.domain.product.model.ProductMoney;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;

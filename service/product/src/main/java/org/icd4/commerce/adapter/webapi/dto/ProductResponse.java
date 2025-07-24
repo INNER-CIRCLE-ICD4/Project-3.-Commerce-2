@@ -1,12 +1,9 @@
 package org.icd4.commerce.adapter.webapi.dto;
 
-import org.icd4.commerce.domain.product.Product;
-import org.icd4.commerce.domain.product.ProductStatus;
+import org.icd4.commerce.domain.product.model.Product;
+import org.icd4.commerce.domain.product.model.ProductStatus;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
 
 public record ProductResponse(
         String id,
@@ -15,9 +12,6 @@ public record ProductResponse(
         String brand,
         String description,
         String categoryId,
-        BigDecimal priceAmount,
-        String priceCurrency,
-        List<ProductOptionResponse> options,
         ProductStatus status,
         Boolean isDeleted,
         LocalDateTime createdAt,
@@ -32,11 +26,6 @@ public record ProductResponse(
                 product.getBrand(),
                 product.getDescription(),
                 product.getCategoryId(),
-                product.getPrice().getAmount(),
-                product.getPrice().getCurrency(),
-                product.getOptions().stream()
-                        .map(opt -> new ProductOptionResponse(opt.getName(), opt.getDescription()))
-                        .collect(Collectors.toList()),
                 product.getStatus(),
                 product.getIsDeleted(),
                 product.getCreatedAt(),
