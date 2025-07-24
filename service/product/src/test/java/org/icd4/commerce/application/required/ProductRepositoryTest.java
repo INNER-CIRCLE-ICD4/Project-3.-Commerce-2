@@ -1,18 +1,20 @@
 package org.icd4.commerce.application.required;
 
 import jakarta.persistence.EntityManager;
-import org.icd4.commerce.domain.product.Product;
-import org.icd4.commerce.domain.product.ProductCreateRequest;
-import org.icd4.commerce.domain.product.ProductOptionRequest;
+import org.icd4.commerce.domain.product.model.Product;
+import org.icd4.commerce.domain.product.request.ProductCreateRequest;
+import org.icd4.commerce.domain.product.request.ProductVariantRequest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import java.math.BigDecimal;
+import java.util.Currency;
 import java.util.List;
+import java.util.Locale;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.icd4.commerce.domain.product.ProductStatus.ON_SALE;
+import static org.icd4.commerce.domain.product.model.ProductStatus.ACTIVE;
 
 @DataJpaTest
 class ProductRepositoryTest {
@@ -24,19 +26,38 @@ class ProductRepositoryTest {
 
     @Test
     void createProduct() {
-        Product product = Product.create(
+        var product = Product.create(
                 new ProductCreateRequest(
-                        "0001",
+                        "sellerId",
                         "0001",
                         "name",
                         "brand",
                         "description",
-                        BigDecimal.ONE,
-                        "KRW",
-                        List.of(new ProductOptionRequest("option1", "value1"),
-                                new ProductOptionRequest("option2", "value2"))
-                )
-        );
+                        BigDecimal.valueOf(1000),
+                        Currency.getInstance(Locale.KOREA).getCurrencyCode(),
+                        List.of(new ProductVariantRequest(
+                                        """
+                                                {
+                                                    "optionName": "option1",
+                                                    "optionValue": "value1"
+                                                }
+                                                """,
+                                        BigDecimal.valueOf(1000),
+                                        Currency.getInstance(Locale.KOREA).getCurrencyCode(),
+                                        1000L
+                                ),
+                                new ProductVariantRequest(
+                                        """
+                                                {
+                                                    "optionName": "option2",
+                                                    "optionValue": "value2"
+                                                }
+                                                """,
+                                        BigDecimal.valueOf(2000),
+                                        Currency.getInstance(Locale.KOREA).getCurrencyCode(),
+                                        1000L
+                                ))
+                ));
         assertThat(product.getId()).isNull();
         productRepository.save(product);
 
@@ -46,7 +67,7 @@ class ProductRepositoryTest {
         entityManager.clear();
 
         var find = productRepository.findById(product.getId()).orElseThrow();
-        assertThat(find.getStatus()).isEqualTo(ON_SALE);
+        assertThat(find.getStatus()).isEqualTo(ACTIVE);
         assertThat(find.getCreatedAt()).isNotNull();
     }
 }

@@ -1,9 +1,9 @@
 package org.icd4.commerce.application.provided;
 
 import jakarta.persistence.EntityManager;
-import org.icd4.commerce.domain.product.Product;
-import org.icd4.commerce.domain.product.ProductCreateRequest;
-import org.icd4.commerce.domain.product.ProductStatus;
+import org.icd4.commerce.domain.product.model.Product;
+import org.icd4.commerce.domain.product.request.ProductCreateRequest;
+import org.icd4.commerce.domain.product.model.ProductStatus;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
@@ -94,7 +94,7 @@ class ProductModifierTest {
         productModifier.changeProductStopped(product.getId(), sellerId);
         entityManager.flush();
 
-        assertThat(product.getStatus()).isEqualTo(ProductStatus.STOPPED);
+        assertThat(product.getStatus()).isEqualTo(ProductStatus.INACTIVE);
     }
 
     @Test

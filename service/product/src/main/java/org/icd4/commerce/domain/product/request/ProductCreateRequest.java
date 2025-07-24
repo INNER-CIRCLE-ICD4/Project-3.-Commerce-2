@@ -1,4 +1,4 @@
-package org.icd4.commerce.domain.product;
+package org.icd4.commerce.domain.product.request;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -11,6 +11,6 @@ public record ProductCreateRequest(
         String description,
         BigDecimal priceAmount,
         String priceCurrency,
-        List<ProductOptionRequest> options
+        List<ProductVariantRequest> variants
 ) {
 }

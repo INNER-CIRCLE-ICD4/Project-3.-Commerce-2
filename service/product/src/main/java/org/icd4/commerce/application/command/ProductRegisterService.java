@@ -4,27 +4,33 @@ import lombok.RequiredArgsConstructor;
 import org.icd4.commerce.application.provided.ProductFinder;
 import org.icd4.commerce.application.provided.ProductRegister;
 import org.icd4.commerce.application.required.ProductRepository;
-import org.icd4.commerce.domain.product.Product;
-import org.icd4.commerce.domain.product.ProductCreateRequest;
-import org.icd4.commerce.domain.product.ProductInfoUpdateRequest;
+import org.icd4.commerce.domain.product.model.Product;
+import org.icd4.commerce.domain.product.model.ProductVariant;
+import org.icd4.commerce.domain.product.request.ProductCreateRequest;
+import org.icd4.commerce.domain.product.request.ProductInfoUpdateRequest;
+import org.icd4.commerce.domain.product.request.ProductVariantRequest;
+import org.icd4.commerce.domain.product.request.ProductVariantUpdateRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+@Transactional
 @RequiredArgsConstructor
 @Service
 public class ProductRegisterService implements ProductRegister {
     private final ProductFinder productFinder;
     private final ProductRepository productRepository;
 
-    @Transactional
     @Override
     public Product create(ProductCreateRequest request) {
-        Product product = productRepository.save(Product.create(request));
-        // TODO : Add event publishing logic here if needed
-        // 재고 모듈로 재고 전달, 검색 모듈 혹은 읽기 모듈로 상품 정보 전달
-        // 상품 등록과 재고 등록을 별도로 가져가고 싶음 협의 필요 :)
-
-        return product;
+        Product product = Product.create(request);
+        Product savedProduct = productRepository.save(product);
+        savedProduct.addVariants(request.variants());
+        return savedProduct;
     }
 
     @Override
@@ -32,5 +38,24 @@ public class ProductRegisterService implements ProductRegister {
         Product product = productFinder.findById(productId);
         product.updateInfo(request);
         return productRepository.save(product);
+    }
+
+    @Override
+    public Product updateVariant(String productId, String sku, ProductVariantUpdateRequest request) {
+        Product product = productFinder.findById(productId);
+        product.updateVariant(sku, request);
+        return productRepository.save(product);
+    }
+
+    @Override
+    public void deleteProduct(String productId) {
+        if (productId == null || productId.isEmpty()) {
+            throw new IllegalArgumentException("상품 ID는 필수입니다.");
+        }
+        if (productRepository.findById(productId).isPresent()) {
+            productRepository.deleteById(productId);
+        } else {
+            throw new IllegalArgumentException("상품을 찾을 수 없습니다: " + productId);
+        }
     }
 }
