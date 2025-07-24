@@ -46,7 +46,7 @@ jobs:
 
     - name: Build Docker image
       run: |
-        docker build -f Dockerfile.stock -t $ECR_REPOSITORY:latest .
+        docker build -f service/stock/Dockerfile -t $ECR_REPOSITORY:latest .
 
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v4
