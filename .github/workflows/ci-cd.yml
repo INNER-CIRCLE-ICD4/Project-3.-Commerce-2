@@ -62,4 +62,4 @@ jobs:
 
     - name: Push to ECR Public
       run: |
-        docker push $ECR_REPOSITORY:latest 
+        docker push $ECR_REPOSITORY/service/stock:latest 
