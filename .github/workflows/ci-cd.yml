@@ -12,9 +12,10 @@ env:
   ECR_REPOSITORY: public.ecr.aws/f5h1p0v2
 
 # CI/CD 파이프라인 (테스트, 빌드, Docker 빌드, ECR 푸시)
-ci-cd:
-  runs_on: ubuntu-latest
-  steps:
+jobs:
+  ci-cd:
+    runs-on: ubuntu-latest
+    steps:
     - name: Checkout code
       uses: actions/checkout@v4
 
