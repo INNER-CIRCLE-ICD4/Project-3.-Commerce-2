@@ -41,4 +41,9 @@ public class ProductModifierService implements ProductModifier {
         product.changePrice(newPrice);
         productRepository.save(product);
     }
+
+    @Override
+    public Product deleteProduct(String productId, String sellerId) { return null; }
+
+
 }
