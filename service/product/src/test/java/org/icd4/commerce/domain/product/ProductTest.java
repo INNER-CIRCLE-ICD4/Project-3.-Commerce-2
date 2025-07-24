@@ -172,15 +172,15 @@ class ProductTest {
     @DisplayName("상품 상태 변경 테스트")
     class ChangeStatusTest {
         void changeStatusStopped() {
-            product.changeStatusStopped();
+            product.inactivate();
             assertThat(product.getStatus()).isEqualTo(ProductStatus.INACTIVE);
             assertThat(product.getUpdatedAt()).isNotNull();
         }
 
         @Test
         void changeStatusFail() {
-            product.changeStatusStopped();
-            assertThatThrownBy(() -> product.changeStatusStopped())
+            product.inactivate();
+            assertThatThrownBy(() -> product.inactivate())
                     .isInstanceOf(IllegalStateException.class)
                     .hasMessageContaining("이미 판매 중지된 상품입니다.");
         }

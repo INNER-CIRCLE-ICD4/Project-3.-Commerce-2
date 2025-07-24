@@ -65,8 +65,9 @@ public class Product {
         this.updatedAt = LocalDateTime.now(ZoneOffset.UTC);
     }
 
-    public void changeStatusStopped() {
-    }
+    // on off
+    public void activate() {}
+    public void inactivate() {}
 
     public void changeCategory(String categoryId) {
     }

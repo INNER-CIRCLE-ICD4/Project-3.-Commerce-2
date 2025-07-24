@@ -3,7 +3,6 @@ package org.icd4.commerce.application.provided;
 import jakarta.persistence.EntityManager;
 import org.icd4.commerce.domain.product.model.Product;
 import org.icd4.commerce.domain.product.request.ProductCreateRequest;
-import org.icd4.commerce.domain.product.model.ProductStatus;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,6 +12,8 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.icd4.commerce.domain.product.model.ProductStatus.ACTIVE;
+import static org.icd4.commerce.domain.product.model.ProductStatus.INACTIVE;
 
 @SpringBootTest
 @Transactional
@@ -76,7 +77,7 @@ class ProductModifierTest {
     }
 
     @Test
-    void changeProductStopped() {
+    void productActivate() {
         var categoryId = "0001";
         var sellerId = "0001";
 
@@ -91,10 +92,32 @@ class ProductModifierTest {
                 List.of()
         ));
 
-        productModifier.changeProductStopped(product.getId(), sellerId);
+        productModifier.activate();
         entityManager.flush();
 
-        assertThat(product.getStatus()).isEqualTo(ProductStatus.INACTIVE);
+        assertThat(product.getStatus()).isEqualTo(ACTIVE);
+    }
+
+    @Test
+    void productInactivate() {
+        var categoryId = "0001";
+        var sellerId = "0001";
+
+        var product = Product.create(new ProductCreateRequest(
+                sellerId,
+                "name",
+                "brand",
+                "description",
+                categoryId,
+                BigDecimal.ONE,
+                "KRW",
+                List.of()
+        ));
+
+        productModifier.inactivate();
+        entityManager.flush();
+
+        assertThat(product.getStatus()).isEqualTo(INACTIVE);
     }
 
     @Test
@@ -113,16 +136,16 @@ class ProductModifierTest {
                 List.of()
         ));
 
-        assertThatThrownBy(() -> productModifier.changeProductStopped(product.getId(), "invalid-seller-id"))
+        assertThatThrownBy(() -> productModifier.inactivate())
                 .isInstanceOf(IllegalArgumentException.class);
-        assertThatThrownBy(() -> productModifier.changeProductStopped("invalid-id", sellerId))
+        assertThatThrownBy(() -> productModifier.inactivate())
                 .isInstanceOf(IllegalArgumentException.class);
 
-        product.changeStatusStopped();
+        product.inactivate();
         entityManager.flush();
         entityManager.clear();
 
-        assertThatThrownBy(() -> product.changeStatusStopped())
+        assertThatThrownBy(() -> product.inactivate())
                 .isInstanceOf(IllegalArgumentException.class);
 
     }

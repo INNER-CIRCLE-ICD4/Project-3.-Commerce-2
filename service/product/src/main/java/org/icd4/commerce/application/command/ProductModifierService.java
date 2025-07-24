@@ -12,14 +12,22 @@ import org.springframework.stereotype.Service;
 public class ProductModifierService implements ProductModifier {
     private final ProductRepository productRepository;
 
+    //TODO: 초희님 구현
     @Override
     public Product changeCategory(String productId, String categoryId, String sellerId) {
         return null;
     }
 
+    //TODO: 초희님 구현
     @Override
-    public Product changeProductStopped(String productId, String sellerId) {
-        return null;
+    public void activate() {
+
+    }
+
+    //TODO: 초희님 구현
+    @Override
+    public void inactivate() {
+
     }
 
     @Override
