@@ -1,10 +1,7 @@
 package org.icd4.commerce.domain.product.model;
 
 import board.common.dataserializer.DataSerializer;
-import jakarta.persistence.Column;
-import jakarta.persistence.Embedded;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
@@ -29,15 +26,19 @@ public class ProductVariant {
     @Embedded
     private ProductMoney sellingPrice;
     private VariantStatus status;
+    @Transient
+    private Long stockQuantity;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
     protected ProductVariant() {
     }
 
-    public static ProductVariant create(String productId, String sellerId,
+    public static ProductVariant create(String productId,
+                                        String sellerId,
                                         Map<String, String> optionCombination,
-                                        ProductMoney sellingPrice) {
+                                        ProductMoney sellingPrice,
+                                        Long stockQuantity) {
         ProductVariant variant = new ProductVariant();
         variant.sku = generateSku(productId, optionCombination);
         variant.productId = productId;
@@ -45,6 +46,7 @@ public class ProductVariant {
         variant.optionCombination = DataSerializer.serialize(optionCombination);
         variant.sellingPrice = sellingPrice;
         variant.status = VariantStatus.ACTIVE;
+        variant.stockQuantity = stockQuantity;
         variant.createdAt = LocalDateTime.now(ZoneOffset.UTC);
         variant.updatedAt = LocalDateTime.now(ZoneOffset.UTC);
         return variant;
