@@ -5,18 +5,11 @@ import org.icd4.commerce.application.provided.ProductFinder;
 import org.icd4.commerce.application.provided.ProductRegister;
 import org.icd4.commerce.application.required.ProductRepository;
 import org.icd4.commerce.domain.product.model.Product;
-import org.icd4.commerce.domain.product.model.ProductVariant;
 import org.icd4.commerce.domain.product.request.ProductCreateRequest;
 import org.icd4.commerce.domain.product.request.ProductInfoUpdateRequest;
-import org.icd4.commerce.domain.product.request.ProductVariantRequest;
 import org.icd4.commerce.domain.product.request.ProductVariantUpdateRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Transactional
 @RequiredArgsConstructor
