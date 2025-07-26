@@ -4,6 +4,7 @@ import org.icd4.commerce.domain.product.model.Product;
 import org.icd4.commerce.domain.product.model.ProductStatus;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public record ProductResponse(
         String id,
@@ -13,6 +14,7 @@ public record ProductResponse(
         String description,
         String categoryId,
         ProductStatus status,
+        List<ProductVariantResponse> variants,
         Boolean isDeleted,
         LocalDateTime createdAt,
         LocalDateTime updatedAt,
@@ -27,6 +29,9 @@ public record ProductResponse(
                 product.getDescription(),
                 product.getCategoryId(),
                 product.getStatus(),
+                product.getVariants().stream()
+                        .map(ProductVariantResponse::fromDomain)
+                        .toList(),
                 product.getIsDeleted(),
                 product.getCreatedAt(),
                 product.getUpdatedAt(),

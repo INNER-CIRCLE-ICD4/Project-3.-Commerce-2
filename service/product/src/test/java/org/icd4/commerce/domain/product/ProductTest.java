@@ -193,8 +193,8 @@ class ProductTest {
         Map<String, String> options1 = Map.of("color", "red", "size", "L");
         Map<String, String> options2 = Map.of("color", "blue", "size", "M");
 
-        ProductVariant variant1 = product.addVariant(options1, ProductMoney.of(BigDecimal.valueOf(1500), "KRW"));
-        ProductVariant variant2 = product.addVariant(options2, ProductMoney.of(BigDecimal.valueOf(1600), "KRW"));
+        ProductVariant variant1 = product.addVariant(options1, ProductMoney.of(BigDecimal.valueOf(1500), "KRW"), 1000L);
+        ProductVariant variant2 = product.addVariant(options2, ProductMoney.of(BigDecimal.valueOf(1600), "KRW"), 1000L);
 
         variant1.changeStatus(VariantStatus.ACTIVE);
         variant2.changeStatus(VariantStatus.ACTIVE);
@@ -233,7 +233,7 @@ class ProductTest {
         void deleteAffectsVariants() {
             // given
             Map<String, String> options = Map.of("color", "red");
-            ProductVariant variant = product.addVariant(options, ProductMoney.of(BigDecimal.valueOf(1500), "KRW"));
+            ProductVariant variant = product.addVariant(options, ProductMoney.of(BigDecimal.valueOf(1500), "KRW"), 1000L);
             variant.changeStatus(VariantStatus.ACTIVE);
 
             // when
@@ -282,11 +282,12 @@ class ProductTest {
             // given
             Map<String, String> options = Map.of("color", "red", "size", "L");
             ProductMoney sellingPrice = ProductMoney.of(BigDecimal.valueOf(1500), "KRW");
+            Long stockQuantity = 1000L;
             LocalDateTime beforeUpdate = product.getUpdatedAt();
 
             // when
             sleep(100); // 시간 차이를 주기 위해 잠시 대기
-            ProductVariant variant = product.addVariant(options, sellingPrice);
+            ProductVariant variant = product.addVariant(options, sellingPrice,stockQuantity);
 
             // then
             assertThat(variant).isNotNull();
@@ -303,10 +304,11 @@ class ProductTest {
         void addVariantWithoutOptions() {
             // given
             Map<String, String> emptyOptions = Collections.emptyMap();
+            Long stockQuantity = 1000L;
             ProductMoney sellingPrice = ProductMoney.of(BigDecimal.valueOf(1000), "KRW");
 
             // when
-            ProductVariant variant = product.addVariant(emptyOptions, sellingPrice);
+            ProductVariant variant = product.addVariant(emptyOptions, sellingPrice, stockQuantity);
 
             // then
             assertThat(variant.getSku()).isEqualTo(product.getId()); // 옵션이 없으면 productId가 SKU
@@ -318,7 +320,8 @@ class ProductTest {
         void findVariantBySku() {
             // given
             Map<String, String> options = Map.of("color", "red");
-            ProductVariant addedVariant = product.addVariant(options, ProductMoney.of(BigDecimal.valueOf(1500), "KRW"));
+            ProductVariant addedVariant = product.addVariant(options, ProductMoney.of(BigDecimal.valueOf(1500),
+                    "KRW"), 1000L);
 
             // when
             ProductVariant foundVariant = product.findVariantBySku(addedVariant.getSku());
@@ -340,7 +343,7 @@ class ProductTest {
         void removeVariant() {
             // given
             Map<String, String> options = Map.of("color", "red");
-            ProductVariant variant = product.addVariant(options, ProductMoney.of(BigDecimal.valueOf(1500), "KRW"));
+            ProductVariant variant = product.addVariant(options, ProductMoney.of(BigDecimal.valueOf(1500), "KRW"),1000L);
             variant.changeStatus(VariantStatus.ACTIVE);
 
             // when
@@ -363,7 +366,7 @@ class ProductTest {
         void updateVariantPrice() {
             // given
             Map<String, String> options = Map.of("color", "red");
-            ProductVariant variant = product.addVariant(options, ProductMoney.of(BigDecimal.valueOf(1500), "KRW"));
+            ProductVariant variant = product.addVariant(options, ProductMoney.of(BigDecimal.valueOf(1500), "KRW"),1000L);
             ProductMoney newPrice = ProductMoney.of(BigDecimal.valueOf(2000), "KRW");
 
             // when
@@ -378,7 +381,7 @@ class ProductTest {
         void changeVariantStatus() {
             // given
             Map<String, String> options = Map.of("color", "red");
-            ProductVariant variant = product.addVariant(options, ProductMoney.of(BigDecimal.valueOf(1500), "KRW"));
+            ProductVariant variant = product.addVariant(options, ProductMoney.of(BigDecimal.valueOf(1500), "KRW"),1000L);
 
             // when
             product.changeVariantStatus(variant.getSku(), VariantStatus.ACTIVE);
@@ -395,9 +398,9 @@ class ProductTest {
             Map<String, String> options2 = Map.of("color", "blue");
             Map<String, String> options3 = Map.of("color", "green");
 
-            ProductVariant variant1 = product.addVariant(options1, ProductMoney.of(BigDecimal.valueOf(1500), "KRW"));
-            ProductVariant variant2 = product.addVariant(options2, ProductMoney.of(BigDecimal.valueOf(1600), "KRW"));
-            ProductVariant variant3 = product.addVariant(options3, ProductMoney.of(BigDecimal.valueOf(1700), "KRW"));
+            ProductVariant variant1 = product.addVariant(options1, ProductMoney.of(BigDecimal.valueOf(1500), "KRW"), 1000L);
+            ProductVariant variant2 = product.addVariant(options2, ProductMoney.of(BigDecimal.valueOf(1600), "KRW"),1000L);
+            ProductVariant variant3 = product.addVariant(options3, ProductMoney.of(BigDecimal.valueOf(1700), "KRW"),1000L);
 
             variant1.changeStatus(VariantStatus.ACTIVE);
             variant2.changeStatus(VariantStatus.INACTIVE);
@@ -416,7 +419,7 @@ class ProductTest {
         void hasAvailableVariants() {
             // given
             Map<String, String> options = Map.of("color", "red");
-            ProductVariant variant = product.addVariant(options, ProductMoney.of(BigDecimal.valueOf(1500), "KRW"));
+            ProductVariant variant = product.addVariant(options, ProductMoney.of(BigDecimal.valueOf(1500), "KRW"),1000L);
 
             // when & then
             assertThat(product.hasAvailableVariants()).isFalse(); // 초기 상태는 REGISTERED
@@ -430,8 +433,8 @@ class ProductTest {
         void getVariantCount() {
             assertThat(product.getVariantCount()).isZero();
 
-            product.addVariant(Map.of("color", "red"), ProductMoney.of(BigDecimal.valueOf(1500), "KRW"));
-            product.addVariant(Map.of("color", "blue"), ProductMoney.of(BigDecimal.valueOf(1600), "KRW"));
+            product.addVariant(Map.of("color", "red"), ProductMoney.of(BigDecimal.valueOf(1500), "KRW"),1000L);
+            product.addVariant(Map.of("color", "blue"), ProductMoney.of(BigDecimal.valueOf(1600), "KRW"),1000L);
 
             assertThat(product.getVariantCount()).isEqualTo(2);
         }
@@ -441,11 +444,9 @@ class ProductTest {
         void hasVariants() {
             assertThat(product.hasVariants()).isFalse();
 
-            product.addVariant(Map.of("color", "red"), ProductMoney.of(BigDecimal.valueOf(1500), "KRW"));
+            product.addVariant(Map.of("color", "red"), ProductMoney.of(BigDecimal.valueOf(1500), "KRW"),1000L);
 
             assertThat(product.hasVariants()).isTrue();
         }
     }
-
-
 }
