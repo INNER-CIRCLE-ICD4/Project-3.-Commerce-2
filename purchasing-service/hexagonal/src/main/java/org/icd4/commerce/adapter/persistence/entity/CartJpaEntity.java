@@ -103,10 +103,6 @@ public class CartJpaEntity {
         return id;
     }
     
-    public void setId(String id) {
-        this.id = id;
-    }
-    
     public String getCustomerId() {
         return customerId;
     }
@@ -126,17 +122,9 @@ public class CartJpaEntity {
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
-    
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-    
+
     public LocalDateTime getLastModifiedAt() {
         return lastModifiedAt;
-    }
-    
-    public void setLastModifiedAt(LocalDateTime lastModifiedAt) {
-        this.lastModifiedAt = lastModifiedAt;
     }
     
     public boolean isConverted() {
