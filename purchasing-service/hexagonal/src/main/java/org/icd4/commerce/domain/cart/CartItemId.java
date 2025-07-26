@@ -1,7 +1,7 @@
 package org.icd4.commerce.domain.cart;
 
+import org.icd4.commerce.common.idgenerator.ULIDUtils;
 import java.util.Objects;
-import java.util.UUID;
 
 /**
  * 장바구니 항목의 고유 식별자를 나타내는 값 객체입니다.
@@ -13,7 +13,7 @@ import java.util.UUID;
  * <ul>
  *   <li>불변성(Immutability): 한 번 생성되면 값을 변경할 수 없습니다.</li>
  *   <li>유효성 검증: null이거나 빈 값을 허용하지 않습니다.</li>
- *   <li>UUID 기반 생성: 자동 생성 시 UUID를 사용하여 고유성을 보장합니다.</li>
+ *   <li>ULID 기반 생성: 자동 생성 시 ULID를 사용하여 고유성과 시간순 정렬을 보장합니다.</li>
  *   <li>장바구니 내 상품의 개별 인스턴스를 식별합니다.</li>
  * </ul>
  * </p>
@@ -52,12 +52,12 @@ public final class CartItemId {
     }
     
     /**
-     * UUID를 사용하여 새로운 CartItemId를 자동 생성합니다.
+     * ULID를 사용하여 새로운 CartItemId를 자동 생성합니다.
      * 
-     * @return UUID 기반의 새로운 CartItemId 인스턴스
+     * @return ULID 기반의 새로운 CartItemId 인스턴스
      */
     public static CartItemId generate() {
-        return new CartItemId(UUID.randomUUID().toString());
+        return new CartItemId(ULIDUtils.generate());
     }
     
     public String value() {

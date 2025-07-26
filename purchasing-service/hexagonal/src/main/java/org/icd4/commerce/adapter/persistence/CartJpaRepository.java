@@ -1,10 +1,9 @@
 package org.icd4.commerce.adapter.persistence;
 
 import org.icd4.commerce.adapter.persistence.entity.CartJpaEntity;
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.Repository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -18,8 +17,7 @@ import java.util.Optional;
  * @author Jooeun
  * @since 1.0
  */
-@Repository
-public interface CartJpaRepository extends JpaRepository<CartJpaEntity, String> {
+public interface CartJpaRepository extends Repository<CartJpaEntity, String> {
     
     /**
      * 고객 ID로 전환되지 않은 장바구니를 조회합니다.
@@ -77,4 +75,35 @@ public interface CartJpaRepository extends JpaRepository<CartJpaEntity, String> 
      */
     @Query("SELECT c FROM CartJpaEntity c LEFT JOIN FETCH c.items WHERE c.id = :cartId")
     Optional<CartJpaEntity> findByIdWithItems(@Param("cartId") String cartId);
+    
+    /**
+     * 장바구니를 저장합니다.
+     * 
+     * @param entity 저장할 장바구니 엔티티
+     * @return 저장된 장바구니 엔티티
+     */
+    CartJpaEntity save(CartJpaEntity entity);
+    
+    /**
+     * ID로 장바구니를 조회합니다.
+     * 
+     * @param id 장바구니 ID
+     * @return 장바구니 엔티티 (Optional)
+     */
+    Optional<CartJpaEntity> findById(String id);
+    
+    /**
+     * ID로 장바구니를 삭제합니다.
+     * 
+     * @param id 삭제할 장바구니 ID
+     */
+    void deleteById(String id);
+    
+    /**
+     * ID로 장바구니 존재 여부를 확인합니다.
+     * 
+     * @param id 확인할 장바구니 ID
+     * @return 존재 여부
+     */
+    boolean existsById(String id);
 }

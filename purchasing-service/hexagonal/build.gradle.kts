@@ -1,6 +1,7 @@
 dependencies {
     // Common modules
     implementation(project(":common:event-contracts"))
+    implementation(project(":common:id-generator"))
     
     // Spring Boot starters
     implementation("org.springframework.boot:spring-boot-starter")

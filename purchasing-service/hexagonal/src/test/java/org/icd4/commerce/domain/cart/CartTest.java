@@ -42,7 +42,7 @@ class CartTest {
     @DisplayName("장바구니에 새로운 상품을 추가할 수 있다")
     void addNewItem() {
         // given
-        ProductId productId = ProductId.of(1L);
+        ProductId productId = ProductId.of("TEST-001");
         Map<String, String> optionMap = new HashMap<>();
         optionMap.put("size", "L");
         ProductOptions options = ProductOptions.of(optionMap);
@@ -61,7 +61,7 @@ class CartTest {
     @DisplayName("동일한 상품과 옵션이면 수량이 합산된다")
     void addSameItemWithSameOptions() {
         // given
-        ProductId productId = ProductId.of(1L);
+        ProductId productId = ProductId.of("TEST-001");
         Map<String, String> optionMap = new HashMap<>();
         optionMap.put("size", "L");
         ProductOptions options = ProductOptions.of(optionMap);
@@ -80,7 +80,7 @@ class CartTest {
     @DisplayName("동일한 상품이지만 옵션이 다르면 별개의 아이템으로 추가된다")
     void addSameItemWithDifferentOptions() {
         // given
-        ProductId productId = ProductId.of(1L);
+        ProductId productId = ProductId.of("TEST-001");
         Map<String, String> optionMap1 = new HashMap<>();
         optionMap1.put("size", "L");
         ProductOptions options1 = ProductOptions.of(optionMap1);
@@ -103,11 +103,11 @@ class CartTest {
     void throwExceptionWhenExceedItemTypeLimit() {
         // given
         for (int i = 1; i <= 50; i++) {
-            cart.addItem(ProductId.of((long) i), 1, ProductOptions.empty());
+            cart.addItem(ProductId.of(String.valueOf(i)), 1, ProductOptions.empty());
         }
         
         // when & then
-        assertThatThrownBy(() -> cart.addItem(ProductId.of(51L), 1, ProductOptions.empty()))
+        assertThatThrownBy(() -> cart.addItem(ProductId.of("TEST-001"), 1, ProductOptions.empty()))
             .isInstanceOf(CartItemLimitExceededException.class)
             .hasMessageContaining("Cannot add more than 50 different product types");
     }
@@ -116,7 +116,7 @@ class CartTest {
     @DisplayName("장바구니에서 아이템을 제거할 수 있다")
     void removeItem() {
         // given
-        ProductId productId = ProductId.of(1L);
+        ProductId productId = ProductId.of("TEST-001");
         cart.addItem(productId, 2, ProductOptions.empty());
         CartItemId itemId = cart.getItems().get(0).getId();
         
@@ -143,7 +143,7 @@ class CartTest {
     @DisplayName("장바구니 아이템의 수량을 변경할 수 있다")
     void updateItemQuantity() {
         // given
-        ProductId productId = ProductId.of(1L);
+        ProductId productId = ProductId.of("TEST-001");
         cart.addItem(productId, 2, ProductOptions.empty());
         CartItemId itemId = cart.getItems().get(0).getId();
         
@@ -158,8 +158,8 @@ class CartTest {
     @DisplayName("장바구니를 비울 수 있다")
     void clearCart() {
         // given
-        cart.addItem(ProductId.of(1L), 2, ProductOptions.empty());
-        cart.addItem(ProductId.of(2L), 3, ProductOptions.empty());
+        cart.addItem(ProductId.of("TEST-001"), 2, ProductOptions.empty());
+        cart.addItem(ProductId.of("TEST-001"), 3, ProductOptions.empty());
         
         // when
         cart.clear();
@@ -173,8 +173,8 @@ class CartTest {
     @DisplayName("장바구니 총액을 계산할 수 있다")
     void calculateTotal() {
         // given
-        ProductId productId1 = ProductId.of(1L);
-        ProductId productId2 = ProductId.of(2L);
+        ProductId productId1 = ProductId.of("TEST-001");
+        ProductId productId2 = ProductId.of("TEST-002");
         
         cart.addItem(productId1, 2, ProductOptions.empty());
         cart.addItem(productId2, 3, ProductOptions.empty());
@@ -195,8 +195,8 @@ class CartTest {
         // given
         Cart otherCart = new Cart(CartId.generate(), CustomerId.of("customer-456"), timeProvider);
         
-        ProductId productId1 = ProductId.of(1L);
-        ProductId productId2 = ProductId.of(2L);
+        ProductId productId1 = ProductId.of("TEST-001");
+        ProductId productId2 = ProductId.of("TEST-002");
         
         cart.addItem(productId1, 2, ProductOptions.empty());
         otherCart.addItem(productId1, 3, ProductOptions.empty());
@@ -215,7 +215,7 @@ class CartTest {
     @DisplayName("장바구니를 주문으로 전환할 수 있다")
     void convertToOrder() {
         // given
-        cart.addItem(ProductId.of(1L), 2, ProductOptions.empty());
+        cart.addItem(ProductId.of("TEST-001"), 2, ProductOptions.empty());
         
         // when
         cart.convertToOrder();
@@ -228,7 +228,7 @@ class CartTest {
     @DisplayName("이미 전환된 장바구니는 다시 전환할 수 없다")
     void cannotConvertAlreadyConvertedCart() {
         // given
-        cart.addItem(ProductId.of(1L), 2, ProductOptions.empty());
+        cart.addItem(ProductId.of("TEST-001"), 2, ProductOptions.empty());
         cart.convertToOrder();
         
         // when & then
@@ -250,11 +250,11 @@ class CartTest {
     @DisplayName("전환된 장바구니는 수정할 수 없다")
     void cannotModifyConvertedCart() {
         // given
-        cart.addItem(ProductId.of(1L), 2, ProductOptions.empty());
+        cart.addItem(ProductId.of("TEST-001"), 2, ProductOptions.empty());
         cart.convertToOrder();
         
         // when & then
-        assertThatThrownBy(() -> cart.addItem(ProductId.of(2L), 1, ProductOptions.empty()))
+        assertThatThrownBy(() -> cart.addItem(ProductId.of("TEST-001"), 1, ProductOptions.empty()))
             .isInstanceOf(CartAlreadyConvertedException.class)
             .hasMessageContaining("Cannot modify a converted cart");
             
@@ -272,14 +272,14 @@ class CartTest {
         // 기존 장바구니 아이템 생성
         CartItem item1 = new CartItem(
             CartItemId.generate(),
-            ProductId.of(1L),
+            ProductId.of("TEST-001"),
             ProductOptions.empty(),
             2,
             timeProvider
         );
         CartItem item2 = new CartItem(
             CartItemId.generate(),
-            ProductId.of(2L),
+            ProductId.of("TEST-001"),
             ProductOptions.of(Map.of("color", "red")),
             1,
             timeProvider
@@ -299,9 +299,9 @@ class CartTest {
         assertThat(restoredCart.getCustomerId()).isEqualTo(customerId);
         assertThat(restoredCart.isConverted()).isFalse();
         assertThat(restoredCart.getItems()).hasSize(2);
-        assertThat(restoredCart.getItems().get(0).getProductId()).isEqualTo(ProductId.of(1L));
+        assertThat(restoredCart.getItems().get(0).getProductId()).isEqualTo(ProductId.of("TEST-001"));
         assertThat(restoredCart.getItems().get(0).getQuantity()).isEqualTo(2);
-        assertThat(restoredCart.getItems().get(1).getProductId()).isEqualTo(ProductId.of(2L));
+        assertThat(restoredCart.getItems().get(1).getProductId()).isEqualTo(ProductId.of("TEST-001"));
         assertThat(restoredCart.getItems().get(1).getQuantity()).isEqualTo(1);
     }
     

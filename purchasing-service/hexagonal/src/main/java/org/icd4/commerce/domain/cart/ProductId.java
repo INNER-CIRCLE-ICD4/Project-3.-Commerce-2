@@ -12,7 +12,7 @@ import java.util.Objects;
  * <ul>
  *   <li>불변성(Immutability): 한 번 생성되면 값을 변경할 수 없습니다.</li>
  *   <li>유효성 검증: null이거나 0 이하의 값을 허용하지 않습니다.</li>
- *   <li>Long 타입 사용: 데이터베이스의 자동 증가 ID와 호환됩니다.</li>
+ *   <li>String 타입 사용: 데이터베이스의 자동 증가 ID와 호환됩니다.</li>
  *   <li>장바구니 항목이 참조하는 상품을 식별합니다.</li>
  * </ul>
  * </p>
@@ -21,7 +21,7 @@ import java.util.Objects;
  */
 public final class ProductId {
     
-    private final Long value;
+    private final String value;
     
     /**
      * ProductId 생성자.
@@ -30,27 +30,24 @@ public final class ProductId {
      * @throws NullPointerException value가 null인 경우
      * @throws IllegalArgumentException value가 0 이하인 경우
      */
-    public ProductId(Long value) {
+    public ProductId(String value) {
         Objects.requireNonNull(value, "ProductId value cannot be null");
-        if (value <= 0) {
-            throw new IllegalArgumentException("ProductId value must be positive");
-        }
         this.value = value;
     }
     
     /**
-     * 주어진 Long 값으로 ProductId를 생성합니다.
+     * 주어진 String 값으로 ProductId를 생성합니다.
      * 
      * @param value 상품 ID 값
      * @return 생성된 ProductId 인스턴스
      * @throws NullPointerException value가 null인 경우
      * @throws IllegalArgumentException value가 0 이하인 경우
      */
-    public static ProductId of(Long value) {
+    public static ProductId of(String value) {
         return new ProductId(value);
     }
     
-    public Long value() {
+    public String value() {
         return value;
     }
     

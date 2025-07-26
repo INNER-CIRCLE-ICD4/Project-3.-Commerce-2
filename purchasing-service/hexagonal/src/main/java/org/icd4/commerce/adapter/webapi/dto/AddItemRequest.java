@@ -37,7 +37,7 @@ public record AddItemRequest(
     public AddItemToCartCommand toCommand(String cartId) {
         return new AddItemToCartCommand(
             CartId.of(cartId),
-            ProductId.of(Long.parseLong(productId)),
+            ProductId.of(productId),
             quantity,
             options != null ? ProductOptions.of(options) : ProductOptions.empty()
         );

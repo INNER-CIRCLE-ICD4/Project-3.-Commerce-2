@@ -11,11 +11,13 @@ spring:
   jpa:
     hibernate:
       ddl-auto: create-drop  # 테스트마다 스키마 재생성
-    show-sql: false  # 테스트 시 SQL 로그 비활성화
+    show-sql: true  # SQL 쿼리를 콘솔에 출력 (테스트 시 쿼리 확인용)
     properties:
       hibernate:
         dialect: org.hibernate.dialect.H2Dialect
-        format_sql: true
+        format_sql: true  # SQL을 보기 좋게 포맷팅
+        use_sql_comments: true  # JPQL이 어떤 SQL로 변환되는지 주석으로 표시
+        generate_statistics: true  # 쿼리 실행 통계 생성
         
   # SQL 초기화 비활성화
   sql:
@@ -31,9 +33,11 @@ spring:
 logging:
   level:
     org.icd4.commerce: DEBUG
-    org.springframework.transaction: DEBUG
-    org.hibernate.SQL: DEBUG  # SQL 로깅이 필요한 경우 활성화
-    org.hibernate.type.descriptor.sql.BasicBinder: TRACE  # 파라미터 로깅
+    org.springframework.transaction: DEBUG  # 트랜잭션 경계 확인
+    org.hibernate.SQL: DEBUG  # Hibernate가 생성한 SQL 로깅
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE  # SQL 파라미터 값 로깅
+    org.hibernate.stat: DEBUG  # Hibernate 통계 정보 로깅
+    org.springframework.jdbc.datasource.init: DEBUG  # 데이터소스 초기화 로깅
     
 # 테스트 전용 설정
 test:

@@ -16,6 +16,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -143,6 +144,19 @@ public class GlobalExceptionHandler {
             ProductServiceException ex) {
         log.error("Product service error", ex);
         return createErrorResponse(ErrorCode.PRODUCT_SERVICE_ERROR);
+    }
+    
+    /**
+     * 정적 리소스를 찾을 수 없는 경우 처리 (favicon.ico 등).
+     * Spring Boot 6.x부터 404 에러가 예외로 전환됨.
+     */
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ResponseEntity<ApiResponse<Void>> handleNoResourceFoundException(
+            NoResourceFoundException ex) {
+        // 정적 리소스 요청은 로그를 남기지 않고 조용히 처리
+        return ResponseEntity
+            .status(HttpStatus.NOT_FOUND)
+            .body(ApiResponse.error("NOT_FOUND", "Resource not found"));
     }
     
     /**
