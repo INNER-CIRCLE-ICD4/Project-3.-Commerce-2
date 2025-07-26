@@ -4,7 +4,7 @@ spring:
     
   # 기본 프로파일 설정
   profiles:
-    default: local  # 프로파일을 명시하지 않으면 local 환경으로 실행
+    default: dev  # 프로파일을 명시하지 않으면 dev 환경으로 실행
     
   # JPA 공통 설정 (모든 프로파일에 적용)
   jpa:
@@ -44,35 +44,6 @@ async:
     timeout-seconds: 10   # 비동기 작업 타임아웃 (초)
         
 ---
-# 로컬 개발 환경 (개발자 로컬 PC에서 실행)
-spring:
-  config:
-    activate:
-      on-profile: local  # --spring.profiles.active=local 또는 기본값
-      
-  datasource:
-    url: jdbc:h2:mem:purchasingdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE  # 인메모리 H2 DB (재시작시 초기화)
-    username: sa
-    password: 
-    driver-class-name: org.h2.Driver
-    
-  jpa:
-    hibernate:
-      ddl-auto: create-drop  # 애플리케이션 시작시 테이블 생성, 종료시 삭제 (개발 편의성)
-    show-sql: true  # 콘솔에 SQL 출력 (디버깅용)
-    
-  h2:
-    console:
-      enabled: true  # H2 웹 콘솔 활성화
-      path: /h2-console  # http://localhost:8080/h2-console 로 접근
-      
-logging:
-  level:
-    org.icd4.commerce: DEBUG  # 우리 패키지는 DEBUG 레벨로 상세 로깅
-    org.hibernate.SQL: DEBUG  # SQL 쿼리 로깅
-    org.hibernate.type.descriptor.sql.BasicBinder: TRACE  # 쿼리 파라미터 값 로깅
-    
----
 # 개발 서버 환경 (개발/테스트 서버)
 spring:
   config:
@@ -80,7 +51,7 @@ spring:
       on-profile: dev  # --spring.profiles.active=dev
       
   datasource:
-    url: ${DB_URL:jdbc:mysql://localhost:3306/purchasing_dev?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul&characterEncoding=UTF-8}
+    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:purchasing_dev}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul&characterEncoding=UTF-8
     username: ${DB_USERNAME:root}
     password: ${DB_PASSWORD:password}
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -109,7 +80,7 @@ spring:
       on-profile: prod  # --spring.profiles.active=prod
       
   datasource:
-    url: ${DB_URL}  # 환경변수로 주입 (보안상 하드코딩 금지)
+    url: jdbc:mysql://${DB_HOST}:${DB_PORT}/${DB_NAME}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul&characterEncoding=UTF-8
     username: ${DB_USERNAME}  # 환경변수로 주입
     password: ${DB_PASSWORD}  # 환경변수로 주입
     driver-class-name: com.mysql.cj.jdbc.Driver
