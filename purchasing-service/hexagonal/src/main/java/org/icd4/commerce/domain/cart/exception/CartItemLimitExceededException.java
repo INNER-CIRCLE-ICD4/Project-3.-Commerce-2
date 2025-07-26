@@ -1,4 +1,8 @@
-package org.icd4.commerce.domain.cart;
+package org.icd4.commerce.domain.cart.exception;
+
+import org.icd4.commerce.domain.cart.Cart;
+import org.icd4.commerce.domain.cart.ProductId;
+import org.icd4.commerce.domain.cart.ProductOptions;
 
 /**
  * 장바구니의 상품 종류 한도를 초과했을 때 발생하는 예외.

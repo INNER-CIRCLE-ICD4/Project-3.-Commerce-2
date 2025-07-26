@@ -1,4 +1,8 @@
-package org.icd4.commerce.domain.cart;
+package org.icd4.commerce.domain.cart.exception;
+
+import org.icd4.commerce.domain.cart.Cart;
+import org.icd4.commerce.domain.cart.ProductId;
+import org.icd4.commerce.domain.cart.ProductOptions;
 
 /**
  * 상품의 필수 옵션이 누락되었을 때 발생하는 예외.

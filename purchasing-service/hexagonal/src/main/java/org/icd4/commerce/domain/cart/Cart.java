@@ -1,5 +1,10 @@
 package org.icd4.commerce.domain.cart;
 
+import org.icd4.commerce.domain.cart.exception.CartAlreadyConvertedException;
+import org.icd4.commerce.domain.cart.exception.CartItemLimitExceededException;
+import org.icd4.commerce.domain.cart.exception.InvalidCartStateException;
+import org.icd4.commerce.domain.cart.exception.InvalidQuantityException;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;

@@ -1,4 +1,6 @@
-package org.icd4.commerce.domain.cart;
+package org.icd4.commerce.domain.cart.exception;
+
+import org.icd4.commerce.domain.cart.Cart;
 
 /**
  * 이미 주문으로 전환된 장바구니를 수정하려고 할 때 발생하는 예외.
