@@ -1,5 +1,7 @@
 package org.icd4.commerce.domain.order;
 
+import lombok.Getter;
+
 import java.math.BigDecimal;
 import java.util.Currency;
 
@@ -17,6 +19,7 @@ import java.util.Currency;
  * </ul>
  * </p>
  */
+@Getter
 public class Money {
     private final BigDecimal amount;
     private final Currency currency;
