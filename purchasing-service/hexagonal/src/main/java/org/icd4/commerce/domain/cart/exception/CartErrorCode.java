@@ -1,4 +1,4 @@
-package org.icd4.commerce.domain.cart;
+package org.icd4.commerce.domain.cart.exception;
 
 /**
  * Cart 도메인 에러 코드 정의.

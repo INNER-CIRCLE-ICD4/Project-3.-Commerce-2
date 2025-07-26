@@ -1,5 +1,7 @@
 package org.icd4.commerce.domain.cart;
 
+import org.icd4.commerce.domain.cart.exception.InvalidQuantityException;
+import org.icd4.commerce.domain.cart.exception.RequiredOptionMissingException;
 import org.icd4.commerce.support.TestTimeProvider;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

@@ -1,4 +1,7 @@
-package org.icd4.commerce.domain.cart;
+package org.icd4.commerce.domain.cart.exception;
+
+import org.icd4.commerce.domain.cart.Cart;
+import org.icd4.commerce.domain.cart.CartItemId;
 
 /**
  * 장바구니가 유효하지 않은 상태일 때 발생하는 예외.

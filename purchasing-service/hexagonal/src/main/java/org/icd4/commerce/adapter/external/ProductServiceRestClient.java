@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.icd4.commerce.domain.cart.ProductId;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
@@ -38,7 +37,6 @@ public class ProductServiceRestClient implements ProductServiceClient {
     }
     
     @Override
-    @Cacheable(value = "products", key = "#productId.value()")
     public ProductInfo getProduct(ProductId productId) {
         log.debug("Fetching product info from external service: {}", productId);
         
@@ -125,7 +123,6 @@ public class ProductServiceRestClient implements ProductServiceClient {
     }
     
     @Override
-    @Cacheable(value = "product-stock", key = "#productId.value()")
     public int getAvailableStock(ProductId productId) {
         log.debug("Checking stock for product: {}", productId);
         

@@ -1,4 +1,4 @@
-package org.icd4.commerce.domain.cart;
+package org.icd4.commerce.domain.cart.exception;
 
 /**
  * Cart 도메인 예외의 기본 클래스.

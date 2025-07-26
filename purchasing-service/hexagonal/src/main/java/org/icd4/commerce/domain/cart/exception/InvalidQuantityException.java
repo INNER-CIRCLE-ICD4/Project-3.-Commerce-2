@@ -1,4 +1,6 @@
-package org.icd4.commerce.domain.cart;
+package org.icd4.commerce.domain.cart.exception;
+
+import org.icd4.commerce.domain.cart.*;
 
 /**
  * 잘못된 수량을 입력했을 때 발생하는 예외.

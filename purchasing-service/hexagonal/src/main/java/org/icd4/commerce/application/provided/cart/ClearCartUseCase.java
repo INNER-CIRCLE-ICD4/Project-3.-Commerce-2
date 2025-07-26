@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.icd4.commerce.application.required.CartRepositoryPort;
 import org.icd4.commerce.domain.cart.Cart;
+import org.icd4.commerce.domain.cart.exception.CartAlreadyConvertedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,7 +26,7 @@ public class ClearCartUseCase {
      * 
      * @param command 장바구니 비우기 커맨드
      * @throws CartNotFoundException 장바구니를 찾을 수 없는 경우
-     * @throws org.icd4.commerce.domain.cart.CartAlreadyConvertedException 이미 주문으로 전환된 경우
+     * @throws CartAlreadyConvertedException 이미 주문으로 전환된 경우
      */
     @Transactional
     public void execute(ClearCartCommand command) {

@@ -8,8 +8,9 @@ sequenceDiagram
     participant CartController
     participant CreateCartUseCase
     participant Cart
-    participant CartRepository
+    participant CartRepositoryPort
     participant CartRepositoryAdapter
+    participant CartRepository
     participant CartJpaRepository
     participant DB
 
@@ -17,16 +18,21 @@ sequenceDiagram
     CartController->>CreateCartUseCase: execute(command)
     CreateCartUseCase->>Cart: new Cart(cartId, customerId, timeProvider)
     Cart-->>CreateCartUseCase: cart instance
-    CreateCartUseCase->>CartRepository: save(cart)
-    CartRepository->>CartRepositoryAdapter: save(cart)
-    CartRepositoryAdapter->>CartRepositoryAdapter: toEntity(cart)
-    CartRepositoryAdapter->>CartJpaRepository: save(entity)
+    CreateCartUseCase->>CartRepositoryPort: save(cart)
+    Note over CartRepositoryPort: Interface (Port)
+    CartRepositoryPort->>CartRepositoryAdapter: save(cart)
+    Note over CartRepositoryAdapter: Adapter implementation
+    CartRepositoryAdapter->>CartRepository: save(cart)
+    Note over CartRepository: Internal JPA handler
+    CartRepository->>CartRepository: toEntity(cart)
+    CartRepository->>CartJpaRepository: save(entity)
     CartJpaRepository->>DB: INSERT
     DB-->>CartJpaRepository: OK
-    CartJpaRepository-->>CartRepositoryAdapter: saved entity
-    CartRepositoryAdapter->>CartRepositoryAdapter: toDomain(entity)
-    CartRepositoryAdapter-->>CartRepository: saved cart
-    CartRepository-->>CreateCartUseCase: saved cart
+    CartJpaRepository-->>CartRepository: saved entity
+    CartRepository->>CartRepository: toDomain(entity)
+    CartRepository-->>CartRepositoryAdapter: saved cart
+    CartRepositoryAdapter-->>CartRepositoryPort: saved cart
+    CartRepositoryPort-->>CreateCartUseCase: saved cart
     CreateCartUseCase->>CreateCartUseCase: CartResult.from(cart)
     CreateCartUseCase-->>CartController: CartResult
     CartController-->>Client: 201 Created
@@ -39,7 +45,7 @@ sequenceDiagram
     participant Client
     participant CartController
     participant AddItemToCartUseCase
-    participant CartRepository
+    participant CartRepositoryPort
     participant ProductPriceProvider
     participant ProductServiceRestClient
     participant ProductService
@@ -51,10 +57,10 @@ sequenceDiagram
     CartController->>AddItemToCartUseCase: execute(command)
     
     %% 장바구니 조회
-    AddItemToCartUseCase->>CartRepository: findById(cartId)
-    CartRepository->>DB: SELECT
-    DB-->>CartRepository: cart data
-    CartRepository-->>AddItemToCartUseCase: Cart
+    AddItemToCartUseCase->>CartRepositoryPort: findById(cartId)
+    CartRepositoryPort->>DB: SELECT
+    DB-->>CartRepositoryPort: cart data
+    CartRepositoryPort-->>AddItemToCartUseCase: Cart
     
     %% 상품 가격 조회
     AddItemToCartUseCase->>ProductPriceProvider: getPrice(productId)
@@ -78,10 +84,10 @@ sequenceDiagram
     Cart-->>AddItemToCartUseCase: updated cart
     
     %% 저장
-    AddItemToCartUseCase->>CartRepository: save(cart)
-    CartRepository->>DB: UPDATE
-    DB-->>CartRepository: OK
-    CartRepository-->>AddItemToCartUseCase: saved cart
+    AddItemToCartUseCase->>CartRepositoryPort: save(cart)
+    CartRepositoryPort->>DB: UPDATE
+    DB-->>CartRepositoryPort: OK
+    CartRepositoryPort-->>AddItemToCartUseCase: saved cart
     
     AddItemToCartUseCase-->>CartController: CartResult
     CartController-->>Client: 200 OK
@@ -94,7 +100,7 @@ sequenceDiagram
     participant Client
     participant CartController
     participant UpdateCartItemQuantityUseCase
-    participant CartRepository
+    participant CartRepositoryPort
     participant InventoryChecker
     participant ProductServiceRestClient
     participant Cart
@@ -105,10 +111,10 @@ sequenceDiagram
     CartController->>UpdateCartItemQuantityUseCase: execute(command)
     
     %% 장바구니 조회
-    UpdateCartItemQuantityUseCase->>CartRepository: findById(cartId)
-    CartRepository->>DB: SELECT
-    DB-->>CartRepository: cart data
-    CartRepository-->>UpdateCartItemQuantityUseCase: Cart
+    UpdateCartItemQuantityUseCase->>CartRepositoryPort: findById(cartId)
+    CartRepositoryPort->>DB: SELECT
+    DB-->>CartRepositoryPort: cart data
+    CartRepositoryPort-->>UpdateCartItemQuantityUseCase: Cart
     
     %% 재고 확인
     UpdateCartItemQuantityUseCase->>InventoryChecker: hasStock(productId, newQuantity)
@@ -124,10 +130,10 @@ sequenceDiagram
     Cart-->>UpdateCartItemQuantityUseCase: updated cart
     
     %% 저장
-    UpdateCartItemQuantityUseCase->>CartRepository: save(cart)
-    CartRepository->>DB: UPDATE
-    DB-->>CartRepository: OK
-    CartRepository-->>UpdateCartItemQuantityUseCase: saved cart
+    UpdateCartItemQuantityUseCase->>CartRepositoryPort: save(cart)
+    CartRepositoryPort->>DB: UPDATE
+    DB-->>CartRepositoryPort: OK
+    CartRepositoryPort-->>UpdateCartItemQuantityUseCase: saved cart
     
     UpdateCartItemQuantityUseCase-->>CartController: CartResult
     CartController-->>Client: 200 OK
@@ -140,7 +146,7 @@ sequenceDiagram
     participant Client
     participant CartController
     participant GetCartUseCase
-    participant CartRepository
+    participant CartRepositoryPort
     participant ProductQueryService
     participant ProductServiceRestClient
     participant ProductService
@@ -150,10 +156,10 @@ sequenceDiagram
     CartController->>GetCartUseCase: execute(cartId)
     
     %% 장바구니 조회
-    GetCartUseCase->>CartRepository: findById(cartId)
-    CartRepository->>DB: SELECT
-    DB-->>CartRepository: cart data
-    CartRepository-->>GetCartUseCase: Cart
+    GetCartUseCase->>CartRepositoryPort: findById(cartId)
+    CartRepositoryPort->>DB: SELECT
+    DB-->>CartRepositoryPort: cart data
+    CartRepositoryPort-->>GetCartUseCase: Cart
     
     %% 상품 정보 배치 조회 (선택적)
     GetCartUseCase->>GetCartUseCase: extractProductIds(cart)
@@ -176,7 +182,7 @@ sequenceDiagram
     participant Client
     participant CartController
     participant RemoveItemFromCartUseCase
-    participant CartRepository
+    participant CartRepositoryPort
     participant Cart
     participant DB
 
@@ -184,10 +190,10 @@ sequenceDiagram
     CartController->>RemoveItemFromCartUseCase: execute(command)
     
     %% 장바구니 조회
-    RemoveItemFromCartUseCase->>CartRepository: findById(cartId)
-    CartRepository->>DB: SELECT
-    DB-->>CartRepository: cart data
-    CartRepository-->>RemoveItemFromCartUseCase: Cart
+    RemoveItemFromCartUseCase->>CartRepositoryPort: findById(cartId)
+    CartRepositoryPort->>DB: SELECT
+    DB-->>CartRepositoryPort: cart data
+    CartRepositoryPort-->>RemoveItemFromCartUseCase: Cart
     
     %% 아이템 제거
     RemoveItemFromCartUseCase->>Cart: removeItem(itemId)
@@ -195,10 +201,10 @@ sequenceDiagram
     Cart-->>RemoveItemFromCartUseCase: updated cart
     
     %% 저장
-    RemoveItemFromCartUseCase->>CartRepository: save(cart)
-    CartRepository->>DB: UPDATE/DELETE
-    DB-->>CartRepository: OK
-    CartRepository-->>RemoveItemFromCartUseCase: saved cart
+    RemoveItemFromCartUseCase->>CartRepositoryPort: save(cart)
+    CartRepositoryPort->>DB: UPDATE/DELETE
+    DB-->>CartRepositoryPort: OK
+    CartRepositoryPort-->>RemoveItemFromCartUseCase: saved cart
     
     RemoveItemFromCartUseCase-->>CartController: CartResult
     CartController-->>Client: 200 OK
@@ -211,7 +217,7 @@ sequenceDiagram
     participant Client
     participant CartController
     participant MergeCartsUseCase
-    participant CartRepository
+    participant CartRepositoryPort
     participant Cart
     participant DB
 
@@ -219,16 +225,16 @@ sequenceDiagram
     CartController->>MergeCartsUseCase: execute(command)
     
     %% 소스 장바구니 조회
-    MergeCartsUseCase->>CartRepository: findById(sourceCartId)
-    CartRepository->>DB: SELECT source cart
-    DB-->>CartRepository: source cart data
-    CartRepository-->>MergeCartsUseCase: Source Cart
+    MergeCartsUseCase->>CartRepositoryPort: findById(sourceCartId)
+    CartRepositoryPort->>DB: SELECT source cart
+    DB-->>CartRepositoryPort: source cart data
+    CartRepositoryPort-->>MergeCartsUseCase: Source Cart
     
     %% 타겟 장바구니 조회
-    MergeCartsUseCase->>CartRepository: findById(targetCartId)
-    CartRepository->>DB: SELECT target cart
-    DB-->>CartRepository: target cart data
-    CartRepository-->>MergeCartsUseCase: Target Cart
+    MergeCartsUseCase->>CartRepositoryPort: findById(targetCartId)
+    CartRepositoryPort->>DB: SELECT target cart
+    DB-->>CartRepositoryPort: target cart data
+    CartRepositoryPort-->>MergeCartsUseCase: Target Cart
     
     %% 병합
     MergeCartsUseCase->>Cart: mergeFrom(sourceCart)
@@ -236,130 +242,27 @@ sequenceDiagram
     Cart-->>MergeCartsUseCase: merged cart
     
     %% 타겟 장바구니 저장
-    MergeCartsUseCase->>CartRepository: save(targetCart)
-    CartRepository->>DB: UPDATE target cart
-    DB-->>CartRepository: OK
+    MergeCartsUseCase->>CartRepositoryPort: save(targetCart)
+    CartRepositoryPort->>DB: UPDATE target cart
+    DB-->>CartRepositoryPort: OK
     
     %% 소스 장바구니 삭제
-    MergeCartsUseCase->>CartRepository: delete(sourceCartId)
-    CartRepository->>DB: DELETE source cart
-    DB-->>CartRepository: OK
+    MergeCartsUseCase->>CartRepositoryPort: deleteById(sourceCartId)
+    CartRepositoryPort->>DB: DELETE source cart
+    DB-->>CartRepositoryPort: OK
     
     MergeCartsUseCase-->>CartController: CartResult
     CartController-->>Client: 200 OK
 ```
 
-## 7. ProductAggregateService를 통한 상품 상세 정보 조회
-
-```mermaid
-sequenceDiagram
-    participant UseCase
-    participant ProductAggregateService
-    participant ProductQueryService
-    participant ProductServiceClient
-    participant PriceProviderAdapter
-    participant ProductServiceRestClient
-    participant ExternalProductService
-    
-    UseCase->>ProductAggregateService: getProductWithDetails(productId)
-    
-    par 병렬 조회
-        ProductAggregateService->>ProductQueryService: getProduct(productId)
-        ProductQueryService->>ProductServiceRestClient: getProduct(productId)
-        ProductServiceRestClient->>ExternalProductService: GET /api/v1/products/{id}
-        ExternalProductService-->>ProductServiceRestClient: product info
-        ProductServiceRestClient-->>ProductQueryService: ProductInfo
-        ProductQueryService-->>ProductAggregateService: ProductInfo
-    and
-        ProductAggregateService->>ProductServiceClient: getAvailableStock(productId)
-        ProductServiceClient->>ProductServiceRestClient: getAvailableStock(productId)
-        ProductServiceRestClient->>ExternalProductService: GET /api/v1/products/{id}/stock
-        ExternalProductService-->>ProductServiceRestClient: stock info
-        ProductServiceRestClient-->>ProductServiceClient: available quantity
-        ProductServiceClient-->>ProductAggregateService: stock quantity
-    and
-        ProductAggregateService->>PriceProviderAdapter: getPrice(productId)
-        PriceProviderAdapter->>ProductServiceRestClient: getProduct(productId)
-        ProductServiceRestClient->>ExternalProductService: GET /api/v1/products/{id}
-        ExternalProductService-->>ProductServiceRestClient: product with price
-        ProductServiceRestClient-->>PriceProviderAdapter: price
-        PriceProviderAdapter-->>ProductAggregateService: BigDecimal price
-    end
-    
-    ProductAggregateService->>ProductAggregateService: combine results
-    ProductAggregateService-->>UseCase: ProductDetails
-```
-
-## 8. AsyncProductService를 통한 비동기 상품 조회
-
-```mermaid
-sequenceDiagram
-    participant Client
-    participant AsyncProductService
-    participant ExecutorService
-    participant ProductQueryService
-    participant ProductServiceRestClient
-    participant ExternalService
-    
-    Client->>AsyncProductService: getProductsAsync(productIds)
-    AsyncProductService->>AsyncProductService: create CompletableFutures
-    
-    loop for each productId
-        AsyncProductService->>ExecutorService: submit task
-        ExecutorService->>ProductQueryService: getProduct(productId)
-        ProductQueryService->>ProductServiceRestClient: getProduct(productId)
-        ProductServiceRestClient->>ExternalService: GET /api/v1/products/{id}
-        ExternalService-->>ProductServiceRestClient: product info
-        ProductServiceRestClient-->>ProductQueryService: ProductInfo
-        ProductQueryService-->>ExecutorService: result
-    end
-    
-    AsyncProductService->>AsyncProductService: CompletableFuture.allOf()
-    AsyncProductService->>AsyncProductService: collect results
-    AsyncProductService-->>Client: CompletableFuture<Map<ProductId, ProductInfo>>
-```
-
-## 9. 배치 상품 조회 (ProductQueryService)
-
-```mermaid
-sequenceDiagram
-    participant Client
-    participant ProductQueryService
-    participant ProductServiceRestClient
-    participant ExternalProductService
-    
-    Client->>ProductQueryService: getProducts(productIds)
-    ProductQueryService->>ProductQueryService: removeDuplicates(productIds)
-    ProductQueryService->>ProductQueryService: chunk(productIds, 100)
-    
-    loop for each chunk
-        alt Batch API available
-            ProductQueryService->>ProductServiceRestClient: getProductsBatch(chunk)
-            ProductServiceRestClient->>ExternalProductService: POST /api/v1/products/batch
-            ExternalProductService-->>ProductServiceRestClient: batch response
-            ProductServiceRestClient-->>ProductQueryService: List<ProductInfo>
-        else Fallback to individual
-            loop for each productId in chunk
-                ProductQueryService->>ProductServiceRestClient: getProduct(productId)
-                ProductServiceRestClient->>ExternalProductService: GET /api/v1/products/{id}
-                ExternalProductService-->>ProductServiceRestClient: product info
-                ProductServiceRestClient-->>ProductQueryService: ProductInfo
-            end
-        end
-    end
-    
-    ProductQueryService->>ProductQueryService: combineResults()
-    ProductQueryService-->>Client: Map<ProductId, ProductInfo>
-```
-
-## 10. 장바구니 비우기 (ClearCartUseCase)
+## 7. 장바구니 비우기 (ClearCartUseCase)
 
 ```mermaid
 sequenceDiagram
     participant Client
     participant CartController
     participant ClearCartUseCase
-    participant CartRepository
+    participant CartRepositoryPort
     participant Cart
     participant DB
 
@@ -367,10 +270,10 @@ sequenceDiagram
     CartController->>ClearCartUseCase: execute(command)
     
     %% 장바구니 조회
-    ClearCartUseCase->>CartRepository: findById(cartId)
-    CartRepository->>DB: SELECT
-    DB-->>CartRepository: cart data
-    CartRepository-->>ClearCartUseCase: Cart
+    ClearCartUseCase->>CartRepositoryPort: findById(cartId)
+    CartRepositoryPort->>DB: SELECT
+    DB-->>CartRepositoryPort: cart data
+    CartRepositoryPort-->>ClearCartUseCase: Cart
     
     %% 모든 아이템 제거
     ClearCartUseCase->>Cart: clear()
@@ -378,10 +281,10 @@ sequenceDiagram
     Cart-->>ClearCartUseCase: cleared cart
     
     %% 저장
-    ClearCartUseCase->>CartRepository: save(cart)
-    CartRepository->>DB: UPDATE (remove all items)
-    DB-->>CartRepository: OK
-    CartRepository-->>ClearCartUseCase: saved cart
+    ClearCartUseCase->>CartRepositoryPort: save(cart)
+    CartRepositoryPort->>DB: UPDATE (remove all items)
+    DB-->>CartRepositoryPort: OK
+    CartRepositoryPort-->>ClearCartUseCase: saved cart
     
     ClearCartUseCase-->>CartController: CartResult
     CartController-->>Client: 200 OK

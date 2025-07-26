@@ -108,19 +108,15 @@ public class CartItemJpaEntity {
     public String getId() {
         return id;
     }
-    
-    public void setId(String id) {
-        this.id = id;
-    }
-    
+
     public CartJpaEntity getCart() {
         return cart;
     }
-    
+
     public void setCart(CartJpaEntity cart) {
         this.cart = cart;
     }
-    
+
     public String getProductId() {
         return productId;
     }
@@ -144,36 +140,24 @@ public class CartItemJpaEntity {
     public void setQuantity(int quantity) {
         this.quantity = quantity;
     }
-    
+
     public LocalDateTime getAddedAt() {
         return addedAt;
     }
-    
-    public void setAddedAt(LocalDateTime addedAt) {
-        this.addedAt = addedAt;
-    }
-    
+
+
     public LocalDateTime getLastModifiedAt() {
         return lastModifiedAt;
     }
-    
-    public void setLastModifiedAt(LocalDateTime lastModifiedAt) {
-        this.lastModifiedAt = lastModifiedAt;
-    }
-    
+
+
     public boolean isAvailable() {
         return isAvailable;
     }
-    
-    public void setAvailable(boolean available) {
-        isAvailable = available;
-    }
-    
+
+
     public String getUnavailableReason() {
         return unavailableReason;
     }
     
-    public void setUnavailableReason(String unavailableReason) {
-        this.unavailableReason = unavailableReason;
-    }
 }
