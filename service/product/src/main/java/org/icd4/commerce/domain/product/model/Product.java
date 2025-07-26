@@ -1,6 +1,7 @@
 package org.icd4.commerce.domain.product.model;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import org.icd4.commerce.domain.product.request.ProductCreateRequest;
 import org.icd4.commerce.domain.product.request.ProductInfoUpdateRequest;
