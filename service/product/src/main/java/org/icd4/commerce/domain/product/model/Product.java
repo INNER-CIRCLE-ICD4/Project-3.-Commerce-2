@@ -66,10 +66,16 @@ public class Product {
     }
 
     // on off
-    public void activate() {}
-    public void inactivate() {}
+    public void activate() {
+        changeStatus(ProductStatus.ACTIVE);
+    }
+
+    public void inactivate() {
+        changeStatus(ProductStatus.INACTIVE);
+    }
 
     public void changeCategory(String categoryId) {
+        this.categoryId = requireNonNull(categoryId);
     }
 
     public void changePrice(ProductMoney newPrice) {
