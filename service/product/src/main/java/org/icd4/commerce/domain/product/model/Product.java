@@ -1,6 +1,7 @@
 package org.icd4.commerce.domain.product.model;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import org.icd4.commerce.domain.product.request.ProductCreateRequest;
 import org.icd4.commerce.domain.product.request.ProductInfoUpdateRequest;
@@ -100,8 +101,8 @@ public class Product {
     /**
      * 단일 변형 추가
      */
-    public ProductVariant addVariant(Map<String, String> optionCombination, ProductMoney sellingPrice) {
-        ProductVariant variant = ProductVariant.create(this.id, this.sellerId, optionCombination, sellingPrice);
+    public ProductVariant addVariant(Map<String, String> optionCombination, ProductMoney sellingPrice,Long stockQuantity) {
+        ProductVariant variant = ProductVariant.create(this.id, this.sellerId, optionCombination, sellingPrice, stockQuantity);
         this.variants.add(variant);
         this.updatedAt = LocalDateTime.now(ZoneOffset.UTC);
         return variant;
@@ -125,7 +126,8 @@ public class Product {
                     this.id,
                     this.sellerId,
                     request.getOptionCombinationMap(),
-                    request.getSellingPrice()
+                    request.getSellingPrice(),
+                    request.stockQuantity()
             );
             this.variants.add(variant);
         }
