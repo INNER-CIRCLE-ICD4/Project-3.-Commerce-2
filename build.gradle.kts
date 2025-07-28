@@ -31,6 +31,7 @@ subprojects {
     dependencies {
         implementation ("ch.qos.logback:logback-classic")
         implementation("org.projectlombok:lombok")
+
         annotationProcessor("org.projectlombok:lombok")
 
         testRuntimeOnly ("org.junit.platform:junit-platform-launcher")
@@ -45,5 +46,4 @@ subprojects {
 
 project("common") { tasks.configureEach { enabled = false } }
 project("service") { tasks.configureEach { enabled = false } }
-
 

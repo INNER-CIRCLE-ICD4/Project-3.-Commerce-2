@@ -1,0 +1,27 @@
+spring:
+  application:
+    name: commerce-product-service # Name of the application
+server:
+  port: 8080
+---
+spring:
+  profiles:
+    active: dev
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:product
+    username: sa
+    password:
+  h2:
+    console:
+      path: /h2-console
+      enabled: true
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        highlight_sql: true
+        dialect: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: create
