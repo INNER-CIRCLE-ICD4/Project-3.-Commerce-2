@@ -1,5 +1,6 @@
 package org.icd4.commerce.application.command;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.icd4.commerce.application.provided.ProductModifier;
 import org.icd4.commerce.application.required.ProductRepository;
@@ -9,6 +10,7 @@ import org.icd4.commerce.domain.product.model.ProductStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.Objects;
 
 @RequiredArgsConstructor
@@ -106,11 +108,53 @@ public class ProductModifierService implements ProductModifier {
 
     @Override
     public void changeProductPrice(String productId, ProductMoney newPrice) {
+        Objects.requireNonNull(productId, "Product id cannot be null");
+        if(productId.isBlank()) {
+            throw new IllegalArgumentException("Product id cannot be blank");
+        }
+        Objects.requireNonNull(newPrice, "New price cannot be null");
+        // 변경될 가격이 양수인지 확인
+        if(newPrice.getAmount().compareTo(BigDecimal.ZERO) <= 0) { // compareTo : 비교값 보다 크면 1 반환 / 작으면 -1, 같으면 0 반환
+            throw new IllegalArgumentException("Price must be a positive value");
+        }
+        // 존재하는 상품인지 확인
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new EntityNotFoundException("Product not found with ID : " + productId));
 
+        product.changePrice(newPrice);
+        productRepository.save(product);
     }
 
     @Override
-    public void deleteProduct(String productId, String sellerId) { }
+    @Transactional
+    public void deleteProduct(String productId, String sellerId) {
+        Objects.requireNonNull(productId, "Product id cannont be null");
+        if(productId.isBlank()) {
+            throw new IllegalArgumentException("Product id cannot be blank");
+        }
+        Objects.requireNonNull(sellerId, "Seller id cannont be null");
+        if(sellerId.isBlank()) {
+            throw new IllegalArgumentException("Seller id cannot be blank");
+        }
+        // 존재하는 상품인지 확인
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new IllegalArgumentException("Product not found with ID : " + productId));
+        // 판매자 일치하는지 확인
+        if(!product.getSellerId().equals(sellerId)) {
+            throw new  IllegalArgumentException("Seller id " + sellerId + " is not match");
+        }
+        // INACTIVE 되어있는지 확인
+        if(product.getStatus().equals(ProductStatus.ACTIVE)) {
+            throw new IllegalStateException("Cannot change active product");
+        }
+        // 이미 삭제된 상품인지 확인
+        if(product.getIsDeleted()) {
+            throw new IllegalStateException("Product is already deleted");
+        }
+
+        product.delete();
+        productRepository.save(product);
+    }
 
 
 }

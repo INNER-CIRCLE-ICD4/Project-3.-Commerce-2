@@ -79,6 +79,11 @@ public class Product {
     }
 
     public void changePrice(ProductMoney newPrice) {
+        if(newPrice.getAmount().compareTo(BigDecimal.ZERO) <= 0) {
+            throw new IllegalArgumentException("Price must be a positive value");
+        }
+        this.basePrice = requireNonNull(newPrice);
+        this.updatedAt = LocalDateTime.now(ZoneOffset.UTC);
     }
 
     public void changeStatus(ProductStatus newStatus) {
@@ -92,6 +97,12 @@ public class Product {
     }
 
     public void delete() {
+        if(this.status == ProductStatus.ACTIVE) {
+            throw new IllegalArgumentException("Cannot delete active product");
+        }
+        if(this.isDeleted) {
+            throw new IllegalArgumentException("Product is already deleted");
+        }
         this.isDeleted = true;
         this.deletedAt = LocalDateTime.now(ZoneOffset.UTC);
 
