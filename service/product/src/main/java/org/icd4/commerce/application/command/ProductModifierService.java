@@ -53,7 +53,7 @@ public class ProductModifierService implements ProductModifier {
 
     //TODO: 초희님 구현
     @Override
-    @Transactional
+    @Transactional // 메모리상의 Product 객체 상태와 일관성 보장하기 위함
     public void activate(String productId, String sellerId) {
         // 필수값 확인
         Objects.requireNonNull(productId, "Product id cannont be null");
@@ -81,6 +81,7 @@ public class ProductModifierService implements ProductModifier {
 
     //TODO: 초희님 구현
     @Override
+    @Transactional
     public void inactivate(String productId, String sellerId) {
         // 필수값 체크
         Objects.requireNonNull(productId, "Product id cannont be null");
