@@ -1,12 +1,12 @@
 package org.icd4.commerce.domain.product.model;
 
 import jakarta.persistence.*;
-import lombok.Builder;
 import lombok.Getter;
 import org.icd4.commerce.domain.product.request.ProductCreateRequest;
 import org.icd4.commerce.domain.product.request.ProductInfoUpdateRequest;
 import org.icd4.commerce.domain.product.request.ProductVariantRequest;
 import org.icd4.commerce.domain.product.request.ProductVariantUpdateRequest;
+import org.springframework.util.Assert;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -68,19 +68,37 @@ public class Product {
 
     // on off
     public void activate() {
+        Assert.state(ProductStatus.ACTIVE != this.status, "이미 활성화된 상품입니다");
         changeStatus(ProductStatus.ACTIVE);
     }
 
     public void inactivate() {
+        Assert.state(ProductStatus.INACTIVE != this.status, "이미 비활성화된 상품입니다");
         changeStatus(ProductStatus.INACTIVE);
     }
 
     public void changeCategory(String categoryId) {
-        this.categoryId = requireNonNull(categoryId);
+        if (categoryId == null || categoryId.trim().isEmpty()) {
+            throw new IllegalArgumentException("상품 카테고리는 필수값입니다");
+        }
+
+        // 추가 도메인 규칙이 있다면
+        if (Objects.equals(this.categoryId, categoryId)) {
+            throw new IllegalArgumentException("동일한 카테고리로는 변경할 수 없습니다");
+        }
+
+        // ACTIVE 상품만 변경 가능하도록 허용할지? 고민 //TODO 비활성 하고 상품 수정도 가능하다고 봅니다 :)
+        // 삭제 상품을 변경할 수 없도록이 맞을 것 같아요
+        if (this.getStatus().equals(ProductStatus.INACTIVE)) {
+            throw new IllegalStateException("Cannot change inactive product");
+        }
+
+        this.categoryId = categoryId;
+        this.updatedAt = LocalDateTime.now(ZoneOffset.UTC);
     }
 
     public void changePrice(ProductMoney newPrice) {
-        if(newPrice.getAmount().compareTo(BigDecimal.ZERO) <= 0) {
+        if (newPrice.getAmount().compareTo(BigDecimal.ZERO) <= 0) {
             throw new IllegalArgumentException("Price must be a positive value");
         }
         this.basePrice = requireNonNull(newPrice);
@@ -89,25 +107,25 @@ public class Product {
 
     public void changeStatus(ProductStatus newStatus) {
         this.status = requireNonNull(newStatus);
-        this.updatedAt = LocalDateTime.now(ZoneOffset.UTC);
-
         // 상품 상태 변경이 모든 변형에 영향
         if (newStatus == ProductStatus.INACTIVE) {
             variants.forEach(variant -> variant.changeStatus(VariantStatus.INACTIVE));
         }
+
+        this.updatedAt = LocalDateTime.now(ZoneOffset.UTC);
     }
 
     public void delete() {
-        if(this.status == ProductStatus.ACTIVE) {
+        if (this.status == ProductStatus.ACTIVE) {
             throw new IllegalArgumentException("Cannot delete active product");
         }
-        if(this.isDeleted) {
+        if (this.isDeleted) {
             throw new IllegalArgumentException("Product is already deleted");
         }
-        this.isDeleted = true;
-        this.deletedAt = LocalDateTime.now(ZoneOffset.UTC);
 
         variants.forEach(variant -> variant.changeStatus(VariantStatus.DISCONTINUED));
+        this.isDeleted = true;
+        this.deletedAt = LocalDateTime.now(ZoneOffset.UTC);
     }
 
     // 재고 모듈 이벤트 처리 (애그리거트 루트를 통해서만)
@@ -118,7 +136,7 @@ public class Product {
     /**
      * 단일 변형 추가
      */
-    public ProductVariant addVariant(Map<String, String> optionCombination, ProductMoney sellingPrice,Long stockQuantity) {
+    public ProductVariant addVariant(Map<String, String> optionCombination, ProductMoney sellingPrice, Long stockQuantity) {
         ProductVariant variant = ProductVariant.create(this.id, this.sellerId, optionCombination, sellingPrice, stockQuantity);
         this.variants.add(variant);
         this.updatedAt = LocalDateTime.now(ZoneOffset.UTC);
@@ -169,6 +187,9 @@ public class Product {
 
         request.getSellingPrice();
         if (!Objects.equals(variant.getSellingPrice(), request.getSellingPrice())) {
+            if (request.getSellingPrice().getAmount().intValue() <= 0) {
+                throw new IllegalArgumentException("판매 가격은 0보다 커야 합니다");
+            }
             variant.updatePrice(request.getSellingPrice());
             hasChanges = true;
         }

@@ -12,6 +12,4 @@ public interface ProductRegister {
     Product updateInfo(String productId, ProductInfoUpdateRequest request);
 
     Product updateVariant(String productId, String sku, ProductVariantUpdateRequest request);
-
-    void deleteProduct(String productId);
 }

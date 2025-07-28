@@ -9,7 +9,6 @@ import java.util.Objects;
 @Embeddable
 @Getter
 public class ProductMoney {
-
     private BigDecimal amount;
     private String currency;
 
@@ -30,11 +29,17 @@ public class ProductMoney {
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof ProductMoney that)) return false;
-        return Objects.equals(amount, that.amount) && Objects.equals(currency, that.currency);
+
+        return Objects.equals(currency, that.currency)
+                && amount != null
+                && that.amount != null
+                && amount.compareTo(that.amount) == 0;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(amount, currency);
+        BigDecimal normalizedAmount = amount != null ? amount.stripTrailingZeros() : null;
+        return Objects.hash(normalizedAmount, currency);
     }
+
 }

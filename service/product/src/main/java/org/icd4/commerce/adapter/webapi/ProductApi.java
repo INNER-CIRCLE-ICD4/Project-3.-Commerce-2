@@ -43,6 +43,8 @@ public class ProductApi {
         return ResponseEntity.ok(productQueryService.findVariantBySku(skuId));
     }
 
+    @PatchMapping("/{productId}/category")
+
     @PostMapping
     public ResponseEntity<ProductResponse> create(@RequestBody ProductCreateRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(productCommandService.create(request));

@@ -39,16 +39,4 @@ public class ProductRegisterService implements ProductRegister {
         product.updateVariant(sku, request);
         return productRepository.save(product);
     }
-
-    @Override
-    public void deleteProduct(String productId) {
-        if (productId == null || productId.isEmpty()) {
-            throw new IllegalArgumentException("상품 ID는 필수입니다.");
-        }
-        if (productRepository.findById(productId).isPresent()) {
-            productRepository.deleteById(productId);
-        } else {
-            throw new IllegalArgumentException("상품을 찾을 수 없습니다: " + productId);
-        }
-    }
 }

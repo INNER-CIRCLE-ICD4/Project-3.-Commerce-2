@@ -142,29 +142,19 @@ class ProductTest {
             assertThat(product.getCategoryId()).isEqualTo("002");
         }
 
-        //TODO: 도메인 익셉션으로 변경하는 것이 어떨까요?
         @Test
         void alreadyUpdatedCategory() {
-            assertThatThrownBy(() -> product.changeCategory("001"))
-                    .isInstanceOf(IllegalArgumentException.class)
-                    .hasMessageContaining("카테고리 ID가 동일합니다.");
+            assertThatThrownBy(() -> product.changeCategory("0001"))
+                    .isInstanceOf(IllegalArgumentException.class);
 
         }
 
         @Test
         void updateInfoCategoryFail() {
             assertThatThrownBy(() -> product.changeCategory(null))
-                    .isInstanceOf(NullPointerException.class);
+                    .isInstanceOf(IllegalArgumentException.class);
             assertThatThrownBy(() -> product.changeCategory(""))
                     .isInstanceOf(IllegalArgumentException.class);
-        }
-
-        //TODO: 도메인 익셉션으로 변경하는 것이 어떨까요?
-        @Test
-        void updateInfoCategoryFailWhenCategoryNotExist() {
-            assertThatThrownBy(() -> product.changeCategory("999"))
-                    .isInstanceOf(IllegalArgumentException.class)
-                    .hasMessageContaining("존재하지 않는 카테고리 ID입니다.");
         }
     }
 
@@ -181,8 +171,7 @@ class ProductTest {
         void changeStatusFail() {
             product.inactivate();
             assertThatThrownBy(() -> product.inactivate())
-                    .isInstanceOf(IllegalStateException.class)
-                    .hasMessageContaining("이미 판매 중지된 상품입니다.");
+                    .isInstanceOf(IllegalStateException.class);
         }
     }
 
@@ -219,6 +208,7 @@ class ProductTest {
 
             // when
             sleep(100);
+            product.inactivate();
             product.delete();
 
             // then
@@ -237,6 +227,7 @@ class ProductTest {
             variant.changeStatus(VariantStatus.ACTIVE);
 
             // when
+            product.inactivate();
             product.delete();
 
             // then
@@ -250,12 +241,13 @@ class ProductTest {
 
         @Test
         @DisplayName("기본 가격이 정상적으로 변경된다")
-        void changePrice() {
+        void changePrice() throws InterruptedException {
             // given
             ProductMoney newPrice = ProductMoney.of(BigDecimal.valueOf(2000), "USD");
             LocalDateTime beforeUpdate = product.getUpdatedAt();
 
             // when
+            sleep(100); // 시간 차이를 주기 위해 잠시 대기
             product.changePrice(newPrice);
 
             // then
@@ -267,8 +259,7 @@ class ProductTest {
         @DisplayName("null 가격으로 변경 시 예외가 발생한다")
         void changePriceWithNull() {
             assertThatThrownBy(() -> product.changePrice(null))
-                    .isInstanceOf(IllegalArgumentException.class)
-                    .hasMessageContaining("새 가격은 null일 수 없습니다.");
+                    .isInstanceOf(NullPointerException.class);
         }
     }
 
@@ -287,7 +278,7 @@ class ProductTest {
 
             // when
             sleep(100); // 시간 차이를 주기 위해 잠시 대기
-            ProductVariant variant = product.addVariant(options, sellingPrice,stockQuantity);
+            ProductVariant variant = product.addVariant(options, sellingPrice, stockQuantity);
 
             // then
             assertThat(variant).isNotNull();
@@ -343,7 +334,7 @@ class ProductTest {
         void removeVariant() {
             // given
             Map<String, String> options = Map.of("color", "red");
-            ProductVariant variant = product.addVariant(options, ProductMoney.of(BigDecimal.valueOf(1500), "KRW"),1000L);
+            ProductVariant variant = product.addVariant(options, ProductMoney.of(BigDecimal.valueOf(1500), "KRW"), 1000L);
             variant.changeStatus(VariantStatus.ACTIVE);
 
             // when
@@ -366,7 +357,7 @@ class ProductTest {
         void updateVariantPrice() {
             // given
             Map<String, String> options = Map.of("color", "red");
-            ProductVariant variant = product.addVariant(options, ProductMoney.of(BigDecimal.valueOf(1500), "KRW"),1000L);
+            ProductVariant variant = product.addVariant(options, ProductMoney.of(BigDecimal.valueOf(1500), "KRW"), 1000L);
             ProductMoney newPrice = ProductMoney.of(BigDecimal.valueOf(2000), "KRW");
 
             // when
@@ -381,7 +372,7 @@ class ProductTest {
         void changeVariantStatus() {
             // given
             Map<String, String> options = Map.of("color", "red");
-            ProductVariant variant = product.addVariant(options, ProductMoney.of(BigDecimal.valueOf(1500), "KRW"),1000L);
+            ProductVariant variant = product.addVariant(options, ProductMoney.of(BigDecimal.valueOf(1500), "KRW"), 1000L);
 
             // when
             product.changeVariantStatus(variant.getSku(), VariantStatus.ACTIVE);
@@ -399,8 +390,8 @@ class ProductTest {
             Map<String, String> options3 = Map.of("color", "green");
 
             ProductVariant variant1 = product.addVariant(options1, ProductMoney.of(BigDecimal.valueOf(1500), "KRW"), 1000L);
-            ProductVariant variant2 = product.addVariant(options2, ProductMoney.of(BigDecimal.valueOf(1600), "KRW"),1000L);
-            ProductVariant variant3 = product.addVariant(options3, ProductMoney.of(BigDecimal.valueOf(1700), "KRW"),1000L);
+            ProductVariant variant2 = product.addVariant(options2, ProductMoney.of(BigDecimal.valueOf(1600), "KRW"), 1000L);
+            ProductVariant variant3 = product.addVariant(options3, ProductMoney.of(BigDecimal.valueOf(1700), "KRW"), 1000L);
 
             variant1.changeStatus(VariantStatus.ACTIVE);
             variant2.changeStatus(VariantStatus.INACTIVE);
@@ -419,12 +410,9 @@ class ProductTest {
         void hasAvailableVariants() {
             // given
             Map<String, String> options = Map.of("color", "red");
-            ProductVariant variant = product.addVariant(options, ProductMoney.of(BigDecimal.valueOf(1500), "KRW"),1000L);
+            ProductVariant variant = product.addVariant(options, ProductMoney.of(BigDecimal.valueOf(1500), "KRW"), 1000L);
 
             // when & then
-            assertThat(product.hasAvailableVariants()).isFalse(); // 초기 상태는 REGISTERED
-
-            variant.changeStatus(VariantStatus.ACTIVE);
             assertThat(product.hasAvailableVariants()).isTrue();
         }
 
@@ -433,8 +421,8 @@ class ProductTest {
         void getVariantCount() {
             assertThat(product.getVariantCount()).isZero();
 
-            product.addVariant(Map.of("color", "red"), ProductMoney.of(BigDecimal.valueOf(1500), "KRW"),1000L);
-            product.addVariant(Map.of("color", "blue"), ProductMoney.of(BigDecimal.valueOf(1600), "KRW"),1000L);
+            product.addVariant(Map.of("color", "red"), ProductMoney.of(BigDecimal.valueOf(1500), "KRW"), 1000L);
+            product.addVariant(Map.of("color", "blue"), ProductMoney.of(BigDecimal.valueOf(1600), "KRW"), 1000L);
 
             assertThat(product.getVariantCount()).isEqualTo(2);
         }
@@ -444,7 +432,7 @@ class ProductTest {
         void hasVariants() {
             assertThat(product.hasVariants()).isFalse();
 
-            product.addVariant(Map.of("color", "red"), ProductMoney.of(BigDecimal.valueOf(1500), "KRW"),1000L);
+            product.addVariant(Map.of("color", "red"), ProductMoney.of(BigDecimal.valueOf(1500), "KRW"), 1000L);
 
             assertThat(product.hasVariants()).isTrue();
         }

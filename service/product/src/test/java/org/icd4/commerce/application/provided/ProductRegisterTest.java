@@ -1,6 +1,7 @@
 package org.icd4.commerce.application.provided;
 
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityNotFoundException;
 import org.icd4.commerce.domain.product.model.Product;
 import org.icd4.commerce.domain.product.model.ProductVariant;
 import org.icd4.commerce.domain.product.model.VariantStatus;
@@ -197,8 +198,7 @@ class ProductRegisterTest {
 
             // when & then
             assertThatThrownBy(() -> productRegister.updateInfo("non-existent-id", updateRequest))
-                    .isInstanceOf(IllegalArgumentException.class)
-                    .hasMessageContaining("상품을 찾을 수 없습니다");
+                    .isInstanceOf(EntityNotFoundException.class);
         }
 
         @Test
@@ -327,8 +327,7 @@ class ProductRegisterTest {
             assertThatThrownBy(() -> productRegister.updateVariant(
                     "non-existent-product-id", targetSku, updateRequest
             ))
-                    .isInstanceOf(IllegalArgumentException.class)
-                    .hasMessageContaining("상품을 찾을 수 없습니다");
+                    .isInstanceOf(EntityNotFoundException.class);
         }
 
         @Test
@@ -345,49 +344,6 @@ class ProductRegisterTest {
             ))
                     .isInstanceOf(IllegalArgumentException.class)
                     .hasMessageContaining("가격은 0보다 커야 합니다");
-        }
-    }
-
-    @Nested
-    @DisplayName("상품 삭제 테스트")
-    class DeleteProductTest {
-
-        private Product savedProduct;
-
-        @BeforeEach
-        void setUp() {
-            savedProduct = productRegister.create(baseRequest);
-            entityManager.flush();
-            entityManager.clear();
-        }
-
-        @Test
-        @DisplayName("상품이 정상적으로 삭제되어야 한다")
-        void deleteProduct() {
-            // when
-            productRegister.deleteProduct(savedProduct.getId());
-            entityManager.flush();
-
-            // then
-            // 실제 구현에 따라 검증 로직이 달라질 수 있습니다
-            // 예: 소프트 삭제인 경우 상태 확인, 하드 삭제인 경우 존재 여부 확인
-        }
-
-        @Test
-        @DisplayName("존재하지 않는 상품 삭제 시 예외가 발생해야 한다")
-        void deleteNonExistentProduct() {
-            // when & then
-            assertThatThrownBy(() -> productRegister.deleteProduct("non-existent-id"))
-                    .isInstanceOf(IllegalArgumentException.class)
-                    .hasMessageContaining("상품을 찾을 수 없습니다");
-        }
-
-        @Test
-        @DisplayName("null ID로 삭제 시 예외가 발생해야 한다")
-        void deleteWithNullId() {
-            // when & then
-            assertThatThrownBy(() -> productRegister.deleteProduct(null))
-                    .isInstanceOf(IllegalArgumentException.class);
         }
     }
 }
