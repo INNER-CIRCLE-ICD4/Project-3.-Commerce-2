@@ -33,15 +33,19 @@ public class ProductCommandService {
                 productModifierService.changeCategory(productId, request.categoryId(), request.sellerId())
         );
     }
+    //TODO 초희님 구현
     public ProductResponse changeProductPrice(String productId, String sellerId, ProductMoney newPrice) {
         return ProductResponse.fromDomain(productModifierService.changeProductPrice(productId, sellerId, newPrice));
     }
+    //TODO 초희님 구현
     public ProductResponse activate(String productId, String sellerId) {
         return ProductResponse.fromDomain(productModifierService.activate(productId, sellerId));
     }
+    //TODO 초희님 구현
     public ProductResponse inactivate(String productId, String sellerId) {
         return ProductResponse.fromDomain(productModifierService.inactivate(productId, sellerId));
     }
+    //TODO 초희님 구현
     public ProductResponse deleteProduct(String productId, String sellerId) {
         return ProductResponse.fromDomain(productModifierService.deleteProduct(productId, sellerId));
     }

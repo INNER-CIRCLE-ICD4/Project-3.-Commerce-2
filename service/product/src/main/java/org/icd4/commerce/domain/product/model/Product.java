@@ -87,10 +87,8 @@ public class Product {
             throw new IllegalArgumentException("동일한 카테고리로는 변경할 수 없습니다");
         }
 
-        // ACTIVE 상품만 변경 가능하도록 허용할지? 고민 //TODO 비활성 하고 상품 수정도 가능하다고 봅니다 :)
-        // 삭제 상품을 변경할 수 없도록이 맞을 것 같아요
-        if (this.getStatus().equals(ProductStatus.INACTIVE)) {
-            throw new IllegalStateException("Cannot change inactive product");
+        if (this.getIsDeleted()) {
+            throw new IllegalStateException();
         }
 
         this.categoryId = categoryId;

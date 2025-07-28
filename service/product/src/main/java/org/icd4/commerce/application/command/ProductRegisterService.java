@@ -26,6 +26,7 @@ public class ProductRegisterService implements ProductRegister {
         return savedProduct;
     }
 
+    //TODO 진수 구현
     @Override
     public Product updateInfo(String productId, ProductInfoUpdateRequest request) {
         Product product = productFinder.findById(productId);
@@ -33,6 +34,7 @@ public class ProductRegisterService implements ProductRegister {
         return productRepository.save(product);
     }
 
+    //TODO 진수 구현
     @Override
     public Product updateVariant(String productId, String sku, ProductVariantUpdateRequest request) {
         Product product = productFinder.findById(productId);
