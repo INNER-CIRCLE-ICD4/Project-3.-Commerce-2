@@ -33,8 +33,7 @@ class ProductModifierTest {
     private Product testProduct;
     private final String SELLER_ID = "seller0001";
     private final String OTHER_SELLER_ID = "seller0002";
-    private final String CATEGORY_ID = "category0001";
-
+    private final BigDecimal PRICE = BigDecimal.ONE;
     @BeforeEach
     void setUp() {
         testProduct = Product.create(new ProductCreateRequest(
@@ -42,8 +41,8 @@ class ProductModifierTest {
                 "name",
                 "brand",
                 "description",
-                CATEGORY_ID,
-                BigDecimal.ONE,
+                "0001",
+                PRICE,
                 "KRW",
                 List.of()
         ));
@@ -209,11 +208,11 @@ class ProductModifierTest {
         entityManager.flush();
         entityManager.clear();
 
-        Product deletedProduct = entityManager.find(Product.class, testProduct.getId());
-        assertThat(deletedProduct).isNotNull();
-        assertThat(deletedProduct.getIsDeleted()).isFalse();
-        assertThat(deletedProduct.getDeletedAt()).isNotNull();
-        assertThat(deletedProduct.getStatus()).isEqualTo(ACTIVE);
+        Product deletedFailProduct = entityManager.find(Product.class, testProduct.getId());
+        assertThat(deletedFailProduct).isNotNull();
+        assertThat(deletedFailProduct.getIsDeleted()).isFalse();
+        assertThat(deletedFailProduct.getDeletedAt()).isNotNull();
+        assertThat(deletedFailProduct.getStatus()).isEqualTo(ACTIVE);
     }
 
     @Test
@@ -293,8 +292,7 @@ class ProductModifierTest {
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("Price must be a positive value");
 
-
-        assertThat(testProduct.getBasePrice()).isEqualTo(BigDecimal.ONE);
+        assertThat(testProduct.getBasePrice()).isEqualTo(PRICE);
 
     }
 }
