@@ -20,6 +20,7 @@ public class ProductModifierService implements ProductModifier {
 
     //TODO: 초희님 구현
     @Override
+    @Transactional
     public Product changeCategory(String productId, String categoryId, String sellerId) {
         // 필수 값 들어왔는지 확인
         Objects.requireNonNull(productId, "Product id cannont be null");
@@ -37,11 +38,11 @@ public class ProductModifierService implements ProductModifier {
 
         // 존재하는 상품인지 확인
         Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new IllegalArgumentException("ID " + productId + "is not exist"));
+                .orElseThrow(() -> new EntityNotFoundException("ID " + productId + "is not exist"));
 
         // 판매자가 일치하지 않는 경우
         if(!product.getSellerId().equals(sellerId)) {
-            throw new  IllegalArgumentException("Seller id " + sellerId + " is not match");
+            throw new  SecurityException("Seller id " + sellerId + " is not match");
         }
 
         // ACTIVE 상품만 변경 가능하도록 허용할지? 고민
@@ -69,11 +70,11 @@ public class ProductModifierService implements ProductModifier {
 
         // 존재하는 상품인지 확인
         Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new IllegalArgumentException("Product ID: " + productId + " does not exist"));
+                .orElseThrow(() -> new EntityNotFoundException("Product ID: " + productId + " does not exist"));
 
         // 판매자 확인
         if(!product.getSellerId().equals(sellerId)) {
-            throw new  IllegalArgumentException("Seller id " + sellerId + " is not match");
+            throw new  SecurityException("Seller id " + sellerId + " is not match");
         }
 
         // 상태 변경
@@ -97,10 +98,10 @@ public class ProductModifierService implements ProductModifier {
 
         // 존재하는 상품인지 확인
         Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new IllegalArgumentException("Product ID : " + productId + " does not exist."));
+                .orElseThrow(() -> new EntityNotFoundException("Product ID : " + productId + " does not exist."));
         // 판매자 일치 확인
         if(!product.getSellerId().equals(sellerId)) {
-            throw new  IllegalArgumentException("Seller id " + sellerId + " is not match");
+            throw new  SecurityException("Seller id " + sellerId + " is not match");
         }
         product.inactivate();
         productRepository.save(product);
@@ -138,10 +139,10 @@ public class ProductModifierService implements ProductModifier {
         }
         // 존재하는 상품인지 확인
         Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new IllegalArgumentException("Product not found with ID : " + productId));
+                .orElseThrow(() -> new EntityNotFoundException("Product not found with ID : " + productId));
         // 판매자 일치하는지 확인
         if(!product.getSellerId().equals(sellerId)) {
-            throw new  IllegalArgumentException("Seller id " + sellerId + " is not match");
+            throw new  SecurityException("Seller id " + sellerId + " is not match");
         }
         // INACTIVE 되어있는지 확인
         if(product.getStatus().equals(ProductStatus.ACTIVE)) {
