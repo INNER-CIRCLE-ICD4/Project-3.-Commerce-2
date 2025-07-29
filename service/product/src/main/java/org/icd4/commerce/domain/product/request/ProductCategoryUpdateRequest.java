@@ -4,7 +4,6 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 public record ProductCategoryUpdateRequest(
-        @NotBlank @NotNull String categoryId,
-        @NotBlank @NotNull String sellerId
+        @NotBlank @NotNull String categoryId
 ) {
 }
