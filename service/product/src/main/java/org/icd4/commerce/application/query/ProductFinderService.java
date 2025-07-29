@@ -3,10 +3,8 @@ package org.icd4.commerce.application.query;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.icd4.commerce.application.provided.ProductFinder;
-import org.icd4.commerce.application.required.ProductQueryRepository;
 import org.icd4.commerce.application.required.ProductRepository;
 import org.icd4.commerce.domain.product.model.Product;
-import org.icd4.commerce.domain.product.model.ProductVariant;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;

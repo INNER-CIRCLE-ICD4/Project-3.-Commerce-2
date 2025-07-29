@@ -38,12 +38,6 @@ public class ProductApi {
         return ResponseEntity.ok(productQueryService.findVariantByProductIdAndSku(productId, sku));
     }
 
-    @GetMapping("/variant/{sku}")
-    public ResponseEntity<ProductVariantResponse> findVariantBySku(
-            @PathVariable String sku) {
-        return ResponseEntity.ok(productQueryService.findVariantBySku(sku));
-    }
-
     @PostMapping
     public ResponseEntity<ProductResponse> create(@RequestBody ProductCreateRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(productCommandService.create(request));
@@ -69,7 +63,6 @@ public class ProductApi {
                                                                            @Valid @RequestBody ProductVariantUpdateRequest request) {
         return ResponseEntity.ok(productCommandService.changeProductVariantInfo(productId, sku, request.sellerId(), request));
     }
-
 
     @PatchMapping("{productId}/price")
     public ResponseEntity<ProductResponse> changePrice(

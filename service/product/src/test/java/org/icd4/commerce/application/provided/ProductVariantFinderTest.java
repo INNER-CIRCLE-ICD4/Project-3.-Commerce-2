@@ -30,23 +30,6 @@ class ProductVariantFinderTest {
     }
 
     @Test
-    void findProductVariantBySku() {
-        //Given
-        Product product = createTestProduct();
-        String expectedSku = product.getAllVariants().getFirst().getSku();
-
-        //When
-        ProductVariant productVariant = productVariantFinder.findVariantBySku(expectedSku);
-        entityManager.flush();
-
-        //Then
-        assertThat(productVariant.getSku()).isEqualTo(expectedSku);
-        assertThat(productVariant.getOptionCombinationMap()).containsExactly(
-                entry("optionName", "option1"),
-                entry("optionValue", "value1"));
-    }
-
-    @Test
     void findProductVariantByIdAndSku() {
         //Given
         Product product = createTestProduct();

@@ -67,22 +67,6 @@ class ProductQueryServiceTest {
     }
 
     @Test
-    @DisplayName("SKU로 변형 조회하면 ProductVariantResponse로 변환되어야 한다")
-    void findVariantBySku() {
-        // Given
-        String sku = "skuId";
-        ProductVariant mockVariant = createProductVariant(sku);
-        when(productVariantFinderService.findVariantBySku(sku)).thenReturn(mockVariant);
-
-        // When
-        ProductVariantResponse response = productQueryService.findVariantBySku(sku);
-
-        // Then
-        assertThat(response.sku()).isEqualTo(sku);
-        verify(productVariantFinderService).findVariantBySku(sku);
-    }
-
-    @Test
     @DisplayName("상품ID와 SKU로 변형 조회하면 적절한 서비스 메서드가 호출되어야 한다")
     void findVariantByProductIdAndSku() {
         // Given

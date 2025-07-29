@@ -23,11 +23,6 @@ public class ProductQueryService {
                 .toList();
     }
 
-    public ProductVariantResponse findVariantBySku(String skuId) {
-        return ProductVariantResponse.fromDomain(
-                productVariantFinderService.findVariantBySku(skuId));
-    }
-
     public ProductVariantResponse findVariantByProductIdAndSku(String productId, String skuId) {
         return ProductVariantResponse.fromDomain(
                 productVariantFinderService.findProductVariantByIdAndSku(productId, skuId));
