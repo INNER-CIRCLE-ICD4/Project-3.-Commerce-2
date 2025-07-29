@@ -12,6 +12,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import static java.util.Objects.requireNonNull;
@@ -59,10 +60,12 @@ public class Product {
 
     // ===== 애그리거트 전체 비즈니스 로직 =====
     public void updateInfo(ProductInfoUpdateRequest request) {
-        this.name = requireNonNull(request.name());
-        this.brand = requireNonNull(request.brand());
-        this.description = requireNonNull(request.description());
-        this.basePrice = ProductMoney.of(request.priceAmount(), request.priceCurrency());
+        Assert.state(!this.isDeleted, "삭제된 상품은 수정할 수 없습니다.");
+
+        updateFieldIfPresent(request.name(), this::updateName);
+        updateFieldIfPresent(request.brand(), this::updateBrand);
+        updateFieldIfPresent(request.description(), this::updateDescription);
+
         this.updatedAt = LocalDateTime.now(ZoneOffset.UTC);
     }
 
@@ -169,42 +172,18 @@ public class Product {
 
     public void updateVariant(String sku, ProductVariantUpdateRequest request) {
         validateVariantUpdate(request);
-
         ProductVariant variant = findVariantBySku(sku);
         if (variant == null) {
             throw new IllegalArgumentException("SKU를 찾을 수 없습니다: " + sku);
         }
-        boolean hasChanges = updateVariantInternal(variant, request);
-        if (hasChanges) {
-            this.updatedAt = LocalDateTime.now(ZoneOffset.UTC);
-        }
+        updateVariantInternal(variant, request);
     }
 
-    private boolean updateVariantInternal(ProductVariant variant, ProductVariantUpdateRequest request) {
-        boolean hasChanges = false;
-
-        request.getSellingPrice();
-        if (!Objects.equals(variant.getSellingPrice(), request.getSellingPrice())) {
-            if (request.getSellingPrice().getAmount().intValue() <= 0) {
-                throw new IllegalArgumentException("판매 가격은 0보다 커야 합니다");
-            }
-            variant.updatePrice(request.getSellingPrice());
-            hasChanges = true;
-        }
-
-        if (request.status() != null) {
-            if (variant.getStatus() != request.status()) {
-                variant.changeStatus(request.status());
-                hasChanges = true;
-            }
-        }
-        return hasChanges;
+    public void updateVariantStatus(String sku, VariantStatus status) {
+        ProductVariant variant = findVariantBySku(sku);
+        Assert.state(variant.getStatus() == status, "현재 상태와 같은 상태로는 변경할 수 없습니다.");
+        variant.changeStatus(status);
     }
-
-    private void validateVariantUpdate(ProductVariantUpdateRequest request) {
-        // 검증
-    }
-
 
     public void removeVariant(String sku) {
         ProductVariant variant = findVariantBySku(sku);
@@ -216,28 +195,7 @@ public class Product {
         this.updatedAt = LocalDateTime.now(ZoneOffset.UTC);
     }
 
-    public void updateVariantPrice(String sku, ProductMoney newPrice) {
-        ProductVariant variant = findVariantBySku(sku);
-        if (variant == null) {
-            throw new IllegalArgumentException("SKU를 찾을 수 없습니다: " + sku);
-        }
-
-        variant.updatePrice(newPrice);
-        this.updatedAt = LocalDateTime.now(ZoneOffset.UTC);
-    }
-
-    public void changeVariantStatus(String sku, VariantStatus newStatus) {
-        ProductVariant variant = findVariantBySku(sku);
-        if (variant == null) {
-            throw new IllegalArgumentException("SKU를 찾을 수 없습니다: " + sku);
-        }
-
-        variant.changeStatus(newStatus);
-        this.updatedAt = LocalDateTime.now(ZoneOffset.UTC);
-    }
-
     // ===== ProductVariant 조회 메서드들 =====
-
     public ProductVariant findVariantBySku(String sku) {
         return variants.stream()
                 .filter(v -> v.getSku().equals(sku))
@@ -277,5 +235,31 @@ public class Product {
                 throw new IllegalArgumentException("중복된 SKU가 존재합니다: " + newSku);
             }
         }
+    }
+
+    private void validateVariantUpdate(ProductVariantUpdateRequest request) {
+        // 검증
+    }
+
+    private void updateVariantInternal(ProductVariant variant, ProductVariantUpdateRequest request) {
+        variant.updateInfo(request);
+    }
+
+    private <T> void updateFieldIfPresent(T field, Consumer<T> consumer) {
+        if (field != null) {
+            consumer.accept(field);
+        }
+    }
+
+    private void updateName(String name) {
+        this.name = name;
+    }
+
+    private void updateBrand(String brand) {
+        this.brand = brand;
+    }
+
+    private void updateDescription(String description) {
+        this.description = description;
     }
 }

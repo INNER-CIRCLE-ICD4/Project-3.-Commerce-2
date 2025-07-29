@@ -11,6 +11,7 @@ import java.util.List;
 @Service
 public class ProductQueryService {
     private final ProductFinderService productFinderService;
+    private final ProductVariantFinderService productVariantFinderService;
 
     public ProductResponse findById(String productId) {
         return ProductResponse.fromDomain(productFinderService.findById(productId));
@@ -24,12 +25,12 @@ public class ProductQueryService {
 
     public ProductVariantResponse findVariantBySku(String skuId) {
         return ProductVariantResponse.fromDomain(
-                productFinderService.findVariantBySku(skuId));
+                productVariantFinderService.findVariantBySku(skuId));
     }
 
     public ProductVariantResponse findVariantByProductIdAndSku(String productId, String skuId) {
         return ProductVariantResponse.fromDomain(
-                productFinderService.findVariantByProductIdAndSku(productId, skuId));
+                productVariantFinderService.findProductVariantByIdAndSku(productId, skuId));
     }
 
 

@@ -20,9 +20,6 @@ public class ProductMoney {
     }
 
     public static ProductMoney of(BigDecimal bigDecimal, String currency) {
-        if (bigDecimal == null || currency == null || currency.isEmpty()) {
-            throw new IllegalArgumentException("금액과 통화는 필수입니다.");
-        }
         return new ProductMoney(bigDecimal, currency);
     }
 

@@ -2,14 +2,12 @@ package org.icd4.commerce.application.provided;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
-import org.icd4.commerce.application.query.ProductFinderService;
 import org.icd4.commerce.domain.product.model.Product;
 import org.icd4.commerce.domain.product.model.ProductMoney;
 import org.icd4.commerce.domain.product.request.ProductCreateRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 

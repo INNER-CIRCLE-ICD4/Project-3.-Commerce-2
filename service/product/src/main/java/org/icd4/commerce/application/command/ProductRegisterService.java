@@ -5,6 +5,7 @@ import org.icd4.commerce.application.provided.ProductFinder;
 import org.icd4.commerce.application.provided.ProductRegister;
 import org.icd4.commerce.application.required.ProductRepository;
 import org.icd4.commerce.domain.product.model.Product;
+import org.icd4.commerce.domain.product.model.VariantStatus;
 import org.icd4.commerce.domain.product.request.ProductCreateRequest;
 import org.icd4.commerce.domain.product.request.ProductInfoUpdateRequest;
 import org.icd4.commerce.domain.product.request.ProductVariantUpdateRequest;
@@ -26,19 +27,24 @@ public class ProductRegisterService implements ProductRegister {
         return savedProduct;
     }
 
-    //TODO 진수 구현
     @Override
-    public Product updateInfo(String productId, ProductInfoUpdateRequest request) {
-        Product product = productFinder.findById(productId);
+    public Product updateInfo(String productId, String sellerId, ProductInfoUpdateRequest request) {
+        Product product = productFinder.findByIdAndSellerId(productId, sellerId);
         product.updateInfo(request);
         return productRepository.save(product);
     }
 
-    //TODO 진수 구현
     @Override
-    public Product updateVariant(String productId, String sku, ProductVariantUpdateRequest request) {
-        Product product = productFinder.findById(productId);
+    public Product updateVariant(String productId, String sellerId, String sku, ProductVariantUpdateRequest request) {
+        Product product = productFinder.findProductWithVariantsByIdAndSellerId(productId, sellerId);
         product.updateVariant(sku, request);
+        return productRepository.save(product);
+    }
+
+    @Override
+    public Product updateVariantStatus(String productId, String sellerId, String sku, VariantStatus status) {
+        Product product = productFinder.findProductWithVariantsByIdAndSellerId(productId, sellerId);
+        product.updateVariantStatus(sku, status);
         return productRepository.save(product);
     }
 }

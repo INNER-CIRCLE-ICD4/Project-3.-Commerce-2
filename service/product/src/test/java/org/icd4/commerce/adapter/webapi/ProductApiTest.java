@@ -21,7 +21,8 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.icd4.commerce.AssertThatUtils.notNull;
-import static org.springframework.http.HttpStatus.*;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.CREATED;
 
 @SpringBootTest
 @AutoConfigureMockMvc
