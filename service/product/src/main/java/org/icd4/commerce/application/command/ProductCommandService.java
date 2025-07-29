@@ -6,10 +6,7 @@ import org.icd4.commerce.adapter.webapi.dto.ProductVariantResponse;
 import org.icd4.commerce.adapter.webapi.dto.event.ProductCreatedEventPayload;
 import org.icd4.commerce.domain.product.model.Product;
 import org.icd4.commerce.domain.product.model.ProductMoney;
-import org.icd4.commerce.domain.product.request.ProductCategoryUpdateRequest;
-import org.icd4.commerce.domain.product.request.ProductCreateRequest;
-import org.icd4.commerce.domain.product.request.ProductInfoUpdateRequest;
-import org.icd4.commerce.domain.product.request.ProductVariantUpdateRequest;
+import org.icd4.commerce.domain.product.request.*;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -50,22 +47,18 @@ public class ProductCommandService {
         );
     }
 
-    //TODO 초희님 구현
     public ProductResponse changeProductPrice(String productId, String sellerId, ProductPriceUpdateRequest request) {
         return ProductResponse.fromDomain(productModifierService.changeProductPrice(productId, sellerId, request.price()));
     }
 
-    //TODO 초희님 구현
     public ProductResponse activate(String productId, String sellerId) {
         return ProductResponse.fromDomain(productModifierService.activate(productId, sellerId));
     }
 
-    //TODO 초희님 구현
     public ProductResponse inactivate(String productId, String sellerId) {
         return ProductResponse.fromDomain(productModifierService.inactivate(productId, sellerId));
     }
 
-    //TODO 초희님 구현
     public ProductResponse deleteProduct(String productId, String sellerId) {
         return ProductResponse.fromDomain(productModifierService.deleteProduct(productId, sellerId));
     }

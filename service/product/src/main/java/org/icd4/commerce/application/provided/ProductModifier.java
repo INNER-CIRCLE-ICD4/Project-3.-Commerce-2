@@ -4,7 +4,7 @@ import org.icd4.commerce.domain.product.model.Product;
 import org.icd4.commerce.domain.product.model.ProductMoney;
 
 public interface ProductModifier {
-    Product changeCategory(String productId, String categoryId, String sellerId);
+    Product changeCategory(String productId, String sellerId, String categoryId);
 
     Product activate(String productId, String sellerId);
 

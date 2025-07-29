@@ -54,7 +54,7 @@ class ProductModifierTest {
 
     @Test
     void changeCategory() {
-        productModifier.changeCategory(TEST_PRODUCT.getId(), "0002", SELLER_ID);
+        productModifier.changeCategory(TEST_PRODUCT.getId(), SELLER_ID, "0002");
         entityManager.flush();
 
         var product = entityManager.find(Product.class, TEST_PRODUCT.getId());
@@ -64,29 +64,29 @@ class ProductModifierTest {
 
     @Test
     void changeCategoryFail() {
-        assertThatThrownBy(() -> productModifier.changeCategory("invalid-id", "0002", SELLER_ID))
+        assertThatThrownBy(() -> productModifier.changeCategory("invalid-id", SELLER_ID, "0002"))
                 .isInstanceOf(EntityNotFoundException.class);
-        assertThatThrownBy(() -> productModifier.changeCategory("", "0002", SELLER_ID))
+        assertThatThrownBy(() -> productModifier.changeCategory("", SELLER_ID, "0002"))
                 .isInstanceOf(IllegalArgumentException.class);
-        assertThatThrownBy(() -> productModifier.changeCategory(null, "0002", SELLER_ID))
+        assertThatThrownBy(() -> productModifier.changeCategory(null, SELLER_ID, "0002"))
                 .isInstanceOf(IllegalArgumentException.class);
 
         // 기존 데이터 그대로
-        assertThatThrownBy(() -> productModifier.changeCategory(TEST_PRODUCT.getId(), "0001", SELLER_ID))
+        assertThatThrownBy(() -> productModifier.changeCategory(TEST_PRODUCT.getId(), SELLER_ID, "0001"))
                 .isInstanceOf(IllegalArgumentException.class);
         // 카테고리 null
-        assertThatThrownBy(() -> productModifier.changeCategory(TEST_PRODUCT.getId(), null, SELLER_ID))
+        assertThatThrownBy(() -> productModifier.changeCategory(TEST_PRODUCT.getId(), SELLER_ID, null))
                 .isInstanceOf(IllegalArgumentException.class);
         // 카테고리 빈 문자열
-        assertThatThrownBy(() -> productModifier.changeCategory(TEST_PRODUCT.getId(), "", SELLER_ID))
+        assertThatThrownBy(() -> productModifier.changeCategory(TEST_PRODUCT.getId(), SELLER_ID, ""))
                 .isInstanceOf(IllegalArgumentException.class);
 
-        assertThatThrownBy(() -> productModifier.changeCategory(TEST_PRODUCT.getId(), "0002", null))
+        assertThatThrownBy(() -> productModifier.changeCategory(TEST_PRODUCT.getId(), null, "0002"))
                 .isInstanceOf(IllegalArgumentException.class);
-        assertThatThrownBy(() -> productModifier.changeCategory(TEST_PRODUCT.getId(), "0002", ""))
+        assertThatThrownBy(() -> productModifier.changeCategory(TEST_PRODUCT.getId(), "", "0002"))
                 .isInstanceOf(IllegalArgumentException.class);
 
-        assertThatThrownBy(() -> productModifier.changeCategory(TEST_PRODUCT.getId(), "0002", OTHER_SELLER_ID))
+        assertThatThrownBy(() -> productModifier.changeCategory(TEST_PRODUCT.getId(), OTHER_SELLER_ID, "0002"))
                 .isInstanceOf(SecurityException.class);
     }
 
