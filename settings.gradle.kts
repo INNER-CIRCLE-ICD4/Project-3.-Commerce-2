@@ -6,6 +6,7 @@ include(
     ":service:hexagonal",
     ":service:layered",
     ":service:product",
+    ":service:search",
     ":service:stock"
 )
 

@@ -1,0 +1,35 @@
+spring:
+  application:
+    name: commerce-search-service
+server:
+  port: 8081
+---
+spring:
+  config:
+    activate:
+      on-profile: dev
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:product
+    username: sa
+    password:
+  h2:
+    console:
+      path: /h2-console
+      enabled: true
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        highlight_sql: true
+        dialect: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: create
+  elasticsearch:
+    uris: https://localhost:9200
+    username: elastic
+    password: elastictest
+    ssl:
+      certificate-validation-mode: none
+
