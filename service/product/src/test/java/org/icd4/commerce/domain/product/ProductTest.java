@@ -4,6 +4,7 @@ import org.icd4.commerce.domain.product.model.*;
 import org.icd4.commerce.domain.product.request.ProductCreateRequest;
 import org.icd4.commerce.domain.product.request.ProductInfoUpdateRequest;
 import org.icd4.commerce.domain.product.request.ProductVariantRequest;
+import org.icd4.commerce.domain.product.request.ProductVariantUpdateRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -103,11 +104,10 @@ class ProductTest {
         void updateInfo() throws InterruptedException {
             // given
             ProductInfoUpdateRequest request = new ProductInfoUpdateRequest(
+                    "sellerId",
                     "updatedName",
                     "updatedBrand",
-                    "updatedDescription",
-                    BigDecimal.valueOf(2000),
-                    "USD"
+                    "updatedDescription"
             );
             LocalDateTime beforeUpdate = product.getUpdatedAt();
 
@@ -119,17 +119,29 @@ class ProductTest {
             assertThat(product.getName()).isEqualTo("updatedName");
             assertThat(product.getBrand()).isEqualTo("updatedBrand");
             assertThat(product.getDescription()).isEqualTo("updatedDescription");
-            assertThat(product.getBasePrice().getAmount()).isEqualTo(BigDecimal.valueOf(2000));
-            assertThat(product.getBasePrice().getCurrency()).isEqualTo("USD");
             assertThat(product.getUpdatedAt()).isAfter(beforeUpdate);
         }
 
         @Test
-        @DisplayName("수정 시 필수 값이 null이면 예외가 발생한다")
-        void updateInfoWithNullValues() {
-            assertThatThrownBy(() -> product.updateInfo(
-                    new ProductInfoUpdateRequest(null, "brand", "desc", BigDecimal.ONE, "KRW")))
-                    .isInstanceOf(NullPointerException.class);
+        @DisplayName("필수 값이 null인 항목은 수정하지 않는다")
+        void updateInfoWithNullValues() throws InterruptedException {
+            // given
+            ProductInfoUpdateRequest request = new ProductInfoUpdateRequest(
+                    "sellerId",
+                    null,
+                    "updatedBrand",
+                    "updatedDescription"
+            );
+            LocalDateTime beforeUpdate = product.getUpdatedAt();
+
+            // when
+            sleep(100);
+            product.updateInfo(request);
+
+            //then
+            assertThat(product.getName()).isEqualTo("name");
+            assertThat(product.getUpdatedAt()).isAfter(beforeUpdate);
+
         }
     }
 
@@ -358,13 +370,14 @@ class ProductTest {
             // given
             Map<String, String> options = Map.of("color", "red");
             ProductVariant variant = product.addVariant(options, ProductMoney.of(BigDecimal.valueOf(1500), "KRW"), 1000L);
-            ProductMoney newPrice = ProductMoney.of(BigDecimal.valueOf(2000), "KRW");
+            ProductVariantUpdateRequest request = new ProductVariantUpdateRequest("sellerId", BigDecimal.ONE, "KRW",
+                    null);
 
             // when
-            product.updateVariantPrice(variant.getSku(), newPrice);
+            product.updateVariant(variant.getSku(), request);
 
             // then
-            assertThat(variant.getSellingPrice()).isEqualTo(newPrice);
+            assertThat(variant.getSellingPrice().getCurrency()).isEqualTo(request.currency());
         }
 
         @Test
@@ -375,7 +388,7 @@ class ProductTest {
             ProductVariant variant = product.addVariant(options, ProductMoney.of(BigDecimal.valueOf(1500), "KRW"), 1000L);
 
             // when
-            product.changeVariantStatus(variant.getSku(), VariantStatus.ACTIVE);
+            product.updateVariantStatus(variant.getSku(), VariantStatus.ACTIVE);
 
             // then
             assertThat(variant.getStatus()).isEqualTo(VariantStatus.ACTIVE);

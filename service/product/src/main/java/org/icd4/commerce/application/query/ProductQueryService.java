@@ -29,7 +29,7 @@ public class ProductQueryService {
 
     public ProductVariantResponse findVariantByProductIdAndSku(String productId, String skuId) {
         return ProductVariantResponse.fromDomain(
-                productFinderService.findVariantByProductIdAndSku(productId, skuId));
+                productFinderService.findProductVariantByIdAndSku(productId, skuId));
     }
 
 

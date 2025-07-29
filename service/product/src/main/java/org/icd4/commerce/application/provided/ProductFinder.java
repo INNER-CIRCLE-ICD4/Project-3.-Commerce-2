@@ -7,7 +7,10 @@ public interface ProductFinder {
     Product findById(String productId);
     Product findByIdAndSellerId(String productId, String sellerId);
 
-    ProductVariant findVariantByProductIdAndSku(String productId, String skuId);
+    Product findProductWithVariantsByIdAndSellerId(String productId, String sellerId);
+
+    ProductVariant findProductVariantByIdAndSku(String productId, String sku);
     ProductVariant findVariantBySku(String skuId);
+
 }
 

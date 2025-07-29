@@ -3,14 +3,14 @@ package org.icd4.commerce.domain.product.model;
 import board.common.dataserializer.DataSerializer;
 import jakarta.persistence.*;
 import lombok.Getter;
+import org.icd4.commerce.domain.product.request.ProductVariantUpdateRequest;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Collections;
 import java.util.Map;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
-
-import static java.util.Objects.requireNonNull;
 
 @Getter
 @Entity
@@ -65,8 +65,10 @@ public class ProductVariant {
         return productId + "_" + Integer.toHexString(optionHash.hashCode()).toUpperCase();
     }
 
-    public void updatePrice(ProductMoney newPrice) {
-        this.sellingPrice = requireNonNull(newPrice);
+    public void updateInfo(ProductVariantUpdateRequest request) {
+        updateFieldIfPresent(request.getSellingPrice(), this::updatePrice);
+        updateFieldIfPresent(request.stockQuantity(), this::updateStockQuantity);
+
         this.updatedAt = LocalDateTime.now(ZoneOffset.UTC);
     }
 
@@ -87,5 +89,25 @@ public class ProductVariant {
             return Collections.emptyMap();
         }
         return DataSerializer.deserialize(this.optionCombination, Map.class);
+    }
+
+    private <T> void updateFieldIfPresent(T field, Consumer<T> consumer) {
+        if (field != null) {
+            consumer.accept(field);
+        }
+    }
+
+    private void updatePrice(ProductMoney price) {
+        if (price.getAmount().intValue() <= 0) {
+            throw new IllegalArgumentException();
+        }
+        this.sellingPrice = price;
+    }
+
+    private void updateStockQuantity(Long stockQuantity) {
+        if (stockQuantity <= 0) {
+            throw new IllegalArgumentException();
+        }
+        this.stockQuantity = stockQuantity;
     }
 }

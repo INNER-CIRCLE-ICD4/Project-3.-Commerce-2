@@ -31,8 +31,16 @@ public class ProductFinderService implements ProductFinder {
     }
 
     @Override
-    public ProductVariant findVariantByProductIdAndSku(String productId, String skuId) {
+    public ProductVariant findProductVariantByIdAndSku(String productId, String skuId) {
         return internalFindById(productId).findVariantBySku(skuId);
+    }
+
+    @Override
+    public Product findProductWithVariantsByIdAndSellerId(String productId, String sellerId) {
+        validationParameter(productId, sellerId);
+        Product product = internalFindProductWithVariant(productId);
+        validateSellerPermission(product, sellerId);
+        return product;
     }
 
     @Override
@@ -42,6 +50,11 @@ public class ProductFinderService implements ProductFinder {
 
     private Product internalFindById(String productId) {
         return productRepository.findById(productId)
+                .orElseThrow(() -> new EntityNotFoundException("상품을 찾을 수 없습니다. productId::" + productId));
+    }
+
+    private Product internalFindProductWithVariant(String productId) {
+        return productRepository.findByIdWithVariants(productId)
                 .orElseThrow(() -> new EntityNotFoundException("상품을 찾을 수 없습니다. productId::" + productId));
     }
 

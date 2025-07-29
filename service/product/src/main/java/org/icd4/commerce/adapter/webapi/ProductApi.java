@@ -9,6 +9,8 @@ import org.icd4.commerce.application.command.ProductCommandService;
 import org.icd4.commerce.application.query.ProductQueryService;
 import org.icd4.commerce.domain.product.request.ProductCategoryUpdateRequest;
 import org.icd4.commerce.domain.product.request.ProductCreateRequest;
+import org.icd4.commerce.domain.product.request.ProductInfoUpdateRequest;
+import org.icd4.commerce.domain.product.request.ProductVariantUpdateRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -39,10 +41,10 @@ public class ProductApi {
         return ResponseEntity.ok(productQueryService.findVariantByProductIdAndSku(productId, sku));
     }
 
-    @GetMapping("/variant/{skuId}")
+    @GetMapping("/variant/{sku}")
     public ResponseEntity<ProductVariantResponse> findVariantBySku(
-            @PathVariable String skuId) {
-        return ResponseEntity.ok(productQueryService.findVariantBySku(skuId));
+            @PathVariable String sku) {
+        return ResponseEntity.ok(productQueryService.findVariantBySku(sku));
     }
 
     @PatchMapping("/{productId}/category")
@@ -50,6 +52,19 @@ public class ProductApi {
             @PathVariable String productId,
             @Valid @RequestBody ProductCategoryUpdateRequest request) {
         return ResponseEntity.ok(productCommandService.changeCategory(productId, request));
+    }
+
+    @PatchMapping("/{productId}")
+    public ResponseEntity<ProductResponse> changeProductInfo(@PathVariable String productId,
+                                                             @Valid @RequestBody ProductInfoUpdateRequest request) {
+        return ResponseEntity.ok(productCommandService.changeProductInfo(productId, request.sellerId(), request));
+    }
+
+    @PatchMapping("/{productId}/{sku}")
+    public ResponseEntity<ProductVariantResponse> changeProductVariantInfo(@PathVariable String productId,
+                                                                           @PathVariable String sku,
+                                                                           @Valid @RequestBody ProductVariantUpdateRequest request) {
+        return ResponseEntity.ok(productCommandService.changeProductVariantInfo(productId, sku, request.sellerId(), request));
     }
 
     @PostMapping
