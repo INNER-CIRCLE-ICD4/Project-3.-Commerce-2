@@ -1,9 +1,9 @@
 package org.icd4.commerce.domain.product;
 
+import org.icd4.commerce.domain.ProductFixture;
 import org.icd4.commerce.domain.product.model.*;
 import org.icd4.commerce.domain.product.request.ProductCreateRequest;
 import org.icd4.commerce.domain.product.request.ProductInfoUpdateRequest;
-import org.icd4.commerce.domain.product.request.ProductVariantRequest;
 import org.icd4.commerce.domain.product.request.ProductVariantUpdateRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -24,41 +24,7 @@ class ProductTest {
 
     @BeforeEach
     void setUp() {
-        productCreateRequest = new ProductCreateRequest(
-                "sellerId",
-                "0001",
-                "name",
-                "brand",
-                "description",
-                BigDecimal.valueOf(1000),
-                Currency.getInstance(Locale.KOREA).getCurrencyCode(),
-                List.of(
-                        new ProductVariantRequest(
-                                """
-                                        {
-                                            "optionName": "option1",
-                                            "optionValue": "value1"
-                                        }
-                                        """,
-                                BigDecimal.valueOf(1000),
-                                Currency.getInstance(Locale.KOREA).getCurrencyCode(),
-                                1000L
-                        ),
-                        new ProductVariantRequest(
-                                """
-                                        {
-                                            "optionName": "option2",
-                                            "optionValue": "value2"
-                                        }
-                                        """,
-                                BigDecimal.valueOf(2000),
-                                Currency.getInstance(Locale.KOREA).getCurrencyCode(),
-                                1000L
-                        )
-                )
-        );
-        product = Product.create(productCreateRequest);
-
+        product = ProductFixture.createProduct("productId");
     }
 
     @Nested

@@ -3,6 +3,7 @@ package org.icd4.commerce.domain.product.model;
 import board.common.dataserializer.DataSerializer;
 import jakarta.persistence.*;
 import lombok.Getter;
+import org.icd4.commerce.domain.product.request.ProductVariantRequest;
 import org.icd4.commerce.domain.product.request.ProductVariantUpdateRequest;
 
 import java.time.LocalDateTime;
@@ -47,6 +48,20 @@ public class ProductVariant {
         variant.sellingPrice = sellingPrice;
         variant.status = VariantStatus.ACTIVE;
         variant.stockQuantity = stockQuantity;
+        variant.createdAt = LocalDateTime.now(ZoneOffset.UTC);
+        variant.updatedAt = LocalDateTime.now(ZoneOffset.UTC);
+        return variant;
+    }
+
+    public static ProductVariant create(String productId, String sellerId, ProductVariantRequest request) {
+        ProductVariant variant = new ProductVariant();
+        variant.sku = generateSku(productId, request.getOptionCombinationMap());
+        variant.productId = productId;
+        variant.sellerId = sellerId;
+        variant.optionCombination = DataSerializer.serialize(request.getOptionCombinationMap());
+        variant.sellingPrice = request.getSellingPrice();
+        variant.status = VariantStatus.ACTIVE;
+        variant.stockQuantity = request.stockQuantity();
         variant.createdAt = LocalDateTime.now(ZoneOffset.UTC);
         variant.updatedAt = LocalDateTime.now(ZoneOffset.UTC);
         return variant;
