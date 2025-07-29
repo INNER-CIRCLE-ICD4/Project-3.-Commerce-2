@@ -17,7 +17,7 @@ public class ProductModifierService implements ProductModifier {
 
     @Override
     @Transactional
-    public Product changeCategory(String productId, String categoryId, String sellerId) {
+    public Product changeCategory(String productId, String sellerId, String categoryId) {
         Product product = productFinder.findByIdAndSellerId(productId,sellerId);
         product.changeCategory(categoryId);
         return productRepository.save(product);
