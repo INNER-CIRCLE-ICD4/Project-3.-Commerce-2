@@ -41,7 +41,7 @@ public class OrderController {
     })
     public OrderResponse createOrder(@RequestBody CreateOrderRequest request) {
         Order order = createOrderUseCase.execute(request.toCommand());
-        return new OrderResponse(order.getOrderId().toString());
+        return OrderResponse.from(order);
     }
 
     // 주문 취소

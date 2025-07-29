@@ -1,6 +1,8 @@
 package org.icd4.commerce.adapter.webapi.dto.order.response;
 
 import org.icd4.commerce.domain.order.*;
+
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -11,7 +13,7 @@ public record OrderResponse(
         String customerId,
         List<OrderItemResponse> orderItems,
         String orderStatus,
-        long totalAmount,
+        BigDecimal totalAmount,
         String orderMessage,
         LocalDateTime createdAt,
         LocalDateTime lastModifiedAt,
@@ -27,11 +29,13 @@ public record OrderResponse(
                         .map(OrderItemResponse::from)
                         .collect(Collectors.toList()),
                 order.getOrderStatus().name(),
-                order.getTotalAmount().getValue(),
+                order.getTotalAmount().getAmount(),
                 order.getOrderMessage(),
                 order.getCreatedAt(),
                 order.getLastModifiedAt(),
-                order.getPaymentInfo() != null ? order.getPaymentInfo().paymentId().toString() : null,
+                order.getPaymentId() != null ? order.getPaymentId().toString() : null,
                 order.getOrderChannel(),
-                order.getCompletedAt();
+                order.getCompletedAt()
+        );
     }
+}
