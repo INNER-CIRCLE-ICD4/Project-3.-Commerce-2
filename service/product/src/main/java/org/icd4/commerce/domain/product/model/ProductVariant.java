@@ -1,19 +1,17 @@
 package org.icd4.commerce.domain.product.model;
 
 import board.common.dataserializer.DataSerializer;
-import jakarta.persistence.Column;
-import jakarta.persistence.Embedded;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Getter;
+import org.icd4.commerce.domain.product.request.ProductVariantRequest;
+import org.icd4.commerce.domain.product.request.ProductVariantUpdateRequest;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Collections;
 import java.util.Map;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
-
-import static java.util.Objects.requireNonNull;
 
 @Getter
 @Entity
@@ -29,15 +27,19 @@ public class ProductVariant {
     @Embedded
     private ProductMoney sellingPrice;
     private VariantStatus status;
+    @Transient
+    private Long stockQuantity;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
     protected ProductVariant() {
     }
 
-    public static ProductVariant create(String productId, String sellerId,
+    public static ProductVariant create(String productId,
+                                        String sellerId,
                                         Map<String, String> optionCombination,
-                                        ProductMoney sellingPrice) {
+                                        ProductMoney sellingPrice,
+                                        Long stockQuantity) {
         ProductVariant variant = new ProductVariant();
         variant.sku = generateSku(productId, optionCombination);
         variant.productId = productId;
@@ -45,6 +47,21 @@ public class ProductVariant {
         variant.optionCombination = DataSerializer.serialize(optionCombination);
         variant.sellingPrice = sellingPrice;
         variant.status = VariantStatus.ACTIVE;
+        variant.stockQuantity = stockQuantity;
+        variant.createdAt = LocalDateTime.now(ZoneOffset.UTC);
+        variant.updatedAt = LocalDateTime.now(ZoneOffset.UTC);
+        return variant;
+    }
+
+    public static ProductVariant create(String productId, String sellerId, ProductVariantRequest request) {
+        ProductVariant variant = new ProductVariant();
+        variant.sku = generateSku(productId, request.getOptionCombinationMap());
+        variant.productId = productId;
+        variant.sellerId = sellerId;
+        variant.optionCombination = DataSerializer.serialize(request.getOptionCombinationMap());
+        variant.sellingPrice = request.getSellingPrice();
+        variant.status = VariantStatus.ACTIVE;
+        variant.stockQuantity = request.stockQuantity();
         variant.createdAt = LocalDateTime.now(ZoneOffset.UTC);
         variant.updatedAt = LocalDateTime.now(ZoneOffset.UTC);
         return variant;
@@ -63,8 +80,10 @@ public class ProductVariant {
         return productId + "_" + Integer.toHexString(optionHash.hashCode()).toUpperCase();
     }
 
-    public void updatePrice(ProductMoney newPrice) {
-        this.sellingPrice = requireNonNull(newPrice);
+    public void updateInfo(ProductVariantUpdateRequest request) {
+        updateFieldIfPresent(request.getSellingPrice(), this::updatePrice);
+        updateFieldIfPresent(request.stockQuantity(), this::updateStockQuantity);
+
         this.updatedAt = LocalDateTime.now(ZoneOffset.UTC);
     }
 
@@ -85,5 +104,25 @@ public class ProductVariant {
             return Collections.emptyMap();
         }
         return DataSerializer.deserialize(this.optionCombination, Map.class);
+    }
+
+    private <T> void updateFieldIfPresent(T field, Consumer<T> consumer) {
+        if (field != null) {
+            consumer.accept(field);
+        }
+    }
+
+    private void updatePrice(ProductMoney price) {
+        if (price.getAmount().intValue() <= 0) {
+            throw new IllegalArgumentException();
+        }
+        this.sellingPrice = price;
+    }
+
+    private void updateStockQuantity(Long stockQuantity) {
+        if (stockQuantity <= 0) {
+            throw new IllegalArgumentException();
+        }
+        this.stockQuantity = stockQuantity;
     }
 }

@@ -1,12 +1,9 @@
 package org.icd4.commerce.domain.product.request;
 
-import java.math.BigDecimal;
-
 public record ProductInfoUpdateRequest(
+        String sellerId,
         String name,
         String brand,
-        String description,
-        BigDecimal priceAmount,
-        String priceCurrency
+        String description
 ) {
 }

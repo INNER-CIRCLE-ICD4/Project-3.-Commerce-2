@@ -16,35 +16,35 @@ import java.util.Locale;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @Transactional
-class ProductFinderTest {
-    private final ProductFinder productFinder;
+class ProductVariantFinderTest {
+    private final ProductVariantFinder productVariantFinder;
     private final EntityManager entityManager;
 
-    public ProductFinderTest(ProductFinder productFinder, EntityManager entityManager) {
-        this.productFinder = productFinder;
+    ProductVariantFinderTest(ProductVariantFinder productVariantFinder, EntityManager entityManager) {
+        this.productVariantFinder = productVariantFinder;
         this.entityManager = entityManager;
     }
 
     @Test
-    void findProductById() {
+    void findProductVariantByIdAndSku() {
         //Given
-        String productId = createTestProduct().getId();
+        Product product = createTestProduct();
+        String expectedSku = product.getAllVariants().getFirst().getSku();
+
         //When
-        Product product = productFinder.findById(productId);
+        ProductVariant productVariant = productVariantFinder.findProductVariantByIdAndSku(product.getId(),expectedSku);
         entityManager.flush();
 
         //Then
-        assertThat(product.getId()).isEqualTo(productId);
-        assertThat(product.getName()).isEqualTo("name");
-        assertThat(product.getBrand()).isEqualTo("brand");
-        assertThat(product.getDescription()).isEqualTo("description");
-        assertThat(product.getBasePrice().getAmount()).isEqualTo(BigDecimal.valueOf(1000));
+        assertThat(productVariant.getSku()).isEqualTo(expectedSku);
+        assertThat(productVariant.getOptionCombinationMap()).containsExactly(
+                entry("optionName", "option1"),
+                entry("optionValue", "value1"));
     }
-
-
 
     private Product createTestProduct() {
         ProductCreateRequest request = createTestProductRequest();
@@ -79,6 +79,4 @@ class ProductFinderTest {
                 )
         );
     }
-
-
 }

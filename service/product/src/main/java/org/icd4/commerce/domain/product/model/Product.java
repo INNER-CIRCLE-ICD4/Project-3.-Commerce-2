@@ -6,11 +6,13 @@ import org.icd4.commerce.domain.product.request.ProductCreateRequest;
 import org.icd4.commerce.domain.product.request.ProductInfoUpdateRequest;
 import org.icd4.commerce.domain.product.request.ProductVariantRequest;
 import org.icd4.commerce.domain.product.request.ProductVariantUpdateRequest;
+import org.springframework.util.Assert;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import static java.util.Objects.requireNonNull;
@@ -58,28 +60,46 @@ public class Product {
 
     // ===== 애그리거트 전체 비즈니스 로직 =====
     public void updateInfo(ProductInfoUpdateRequest request) {
-        this.name = requireNonNull(request.name());
-        this.brand = requireNonNull(request.brand());
-        this.description = requireNonNull(request.description());
-        this.basePrice = ProductMoney.of(request.priceAmount(), request.priceCurrency());
+        Assert.state(!this.isDeleted, "삭제된 상품은 수정할 수 없습니다.");
+
+        updateFieldIfPresent(request.name(), this::updateName);
+        updateFieldIfPresent(request.brand(), this::updateBrand);
+        updateFieldIfPresent(request.description(), this::updateDescription);
+
         this.updatedAt = LocalDateTime.now(ZoneOffset.UTC);
     }
 
     // on off
     public void activate() {
+        Assert.state(ProductStatus.ACTIVE != this.status, "이미 활성화된 상품입니다");
         changeStatus(ProductStatus.ACTIVE);
     }
 
     public void inactivate() {
+        Assert.state(ProductStatus.INACTIVE != this.status, "이미 비활성화된 상품입니다");
         changeStatus(ProductStatus.INACTIVE);
     }
 
     public void changeCategory(String categoryId) {
-        this.categoryId = requireNonNull(categoryId);
+        if (categoryId == null || categoryId.trim().isEmpty()) {
+            throw new IllegalArgumentException("상품 카테고리는 필수값입니다");
+        }
+
+        // 추가 도메인 규칙이 있다면
+        if (Objects.equals(this.categoryId, categoryId)) {
+            throw new IllegalArgumentException("동일한 카테고리로는 변경할 수 없습니다");
+        }
+
+        if (this.getIsDeleted()) {
+            throw new IllegalStateException();
+        }
+
+        this.categoryId = categoryId;
+        this.updatedAt = LocalDateTime.now(ZoneOffset.UTC);
     }
 
     public void changePrice(ProductMoney newPrice) {
-        if(newPrice.getAmount().compareTo(BigDecimal.ZERO) <= 0) {
+        if (newPrice.getAmount().compareTo(BigDecimal.ZERO) <= 0) {
             throw new IllegalArgumentException("Price must be a positive value");
         }
         this.basePrice = requireNonNull(newPrice);
@@ -88,25 +108,25 @@ public class Product {
 
     public void changeStatus(ProductStatus newStatus) {
         this.status = requireNonNull(newStatus);
-        this.updatedAt = LocalDateTime.now(ZoneOffset.UTC);
-
         // 상품 상태 변경이 모든 변형에 영향
         if (newStatus == ProductStatus.INACTIVE) {
             variants.forEach(variant -> variant.changeStatus(VariantStatus.INACTIVE));
         }
+
+        this.updatedAt = LocalDateTime.now(ZoneOffset.UTC);
     }
 
     public void delete() {
-        if(this.status == ProductStatus.ACTIVE) {
+        if (this.status == ProductStatus.ACTIVE) {
             throw new IllegalArgumentException("Cannot delete active product");
         }
-        if(this.isDeleted) {
+        if (this.isDeleted) {
             throw new IllegalArgumentException("Product is already deleted");
         }
-        this.isDeleted = true;
-        this.deletedAt = LocalDateTime.now(ZoneOffset.UTC);
 
         variants.forEach(variant -> variant.changeStatus(VariantStatus.DISCONTINUED));
+        this.isDeleted = true;
+        this.deletedAt = LocalDateTime.now(ZoneOffset.UTC);
     }
 
     // 재고 모듈 이벤트 처리 (애그리거트 루트를 통해서만)
@@ -117,8 +137,8 @@ public class Product {
     /**
      * 단일 변형 추가
      */
-    public ProductVariant addVariant(Map<String, String> optionCombination, ProductMoney sellingPrice) {
-        ProductVariant variant = ProductVariant.create(this.id, this.sellerId, optionCombination, sellingPrice);
+    public ProductVariant addVariant(Map<String, String> optionCombination, ProductMoney sellingPrice, Long stockQuantity) {
+        ProductVariant variant = ProductVariant.create(this.id, this.sellerId, optionCombination, sellingPrice, stockQuantity);
         this.variants.add(variant);
         this.updatedAt = LocalDateTime.now(ZoneOffset.UTC);
         return variant;
@@ -142,7 +162,8 @@ public class Product {
                     this.id,
                     this.sellerId,
                     request.getOptionCombinationMap(),
-                    request.getSellingPrice()
+                    request.getSellingPrice(),
+                    request.stockQuantity()
             );
             this.variants.add(variant);
         }
@@ -151,39 +172,18 @@ public class Product {
 
     public void updateVariant(String sku, ProductVariantUpdateRequest request) {
         validateVariantUpdate(request);
-
         ProductVariant variant = findVariantBySku(sku);
         if (variant == null) {
             throw new IllegalArgumentException("SKU를 찾을 수 없습니다: " + sku);
         }
-        boolean hasChanges = updateVariantInternal(variant, request);
-        if (hasChanges) {
-            this.updatedAt = LocalDateTime.now(ZoneOffset.UTC);
-        }
+        updateVariantInternal(variant, request);
     }
 
-    private boolean updateVariantInternal(ProductVariant variant, ProductVariantUpdateRequest request) {
-        boolean hasChanges = false;
-
-        request.getSellingPrice();
-        if (!Objects.equals(variant.getSellingPrice(), request.getSellingPrice())) {
-            variant.updatePrice(request.getSellingPrice());
-            hasChanges = true;
-        }
-
-        if (request.status() != null) {
-            if (variant.getStatus() != request.status()) {
-                variant.changeStatus(request.status());
-                hasChanges = true;
-            }
-        }
-        return hasChanges;
+    public void updateVariantStatus(String sku, VariantStatus status) {
+        ProductVariant variant = findVariantBySku(sku);
+        Assert.state(variant.getStatus() == status, "현재 상태와 같은 상태로는 변경할 수 없습니다.");
+        variant.changeStatus(status);
     }
-
-    private void validateVariantUpdate(ProductVariantUpdateRequest request) {
-        // 검증
-    }
-
 
     public void removeVariant(String sku) {
         ProductVariant variant = findVariantBySku(sku);
@@ -195,28 +195,7 @@ public class Product {
         this.updatedAt = LocalDateTime.now(ZoneOffset.UTC);
     }
 
-    public void updateVariantPrice(String sku, ProductMoney newPrice) {
-        ProductVariant variant = findVariantBySku(sku);
-        if (variant == null) {
-            throw new IllegalArgumentException("SKU를 찾을 수 없습니다: " + sku);
-        }
-
-        variant.updatePrice(newPrice);
-        this.updatedAt = LocalDateTime.now(ZoneOffset.UTC);
-    }
-
-    public void changeVariantStatus(String sku, VariantStatus newStatus) {
-        ProductVariant variant = findVariantBySku(sku);
-        if (variant == null) {
-            throw new IllegalArgumentException("SKU를 찾을 수 없습니다: " + sku);
-        }
-
-        variant.changeStatus(newStatus);
-        this.updatedAt = LocalDateTime.now(ZoneOffset.UTC);
-    }
-
     // ===== ProductVariant 조회 메서드들 =====
-
     public ProductVariant findVariantBySku(String sku) {
         return variants.stream()
                 .filter(v -> v.getSku().equals(sku))
@@ -256,5 +235,31 @@ public class Product {
                 throw new IllegalArgumentException("중복된 SKU가 존재합니다: " + newSku);
             }
         }
+    }
+
+    private void validateVariantUpdate(ProductVariantUpdateRequest request) {
+        // 검증
+    }
+
+    private void updateVariantInternal(ProductVariant variant, ProductVariantUpdateRequest request) {
+        variant.updateInfo(request);
+    }
+
+    private <T> void updateFieldIfPresent(T field, Consumer<T> consumer) {
+        if (field != null) {
+            consumer.accept(field);
+        }
+    }
+
+    private void updateName(String name) {
+        this.name = name;
+    }
+
+    private void updateBrand(String brand) {
+        this.brand = brand;
+    }
+
+    private void updateDescription(String description) {
+        this.description = description;
     }
 }

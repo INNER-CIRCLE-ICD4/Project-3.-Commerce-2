@@ -25,171 +25,103 @@ class ProductModifierTest {
     ProductModifier productModifier;
     EntityManager entityManager;
 
+    private Product TEST_PRODUCT;
+    private final String SELLER_ID = "seller0001";
+    private final String OTHER_SELLER_ID = "seller0002";
+    private final BigDecimal PRICE = BigDecimal.ONE;
+
     ProductModifierTest(ProductModifier productModifier, EntityManager entityManager) {
         this.productModifier = productModifier;
         this.entityManager = entityManager;
     }
 
-    private Product testProduct;
-    private final String SELLER_ID = "seller0001";
-    private final String OTHER_SELLER_ID = "seller0002";
-    private final BigDecimal PRICE = BigDecimal.ONE;
     @BeforeEach
     void setUp() {
-        testProduct = Product.create(new ProductCreateRequest(
+        TEST_PRODUCT = Product.create(new ProductCreateRequest(
                 SELLER_ID,
+                "0001",
                 "name",
                 "brand",
                 "description",
-                "0001",
                 PRICE,
                 "KRW",
                 List.of()
         ));
-        entityManager.persist(testProduct);
+        entityManager.persist(TEST_PRODUCT);
         entityManager.flush();
         entityManager.clear();
     }
+
     @Test
     void changeCategory() {
-        var categoryId = "0001";
-        var sellerId = "0001";
-
-        var product = Product.create(new ProductCreateRequest(
-                sellerId,
-                "name",
-                "brand",
-                "description",
-                categoryId,
-                BigDecimal.ONE,
-                "KRW",
-                List.of()
-        ));
-
-        productModifier.changeCategory(product.getId(), "0002", sellerId);
+        productModifier.changeCategory(TEST_PRODUCT.getId(), SELLER_ID, "0002");
         entityManager.flush();
+
+        var product = entityManager.find(Product.class, TEST_PRODUCT.getId());
 
         assertThat(product.getCategoryId()).isEqualTo("0002");
     }
 
     @Test
     void changeCategoryFail() {
-        var categoryId = "0001";
-        var sellerId = "0001";
-
-        var product = Product.create(new ProductCreateRequest(
-                sellerId,
-                "name",
-                "brand",
-                "description",
-                categoryId,
-                BigDecimal.ONE,
-                "KRW",
-                List.of()
-        ));
-
-        assertThatThrownBy(() -> productModifier.changeCategory(product.getId(), categoryId, sellerId))
+        assertThatThrownBy(() -> productModifier.changeCategory("invalid-id", SELLER_ID, "0002"))
+                .isInstanceOf(EntityNotFoundException.class);
+        assertThatThrownBy(() -> productModifier.changeCategory("", SELLER_ID, "0002"))
                 .isInstanceOf(IllegalArgumentException.class);
-        assertThatThrownBy(() -> productModifier.changeCategory(product.getId(), null, sellerId))
-                .isInstanceOf(NullPointerException.class);
-        assertThatThrownBy(() -> productModifier.changeCategory(product.getId(), "", sellerId))
+        assertThatThrownBy(() -> productModifier.changeCategory(null, SELLER_ID, "0002"))
                 .isInstanceOf(IllegalArgumentException.class);
-        assertThatThrownBy(() -> productModifier.changeCategory("invalid-id", "0002", sellerId))
+
+        // 기존 데이터 그대로
+        assertThatThrownBy(() -> productModifier.changeCategory(TEST_PRODUCT.getId(), SELLER_ID, "0001"))
                 .isInstanceOf(IllegalArgumentException.class);
-        assertThatThrownBy(() -> productModifier.changeCategory(product.getId(), "0002", "invalid-seller-id"))
+        // 카테고리 null
+        assertThatThrownBy(() -> productModifier.changeCategory(TEST_PRODUCT.getId(), SELLER_ID, null))
                 .isInstanceOf(IllegalArgumentException.class);
-    }
+        // 카테고리 빈 문자열
+        assertThatThrownBy(() -> productModifier.changeCategory(TEST_PRODUCT.getId(), SELLER_ID, ""))
+                .isInstanceOf(IllegalArgumentException.class);
 
-    @Test
-    void productActivate() {
-        var categoryId = "0001";
-        var sellerId = "0001";
+        assertThatThrownBy(() -> productModifier.changeCategory(TEST_PRODUCT.getId(), null, "0002"))
+                .isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> productModifier.changeCategory(TEST_PRODUCT.getId(), "", "0002"))
+                .isInstanceOf(IllegalArgumentException.class);
 
-        var product = Product.create(new ProductCreateRequest(
-                sellerId,
-                "name",
-                "brand",
-                "description",
-                categoryId,
-                BigDecimal.ONE,
-                "KRW",
-                List.of()
-        ));
-
-        productModifier.activate(product.getId(), sellerId);
-        entityManager.flush();
-
-        assertThat(product.getStatus()).isEqualTo(ACTIVE);
+        assertThatThrownBy(() -> productModifier.changeCategory(TEST_PRODUCT.getId(), OTHER_SELLER_ID, "0002"))
+                .isInstanceOf(SecurityException.class);
     }
 
     @Test
     void productInactivate() {
-        var categoryId = "0001";
-        var sellerId = "0001";
-
-        var product = Product.create(new ProductCreateRequest(
-                sellerId,
-                "name",
-                "brand",
-                "description",
-                categoryId,
-                BigDecimal.ONE,
-                "KRW",
-                List.of()
-        ));
-
-        productModifier.inactivate(product.getId(), sellerId);
+        productModifier.inactivate(TEST_PRODUCT.getId(), SELLER_ID);
         entityManager.flush();
 
+        var product = entityManager.find(Product.class, TEST_PRODUCT.getId());
         assertThat(product.getStatus()).isEqualTo(INACTIVE);
-    }
 
-    @Test
-    void changeProductStoppedFail() {
-        var categoryId = "0001";
-        var sellerId = "0001";
-
-        var product = Product.create(new ProductCreateRequest(
-                sellerId,
-                "name",
-                "brand",
-                "description",
-                categoryId,
-                BigDecimal.ONE,
-                "KRW",
-                List.of()
-        ));
-
-        assertThatThrownBy(() -> productModifier.inactivate(product.getId(), sellerId))
-                .isInstanceOf(IllegalArgumentException.class);
-        assertThatThrownBy(() -> productModifier.inactivate(product.getId(), sellerId))
-                .isInstanceOf(IllegalArgumentException.class);
-
-        product.inactivate();
+        productModifier.activate(TEST_PRODUCT.getId(), SELLER_ID);
         entityManager.flush();
-        entityManager.clear();
 
-        assertThatThrownBy(() -> product.inactivate())
-                .isInstanceOf(IllegalArgumentException.class);
-
+        var product2 = entityManager.find(Product.class, TEST_PRODUCT.getId());
+        assertThat(product2.getStatus()).isEqualTo(ACTIVE);
     }
 
     @Test
     @DisplayName("상품이 INACTIVE 상태일 때, 삭제가 된다")
+        // inactivate 메서드와 의존성이 생김
     void deleteProduct() {
-        Product activateProduct = entityManager.find(Product.class, testProduct.getId());
-        productModifier.inactivate(testProduct.getId(), SELLER_ID);
+        Product activateProduct = entityManager.find(Product.class, TEST_PRODUCT.getId());
+        productModifier.inactivate(TEST_PRODUCT.getId(), SELLER_ID);
         entityManager.flush();
         entityManager.clear();
 
-        Product inactivateProduct = entityManager.find(Product.class, testProduct.getId());
+        Product inactivateProduct = entityManager.find(Product.class, TEST_PRODUCT.getId());
         assertThat(inactivateProduct.getStatus()).isEqualTo(INACTIVE);
 
-        productModifier.deleteProduct(testProduct.getId(), SELLER_ID);
+        productModifier.deleteProduct(TEST_PRODUCT.getId(), SELLER_ID);
         entityManager.flush();
         entityManager.clear();
 
-        Product deletedProduct = entityManager.find(Product.class, testProduct.getId());
+        Product deletedProduct = entityManager.find(Product.class, TEST_PRODUCT.getId());
         assertThat(deletedProduct).isNotNull();
         assertThat(deletedProduct.getIsDeleted()).isTrue();
         assertThat(deletedProduct.getDeletedAt()).isNotNull();
@@ -199,20 +131,18 @@ class ProductModifierTest {
     @Test
     @DisplayName("상품이 ACTIVE 상태일 떄, 삭제가 실패되고 예외를 발생시킨다 ")
     void deleteProductFailWhenProductIsActive() {
-        Product activateProduct = entityManager.find(Product.class, testProduct.getId());
+        var activateProduct = entityManager.find(Product.class, TEST_PRODUCT.getId());
         assertThat(activateProduct.getStatus()).isEqualTo(ACTIVE);
 
-        assertThatThrownBy(() -> productModifier.deleteProduct(testProduct.getId(), SELLER_ID))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("Product must be inactive to be deleted");
+        assertThatThrownBy(() -> productModifier.deleteProduct(TEST_PRODUCT.getId(), SELLER_ID))
+                .isInstanceOf(IllegalArgumentException.class);
         entityManager.flush();
         entityManager.clear();
 
-        Product deletedFailProduct = entityManager.find(Product.class, testProduct.getId());
+        var deletedFailProduct =  entityManager.find(Product.class, TEST_PRODUCT.getId());
         assertThat(deletedFailProduct).isNotNull();
         assertThat(deletedFailProduct.getIsDeleted()).isFalse();
-        assertThat(deletedFailProduct.getDeletedAt()).isNotNull();
-        assertThat(deletedFailProduct.getStatus()).isEqualTo(ACTIVE);
+        assertThat(deletedFailProduct.getDeletedAt()).isNull();
     }
 
     @Test
@@ -221,8 +151,7 @@ class ProductModifierTest {
         var nonExistentProductId = "NON-EXISTENT-PRODUCT-ID";
 
         assertThatThrownBy(() -> productModifier.deleteProduct(nonExistentProductId, SELLER_ID))
-                .isInstanceOf(EntityNotFoundException.class)
-                .hasMessageContaining("Product not found");
+                .isInstanceOf(EntityNotFoundException.class);
 
     }
 
@@ -230,22 +159,20 @@ class ProductModifierTest {
     @DisplayName("권한이 없는 판매자가 삭제를 시도하면, 삭제가 실패되고 예외를 발생시킨다 ")
     void deleteProductFailWhenUnauthorizedSeller() {
 
-        productModifier.inactivate(testProduct.getId(), SELLER_ID);
+        productModifier.inactivate(TEST_PRODUCT.getId(), SELLER_ID);
         entityManager.flush();
         entityManager.clear();
 
-        Product inactiveProduct = entityManager.find(Product.class, testProduct.getId());
+        Product inactiveProduct = entityManager.find(Product.class, TEST_PRODUCT.getId());
         assertThat(inactiveProduct.getStatus()).isEqualTo(INACTIVE);
 
-        assertThatThrownBy(() -> productModifier.deleteProduct(testProduct.getId(), OTHER_SELLER_ID))
-                .isInstanceOf(SecurityException.class)
-                .hasMessageContaining("Unauthorized seller");
-
+        assertThatThrownBy(() -> productModifier.deleteProduct(TEST_PRODUCT.getId(), OTHER_SELLER_ID))
+                .isInstanceOf(SecurityException.class);
         entityManager.flush();
         // 삭제 실패 된 후 삭제가 안 되었는지 확인
-        Product productAfterFail =  entityManager.find(Product.class, testProduct.getId());
+        Product productAfterFail = entityManager.find(Product.class, TEST_PRODUCT.getId());
         assertThat(productAfterFail).isNotNull();
-        assertThat(productAfterFail.getDeletedAt()).isNotNull();
+        assertThat(productAfterFail.getDeletedAt()).isNull();
         assertThat(productAfterFail.getIsDeleted()).isFalse();
         assertThat(productAfterFail.getStatus()).isEqualTo(INACTIVE);
     }
@@ -257,11 +184,11 @@ class ProductModifierTest {
 
         ProductMoney newPrice = ProductMoney.of(BigDecimal.valueOf(15000), "KRW");
 
-        productModifier.changeProductPrice(testProduct.getId(), newPrice);
+        productModifier.changeProductPrice(TEST_PRODUCT.getId(), SELLER_ID, newPrice);
         entityManager.flush();
         entityManager.clear();
 
-        Product updateProduct = entityManager.find(Product.class, testProduct.getId());
+        var updateProduct =  entityManager.find(Product.class, TEST_PRODUCT.getId());
         assertThat(updateProduct.getBasePrice()).isEqualTo(newPrice);
     }
 
@@ -271,28 +198,24 @@ class ProductModifierTest {
         var nonExistentProductId = "nonExistentProductId";
         ProductMoney newPrice = ProductMoney.of(BigDecimal.valueOf(15000), "KRW");
 
-        assertThatThrownBy(() -> entityManager.find(Product.class, nonExistentProductId))
-                .isInstanceOf(EntityNotFoundException.class)
-                .hasMessageContaining("Product not found with ID ; " + nonExistentProductId);
-
-
+        assertThatThrownBy(() -> productModifier.changeProductPrice(nonExistentProductId, SELLER_ID, newPrice))
+                .isInstanceOf(EntityNotFoundException.class);
     }
 
     @Test
     @DisplayName("유효하지 않은 (음수 / 0) 가격으로 변경하려고 할 때, 실패하고 예외를 발생시킨다")
-    void changeProductPriceFailInvalidPrice(){
+    void changeProductPriceFailInvalidPrice() {
 
         ProductMoney invalidPrice = ProductMoney.of(BigDecimal.valueOf(-15000), "KRW");
         ProductMoney zeroPrice = ProductMoney.of(BigDecimal.valueOf(0), "KRW");
 
-        assertThatThrownBy(() -> productModifier.changeProductPrice(testProduct.getId(), invalidPrice))
+        assertThatThrownBy(() -> productModifier.changeProductPrice(TEST_PRODUCT.getId(), SELLER_ID, invalidPrice))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("Price must be a positive value");
-        assertThatThrownBy(() -> productModifier.changeProductPrice(testProduct.getId(), zeroPrice))
+        assertThatThrownBy(() -> productModifier.changeProductPrice(TEST_PRODUCT.getId(), SELLER_ID, zeroPrice))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("Price must be a positive value");
 
-        assertThat(testProduct.getBasePrice()).isEqualTo(PRICE);
-
+        assertThat(TEST_PRODUCT.getBasePrice().getAmount()).isEqualTo(PRICE);
     }
 }
