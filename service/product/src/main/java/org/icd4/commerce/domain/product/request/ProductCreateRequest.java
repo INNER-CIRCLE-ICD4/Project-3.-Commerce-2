@@ -1,14 +1,16 @@
-package org.icd4.commerce.adapter.webapi.dto;
+package org.icd4.commerce.domain.product.request;
 
 import java.math.BigDecimal;
 import java.util.List;
 
 public record ProductCreateRequest(
-        Long sellerId,
+        String sellerId,
+        String categoryId,
         String name,
         String brand,
-        String categoryId,
+        String description,
         BigDecimal priceAmount,
         String priceCurrency,
-        List<ProductOptionRequest> options
-) {}
+        List<ProductVariantRequest> variants
+) {
+}
