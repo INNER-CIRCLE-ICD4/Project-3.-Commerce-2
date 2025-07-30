@@ -1,38 +1,23 @@
 package org.icd4.commerce.domain.product;
 
-import jakarta.persistence.*;
 import lombok.Getter;
-import org.icd4.commerce.adapter.webapi.dto.ProductCreateRequest;
-import org.icd4.commerce.application.command.ProductCreationCommand;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.elasticsearch.annotations.Document;
 
 import java.time.LocalDateTime;
-import java.time.ZoneOffset;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
 
 @Getter
-@Entity
+@Document(indexName = "product_index")
 public class Product {
     @Id
-    private String id;
-    private String sellerId;
-    private String name;
-    private String brand;
-    private String description;
-    private String categoryId;
-
-    protected Product() {}
-
-    public static Product create(ProductCreateRequest request) {
-        Product product = new Product();
-        product.id = request.productId();
-        product.sellerId = request.sellerId();
-        product.name = request.name();
-        product.brand = request.brand();
-        product.description =request.description();
-        product.categoryId = request.categoryId();
-        return product;
-    }
+    String productId;
+    String categoryId;
+    String name;
+    String brand;
+    String description;
+    /************************/
+    // String status;
+    LocalDateTime createdAt;
+    LocalDateTime updatedAt;
+    // Boolean isDeleted;
 }

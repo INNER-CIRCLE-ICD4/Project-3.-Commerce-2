@@ -17,8 +17,8 @@ public class ProductQueryWithESConfig {
     public String registerProduct(Product product) {
         try {
             IndexRequest<Product> request = IndexRequest.of(i -> i
-                    .index("product")
-                    .id(product.getId())
+                    .index("product_index")
+                    .id(product.getProductId())
                     .document(product));
             IndexResponse response = esClient.index(request);
             return response.id();
