@@ -10,7 +10,7 @@ spring:
       on-profile: dev
   datasource:
     driver-class-name: org.h2.Driver
-    url: jdbc:h2:mem:product
+    url: jdbc:h2:mem:search
     username: sa
     password:
   h2:
@@ -27,7 +27,7 @@ spring:
     hibernate:
       ddl-auto: create
   elasticsearch:
-    uris: https://localhost:9200
+    uris: localhost:9200
     username: elastic
     password: elastictest
     ssl:

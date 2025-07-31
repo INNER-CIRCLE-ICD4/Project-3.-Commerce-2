@@ -1,0 +1,97 @@
+{
+  "settings": {
+    "index": {
+      "analysis": {
+        "analyzer": {
+          "korean_analyzer": {
+            "type": "custom",
+            "tokenizer": "nori_tokenizer"
+          }
+        }
+      }
+    }
+  },
+  "mappings": {
+    "properties": {
+      "id": {
+        "type": "keyword"
+      },
+      "sellerId": {
+        "type": "keyword"
+      },
+      "name": {
+        "type": "text",
+        "analyzer": "korean_analyzer"
+      },
+      "brand": {
+        "type": "text",
+        "analyzer": "korean_analyzer",
+        "fields": {
+          "keyword": {
+            "type": "keyword",
+            "ignore_above": 256
+          }
+        }
+      },
+      "description": {
+        "type": "text",
+        "analyzer": "korean_analyzer"
+      },
+      "categoryId": {
+        "type": "keyword"
+      },
+      "status": {
+        "type": "keyword"
+      },
+      "createdAt": {
+        "type": "date",
+        "format": "date_hour_minute_second_millis"
+      },
+      "updatedAt": {
+        "type": "date",
+        "format": "date_hour_minute_second_millis"
+      },
+      "isDeleted": {
+        "type": "boolean"
+      },
+      "productAttributes": {
+        "type": "keyword"
+      },
+      "autocompleteSuggestions": {
+        "type": "completion"
+      },
+      "variants": {
+        "type": "nested",
+        "properties": {
+          "sku": {
+            "type": "keyword"
+          },
+          "price": {
+            "type": "long"
+          },
+          "stock": {
+            "type": "integer"
+          },
+          "status": {
+            "type": "keyword"
+          },
+          "optionCombination": {
+            "type": "nested",
+            "properties": {
+              "name": {
+                "type": "keyword"
+              },
+              "value": {
+                "type": "keyword"
+              }
+            }
+          }
+        }
+      },
+      "rawOptions": {
+        "type": "object",
+        "enabled": false
+      }
+    }
+  }
+}

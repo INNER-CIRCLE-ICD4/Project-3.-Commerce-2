@@ -1,0 +1,197 @@
+### 1. 기존 인덱스 삭제
+DELETE http://localhost:9200/product_index
+
+
+### 2. 인덱스 생성 (korean_analyzer + strict_date_optional_time)
+PUT http://localhost:9200/product_index
+Content-Type: application/json
+
+{
+  "settings": {
+    "index": {
+      "analysis": {
+        "analyzer": {
+          "korean_analyzer": {
+            "type": "custom",
+            "tokenizer": "nori_tokenizer"
+          }
+        }
+      }
+    }
+  },
+  "mappings": {
+    "properties": {
+      "id": { "type": "keyword" },
+      "sellerId": { "type": "keyword" },
+      "name": {
+        "type": "text",
+        "analyzer": "korean_analyzer"
+      },
+      "brand": {
+        "type": "text",
+        "analyzer": "korean_analyzer",
+        "fields": {
+          "keyword": {
+            "type": "keyword",
+            "ignore_above": 256
+          }
+        }
+      },
+      "description": {
+        "type": "text",
+        "analyzer": "korean_analyzer"
+      },
+      "categoryId": { "type": "keyword" },
+      "status": { "type": "keyword" },
+      "createdAt": {
+        "type": "date",
+        "format": "strict_date_optional_time"
+      },
+      "updatedAt": {
+        "type": "date",
+        "format": "strict_date_optional_time"
+      },
+      "isDeleted": { "type": "boolean" },
+      "productAttributes": { "type": "keyword" },
+      "autocompleteSuggestions": { "type": "completion" },
+      "variants": {
+        "type": "nested",
+        "properties": {
+          "sku": { "type": "keyword" },
+          "price": { "type": "long" },
+          "stock": { "type": "integer" },
+          "status": { "type": "keyword" },
+          "optionCombination": {
+            "type": "nested",
+            "properties": {
+              "name": { "type": "keyword" },
+              "value": { "type": "keyword" }
+            }
+          }
+        }
+      },
+      "rawOptions": {
+        "type": "object",
+        "enabled": false
+      }
+    }
+  }
+}
+
+
+### 3. 첫 번째 문서 추가 (셔츠)
+POST http://localhost:9200/product_index/_doc
+Content-Type: application/json
+
+{
+  "id": "7a8c3d9b-2e6f-4c8d-8a2b-3c4e5f6d7a8e",
+  "sellerId": "SELLER_FASHION_002",
+  "name": "모던 오버핏 셔츠",
+  "brand": "패션블루",
+  "description": "부드러운 코튼 소재의 오버핏 셔츠입니다. 다양한 색상으로 출시되었습니다.",
+  "categoryId": "CATEGORY_FASHION_MEN_001",
+  "status": "ACTIVE",
+  "createdAt": "2025-07-30T10:15:00.000Z",
+  "updatedAt": "2025-07-30T10:15:00.000Z",
+  "isDeleted": false,
+  "minPrice": 35000,
+  "maxPrice": 35000,
+  "productAttributes": [
+    "color:white",
+    "color:black",
+    "color:navy",
+    "size:M",
+    "size:L",
+    "size:XL",
+    "material:cotton"
+  ],
+  "autocompleteSuggestions": {
+    "input": ["모던 셔츠", "패션블루 셔츠", "오버핏 셔츠"],
+    "weight": 10
+  },
+  "variants": [
+    {
+      "sku": "SHIRT-MODERN-M-WHITE",
+      "price": 35000,
+      "stock": 50,
+      "status": "ACTIVE",
+      "optionCombination": [
+        { "name": "color", "value": "white" },
+        { "name": "size", "value": "M" }
+      ]
+    },
+    {
+      "sku": "SHIRT-MODERN-L-BLACK",
+      "price": 35000,
+      "stock": 50,
+      "status": "ACTIVE",
+      "optionCombination": [
+        { "name": "color", "value": "black" },
+        { "name": "size", "value": "L" }
+      ]
+    },
+    {
+      "sku": "SHIRT-MODERN-XL-NAVY",
+      "price": 35000,
+      "stock": 50,
+      "status": "ACTIVE",
+      "optionCombination": [
+        { "name": "color", "value": "navy" },
+        { "name": "size", "value": "XL" }
+      ]
+    }
+  ]
+}
+
+
+### 4. 두 번째 문서 추가 (노트북)
+POST http://localhost:9200/product_index/_doc
+Content-Type: application/json
+
+{
+  "id": "a9b2c1d3-4e5f-4a7b-8c9d-1e2f3a4b5c6d",
+  "sellerId": "SELLER_ELECTRONICS_001",
+  "name": "고성능 15인치 노트북",
+  "brand": "테크메이트",
+  "description": "최신 인텔 프로세서를 탑재한 15인치 고성능 노트북입니다.",
+  "categoryId": "CATEGORY_ELECTRONICS_001",
+  "status": "ACTIVE",
+  "createdAt": "2025-07-30T10:00:00.000Z",
+  "updatedAt": "2025-07-30T10:00:00.000Z",
+  "isDeleted": false,
+  "productAttributes": [
+    "color:space_gray",
+    "storage:512GB",
+    "ram:16GB"
+  ],
+  "autocompleteSuggestions": {
+    "input": [
+      "고성능 노트북",
+      "테크메이트 노트북",
+      "15인치 노트북"
+    ],
+    "weight": 10
+  },
+  "variants": [
+    {
+      "sku": "TM-LAP-15-SGY-512-16",
+      "price": 1500000,
+      "stock": 30,
+      "status": "ACTIVE",
+      "optionCombination": [
+        {
+          "name": "color",
+          "value": "space_gray"
+        },
+        {
+          "name": "storage",
+          "value": "512GB"
+        },
+        {
+          "name": "ram",
+          "value": "16GB"
+        }
+      ]
+    }
+  ]
+}
