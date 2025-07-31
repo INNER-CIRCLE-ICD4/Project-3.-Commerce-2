@@ -8,6 +8,7 @@ import org.icd4.commerce.application.required.StockRepository;
 import org.icd4.commerce.domain.Stock;
 import org.springframework.stereotype.Service;
 
+import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -53,8 +54,9 @@ public class StockService implements StockRegister, StockFinder {
 
     @Override
     public Long checkQuantity(String stockId) {
-        Optional<Stock> stock = stockRepository.findById(stockId);
+        return stockRepository.findById(stockId)
+                .map(Stock::checkQuantity)
+                .orElseThrow(() -> new NoSuchElementException("Stock not found: " + stockId));
 
-        return stock.get().checkQuantity();
     }
 }
