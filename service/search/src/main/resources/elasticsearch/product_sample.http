@@ -143,8 +143,198 @@ Content-Type: application/json
   ]
 }
 
+### 3.1. '모던' 키워드와 관련 없는 오버핏 셔츠
+### '모던' 키워드 없이 '오버핏 셔츠'로 검색했을 때 이 상품이 상위에 노출
+POST http://localhost:9200/product_index/_doc
+Content-Type: application/json
 
-### 4. 두 번째 문서 추가 (노트북)
+{
+  "id": "d8e34f9c-512c-4b11-b47c-7d929b9f913d",
+  "sellerId": "SELLER_FASHION_002",
+  "name": "빈티지 체크 오버핏 셔츠",
+  "brand": "패션블루",
+  "description": "클래식한 체크 패턴의 오버핏 셔츠입니다. 캐주얼한 코디에 적합합니다.",
+  "categoryId": "CATEGORY_FASHION_MEN_001",
+  "status": "ACTIVE",
+  "createdAt": "2025-07-30T11:00:00.000Z",
+  "updatedAt": "2025-07-30T11:00:00.000Z",
+  "isDeleted": false,
+  "minPrice": 42000,
+  "maxPrice": 42000,
+  "productAttributes": [
+    "color:red",
+    "color:navy",
+    "pattern:check",
+    "size:M",
+    "size:L",
+    "size:XL",
+    "material:linen"
+  ],
+  "autocompleteSuggestions": {
+    "input": ["빈티지 셔츠", "체크 셔츠", "오버핏 셔츠"],
+    "weight": 8
+  },
+  "variants": [
+    {
+      "sku": "SHIRT-VINTAGE-M-RED",
+      "price": 42000,
+      "stock": 40,
+      "status": "ACTIVE",
+      "optionCombination": [
+        { "name": "color", "value": "red" },
+        { "name": "size", "value": "M" }
+      ]
+    },
+    {
+      "sku": "SHIRT-VINTAGE-L-NAVY",
+      "price": 42000,
+      "stock": 40,
+      "status": "ACTIVE",
+      "optionCombination": [
+        { "name": "color", "value": "navy" },
+        { "name": "size", "value": "L" }
+      ]
+    }
+  ]
+}
+
+### 3.2  '모던 오버핏'은 맞지만 '셔츠'는 아닌 상품
+### 모던 오버핏 코트를 검색했을 때 이 상품이 상위 모던 오버핏 셔츠를 검색했을 때는 후순위
+POST http://localhost:9200/product_index/_doc
+Content-Type: application/json
+
+{
+  "id": "a9e34c9c-512c-4b11-b47c-7d929b9f913d",
+  "sellerId": "SELLER_FASHION_002",
+  "name": "모던 오버핏 코트",
+  "brand": "패션블루",
+  "description": "세련된 디자인의 오버핏 코트로, 가볍고 따뜻한 소재로 제작되었습니다.",
+  "categoryId": "CATEGORY_FASHION_MEN_002",
+  "status": "ACTIVE",
+  "createdAt": "2025-07-30T12:00:00.000Z",
+  "updatedAt": "2025-07-30T12:00:00.000Z",
+  "isDeleted": false,
+  "minPrice": 125000,
+  "maxPrice": 125000,
+  "productAttributes": [
+    "color:beige",
+    "color:black",
+    "size:M",
+    "size:L",
+    "size:XL",
+    "material:wool"
+  ],
+  "autocompleteSuggestions": {
+    "input": ["모던 코트", "오버핏 코트", "패션블루 코트"],
+    "weight": 12
+  },
+  "variants": [
+    {
+      "sku": "COAT-MODERN-M-BEIGE",
+      "price": 125000,
+      "stock": 30,
+      "status": "ACTIVE",
+      "optionCombination": [
+        { "name": "color", "value": "beige" },
+        { "name": "size", "value": "M" }
+      ]
+    },
+    {
+      "sku": "COAT-MODERN-L-BLACK",
+      "price": 125000,
+      "stock": 30,
+      "status": "ACTIVE",
+      "optionCombination": [
+        { "name": "color", "value": "black" },
+        { "name": "size", "value": "L" }
+      ]
+    }
+  ]
+}
+
+### 3.3 오버핏이 아닌 모던 셔츠
+### 모던 오버핏 셔츠 검색 시 유사도는 떨어지지만 모던, 셔츠만으로 충분히 노출 되는 지 확인
+POST http://localhost:9200/product_index/_doc
+Content-Type: application/json
+
+{
+  "id": "b3e34f9c-512c-4b11-b47c-7d929b9f913d",
+  "sellerId": "SELLER_FASHION_001",
+  "name": "모던 슬림핏 셔츠",
+  "brand": "베이직웨어",
+  "description": "깔끔하고 몸에 잘 맞는 실루엣의 모던 슬림핏 셔츠입니다.",
+  "categoryId": "CATEGORY_FASHION_MEN_001",
+  "status": "ACTIVE",
+  "createdAt": "2025-07-30T13:00:00.000Z",
+  "updatedAt": "2025-07-30T13:00:00.000Z",
+  "isDeleted": false,
+  "minPrice": 30000,
+  "maxPrice": 30000,
+  "productAttributes": [
+    "color:white",
+    "color:grey",
+    "size:95",
+    "size:100",
+    "size:105",
+    "material:cotton"
+  ],
+  "autocompleteSuggestions": {
+    "input": ["슬림핏 셔츠", "베이직웨어 셔츠", "모던 셔츠"],
+    "weight": 9
+  },
+  "variants": [
+    {
+      "sku": "SHIRT-SLIM-95-WHITE",
+      "price": 30000,
+      "stock": 60,
+      "status": "ACTIVE",
+      "optionCombination": [
+        { "name": "color", "value": "white" },
+        { "name": "size", "value": "95" }
+      ]
+    },
+    {
+      "sku": "SHIRT-SLIM-100-GREY",
+      "price": 30000,
+      "stock": 60,
+      "status": "ACTIVE",
+      "optionCombination": [
+        { "name": "color", "value": "grey" },
+        { "name": "size", "value": "100" }
+      ]
+    }
+  ]
+}
+
+### 4. 단순 검색
+GET http://localhost:9200/product_index/_search
+Content-Type: application/json
+
+{
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "multi_match": {
+            "query": "모던 오버핏 셔츠",
+            "fields": ["name^3", "brand^2", "description"],
+            "type": "best_fields"
+          }
+        }
+      ],
+      "filter": [
+        { "term": { "status": "ACTIVE" } },
+        { "term": { "isDeleted": false } }
+      ]
+    }
+  },
+  "sort": [
+    { "_score": { "order": "desc" } }
+  ]
+}
+
+
+### n. 두 번째 문서 추가 (노트북)
 POST http://localhost:9200/product_index/_doc
 Content-Type: application/json
 
