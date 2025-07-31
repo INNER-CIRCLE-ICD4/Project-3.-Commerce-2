@@ -1,0 +1,25 @@
+{
+  "properties": {
+    "productId": { "type": "keyword" },
+    "name": {
+      "type": "text",
+      "analyzer": "korean_synonym_analyzer"
+    },
+    "description": {
+      "type": "text",
+      "analyzer": "korean_synonym_analyzer"
+    },
+    "categoryId": { "type": "keyword" },
+    "status": { "type": "keyword" },
+    "createdAt": {
+      "type": "date",
+      "format": "strict_date_optional_time"
+    },
+    "updatedAt": {
+      "type": "date",
+      "format": "strict_date_optional_time"
+    },
+    "isDeleted": { "type": "boolean" },
+    "autocompleteSuggestions": { "type": "completion" }
+  }
+}

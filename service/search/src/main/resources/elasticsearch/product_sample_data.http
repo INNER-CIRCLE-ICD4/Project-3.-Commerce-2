@@ -1,0 +1,194 @@
+### 기존 인덱스 삭제 (필요 시에만 실행)
+# 설정을 변경할 경우.. 다시 시작하기 위함 삭제하는 명령
+DELETE http://localhost:9200/product_index
+
+
+
+### 인덱스 생성 (Settings & Mappings 적용)
+# product_index라는 이름의 새로운 검색 시스템을 만들어라" 명령
+PUT http://localhost:9200/product_index
+Content-Type: application/json
+
+{
+  "settings": {
+    "index": {
+      "analysis": {
+        "analyzer": {
+          "korean_analyzer": {
+            "type": "custom",
+            "tokenizer": "nori_tokenizer"
+          },
+          "korean_synonym_analyzer": {
+            "type": "custom",
+            "tokenizer": "nori_tokenizer",
+            "filter": ["my_synonym_filter"]
+          },
+          "ingredient_analyzer": {
+            "type": "custom",
+            "tokenizer": "nori_tokenizer",
+            "filter": ["lowercase"]
+          }
+        },
+        "filter": {
+          "my_synonym_filter": {
+            "type": "synonym",
+            "synonyms": [
+              "닭가슴살, 치킨 브레스트",
+              "구운계란, 삶은계란, 계란",
+              "샐러드, salad"
+            ]
+          }
+        }
+      }
+    }
+  },
+  "mappings": {
+    "properties": {
+      "productId": { "type": "keyword" },
+      "sellerId": { "type": "keyword" },
+      "name": {
+        "type": "text",
+        "analyzer": "korean_synonym_analyzer"
+      },
+      "description": {
+        "type": "text",
+        "analyzer": "korean_synonym_analyzer"
+      },
+      "categoryId": { "type": "keyword" },
+      "status": { "type": "keyword" },
+      "createdAt": {
+        "type": "date",
+        "format": "strict_date_optional_time"
+      },
+      "updatedAt": {
+        "type": "date",
+        "format": "strict_date_optional_time"
+      },
+      "isDeleted": { "type": "boolean" },
+      "minPrice": { "type": "long" },
+      "maxPrice": { "type": "long" },
+      "autocompleteSuggestions": { "type": "completion" }
+    }
+  }
+}
+
+
+### 3.1. 첫 번째 음식 상품 문서 추가 (단백질 닭가슴살 샐러드)
+# 상품 데이터를 하나씩 넣어주는 명령
+POST http://localhost:9200/product_index/_doc
+Content-Type: application/json
+
+{
+  "productId": "salad-chicken-001",
+  "sellerId": "SELLER_HEALTH_001",
+  "name": "단백질 닭가슴살 샐러드",
+  "description": "신선한 채소와 고품질 닭가슴살로 만든 영양 만점 샐러드. 다이어트 식단에 최적입니다.",
+  "categoryId": "CATEGORY_FOOD_SALAD",
+  "status": "ACTIVE",
+  "createdAt": "2025-07-30T10:00:00.000Z",
+  "updatedAt": "2025-07-30T10:00:00.000Z",
+  "isDeleted": false,
+  "minPrice": 12000,
+  "maxPrice": 12000,
+  "autocompleteSuggestions": {
+    "input": ["닭가슴살 샐러드", "단백질 샐러드", "다이어트 도시락"],
+    "weight": 15
+  }
+}
+
+
+
+### 3.2. 두 번째 음식 상품 문서 추가 (비건 렌틸콩 샐러드)
+POST http://localhost:9200/product_index/_doc
+Content-Type: application/json
+
+{
+  "productId": "salad-vegan-002",
+  "sellerId": "SELLER_HEALTH_002",
+  "name": "비건 렌틸콩 샐러드",
+  "description": "채식주의자를 위한 렌틸콩과 신선한 야채 샐러드. 건강하고 가벼운 한 끼.",
+  "categoryId": "CATEGORY_FOOD_SALAD",
+  "status": "ACTIVE",
+  "createdAt": "2025-07-30T10:05:00.000Z",
+  "updatedAt": "2025-07-30T10:05:00.000Z",
+  "isDeleted": false,
+  "minPrice": 10000,
+  "maxPrice": 10000,
+  "autocompleteSuggestions": {
+    "input": ["렌틸콩 샐러드", "비건 샐러드", "채식 도시락"],
+    "weight": 12
+  }
+}
+
+
+
+### 3.3. 세 번째 음식 상품 문서 추가 (고단백 통밀 스테이크 도시락)
+POST http://localhost:9200/product_index/_doc
+Content-Type: application/json
+
+{
+  "productId": "lunchbox-steak-003",
+  "sellerId": "SELLER_HEALTH_001",
+  "name": "고단백 통밀 스테이크 도시락",
+  "description": "통밀밥과 부채살 스테이크, 구운 채소로 구성된 균형 잡힌 도시락. 든든한 식사 대용.",
+  "categoryId": "CATEGORY_FOOD_LUNCHBOX",
+  "status": "ACTIVE",
+  "createdAt": "2025-07-30T10:10:00.000Z",
+  "updatedAt": "2025-07-30T10:10:00.000Z",
+  "isDeleted": false,
+  "minPrice": 18000,
+  "maxPrice": 18000,
+  "autocompleteSuggestions": {
+    "input": ["스테이크 도시락", "단백질 도시락", "통밀 도시락"],
+    "weight": 18
+  }
+}
+
+
+
+### 3.4. 네 번째 음식 상품 문서 추가 (훈제 구운 계란)
+POST http://localhost:9200/product_index/_doc
+Content-Type: application/json
+
+{
+  "productId": "snack-egg-004",
+  "sellerId": "SELLER_FARM_001",
+  "name": "훈제 구운 계란 (6개입)",
+  "description": "간편하게 즐기는 고단백 간식. 훈제향 가득한 구운 계란입니다.",
+  "categoryId": "CATEGORY_FOOD_SNACK",
+  "status": "ACTIVE",
+  "createdAt": "2025-07-30T10:15:00.000Z",
+  "updatedAt": "2025-07-30T10:15:00.000Z",
+  "isDeleted": false,
+  "minPrice": 5000,
+  "maxPrice": 5000,
+  "autocompleteSuggestions": {
+    "input": ["구운 계란", "삶은 계란", "훈제 계란"],
+    "weight": 20
+  }
+}
+
+
+
+### 4.1. 모든 음식 상품 검색
+GET http://localhost:9200/api/products/search?keyword=샐러드
+Accept: application/json
+
+
+
+### 4.2. 단백질 도시락 검색
+GET http://localhost:9200/api/products/search?keyword=단백질 도시락
+Accept: application/json
+
+
+
+### 4.3. 구운 계란 검색 (동의어 "계란" 사용)
+GET http://localhost:9200/api/products/search?keyword=계란
+Accept: application/json
+
+
+
+### 5. 자동 완성 제안 요청 (예: "샐러")
+GET http://localhost:9200/api/products/autocomplete?prefix=샐러
+Accept: application/json
+
