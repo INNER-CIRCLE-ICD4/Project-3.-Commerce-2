@@ -1,6 +1,5 @@
 package org.icd4.commerce.domain.order;
 
-import java.io.Serializable;
 import java.util.Objects;
 import java.util.UUID;
 

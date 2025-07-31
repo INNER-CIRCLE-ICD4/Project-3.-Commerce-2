@@ -2,6 +2,7 @@ package org.icd4.commerce.domain.order;
 
 import lombok.Getter;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
@@ -69,12 +70,34 @@ public class Order {
         return new Order(OrderId.generate(), customerId, orderItems, orderMessage, orderChannel);
     }
 
+    public static Order restore(
+            OrderId orderId,
+            CustomerId customerId,
+            List<OrderItem> orderItems,
+            OrderStatus orderStatus,
+            Money totalAmount,
+            String orderMessage,
+            PaymentId paymentId,
+            String orderChannel,
+            LocalDateTime createdAt,
+            LocalDateTime lastModifiedAt,
+            LocalDateTime completedAt
+    ) {
+        Order order = new Order(orderId, customerId, orderItems, orderMessage, orderChannel);
+        order.orderStatus = orderStatus;
+        order.totalAmount = totalAmount;
+        order.paymentId = paymentId;
+        order.lastModifiedAt = lastModifiedAt;
+        order.completedAt = completedAt;
+        return order;
+    }
+
     /**
      * 총 주문 금액 계산
      */
     public Money calculateTotal() {
         return orderItems.stream()
-                .map(item -> Money.of(item.getItemAmount()))
+                .map(item -> Money.of(BigDecimal.valueOf(item.getItemAmount())))
                 .reduce(Money.ZERO, Money::add);
     }
 
@@ -89,7 +112,7 @@ public class Order {
         this.paymentId = paymentId;
         this.lastModifiedAt = LocalDateTime.now();
 
-        //⭐⭐⭐[재고 차감 처리 요청]구현 필요
+        //TODO: [재고 차감 처리 요청]구현 필요
     }
 
     /**

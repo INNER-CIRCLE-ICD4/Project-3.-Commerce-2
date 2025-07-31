@@ -43,16 +43,16 @@ public class Money {
     }
 
     //정적 팩토리 메서드
-    public static Money of(long amount) {
-        return new Money(BigDecimal.valueOf(amount), KRW);
+    public static Money of(BigDecimal amount) {
+        return new Money(amount, KRW);
     }
 
-    public static Money of(long amount, Currency currency) {
-        return new Money(BigDecimal.valueOf(amount), currency);
+    public static Money of(BigDecimal amount, Currency currency) {
+        return new Money(amount, currency);
     }
 
     //ZERO 상수
-    public static final Money ZERO = Money.of(0);
+    public static final Money ZERO = Money.of(BigDecimal.valueOf(0));
 
     /**
      * 금액을 더한 새 Money 객체 반환
