@@ -333,6 +333,126 @@ Content-Type: application/json
   ]
 }
 
+### 5. 검색어 자동 완성
+GET http://localhost:9200/product_index/_search
+
+{
+  "suggest": {
+    "text": "모던",
+    "product-suggest": {
+      "completion": {
+        "field": "autocompleteSuggestions",
+        "fuzzy": {
+          "fuzziness": "AUTO"
+        }
+      }
+    }
+  }
+}
+
+### 6. 쿼리를 포함한 필터(쿼리 미포함시 must 제거)
+GET http://localhost:9200/product_index/_search
+
+{
+  "suggest": {
+    "text": "모던",
+    "product-suggest": {
+      "completion": {
+        "field": "autocompleteSuggestions",
+        "fuzzy": {
+          "fuzziness": "AUTO"
+        }
+      }
+    }
+  }
+}
+
+{
+  "query": {
+    "bool": {
+      "must": [
+        { "match": { "name": "셔츠" } }
+      ],
+      "filter": [
+        { "term": { "status": "ACTIVE" } },
+        { "term": { "productAttributes": "color:white" } },
+        { "term": { "productAttributes": "size:M" } },
+        {
+          "nested": {
+            "path": "variants",
+            "query": {
+              "term": { "variants.stock": { "value": 0, "boost": 0 } }
+            },
+            "inner_hits": {}
+          }
+        }
+      ]
+    }
+  }
+}
+
+### 7. 정렬
+GET http://localhost:9200/product_index/_search
+
+{
+  "suggest": {
+    "text": "모던",
+    "product-suggest": {
+      "completion": {
+        "field": "autocompleteSuggestions",
+        "fuzzy": {
+          "fuzziness": "AUTO"
+        }
+      }
+    }
+  }
+}
+
+{
+  "query": {
+    "bool": {
+      "must": [
+        { "match": { "name": "셔츠" } }
+      ],
+      "filter": [
+        { "term": { "status": "ACTIVE" } },
+        { "term": { "productAttributes": "color:white" } },
+        { "term": { "productAttributes": "size:M" } },
+        {
+          "nested": {
+            "path": "variants",
+            "query": {
+              "term": { "variants.stock": { "value": 0, "boost": 0 } }
+            },
+            "inner_hits": {}
+          }
+        }
+      ]
+    }
+  }
+}
+
+{
+  "query": {
+    "bool": {
+      "must": [
+        { "match": { "name": "셔츠" } }
+      ]
+    }
+  },
+  "sort": [
+    {
+      "variants.price": {
+        "order": "asc",
+        "nested": {
+          "path": "variants"
+        }
+      }
+    }
+  ]
+}
+
+
 
 ### n. 두 번째 문서 추가 (노트북)
 POST http://localhost:9200/product_index/_doc
