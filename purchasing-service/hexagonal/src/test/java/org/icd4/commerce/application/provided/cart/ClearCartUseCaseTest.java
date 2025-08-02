@@ -1,5 +1,7 @@
 package org.icd4.commerce.application.provided.cart;
 
+import org.icd4.commerce.application.provided.cart.command.ClearCartCommand;
+import org.icd4.commerce.application.provided.cart.usecase.ClearCartUseCase;
 import org.icd4.commerce.application.required.CartRepositoryPort;
 import org.icd4.commerce.domain.cart.Cart;
 import org.icd4.commerce.domain.cart.CartId;
@@ -15,7 +17,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Optional;

@@ -1,10 +1,10 @@
-package org.icd4.commerce.adapter.webapi.dto;
+package org.icd4.commerce.adapter.webapi.dto.cart.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import lombok.Builder;
-import org.icd4.commerce.application.provided.cart.UpdateCartItemQuantityCommand;
+import org.icd4.commerce.application.provided.cart.command.UpdateCartItemQuantityCommand;
 import org.icd4.commerce.domain.cart.CartId;
 import org.icd4.commerce.domain.cart.CartItemId;
 

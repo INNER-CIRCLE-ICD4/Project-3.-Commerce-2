@@ -1,4 +1,4 @@
-package org.icd4.commerce.adapter.webapi.dto;
+package org.icd4.commerce.adapter.webapi.dto.cart.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import org.icd4.commerce.domain.cart.CartId;
