@@ -84,18 +84,15 @@ POST http://localhost:9200/product_index/_doc
 Content-Type: application/json
 
 {
-  "id": "7a8c3d9b-2e6f-4c8d-8a2b-3c4e5f6d7a8e",
+  "productId": "7a8c3d9b-2e6f-4c8d-8a2b-3c4e5f6d7a8e",
   "sellerId": "SELLER_FASHION_002",
   "name": "모던 오버핏 셔츠",
   "brand": "패션블루",
   "description": "부드러운 코튼 소재의 오버핏 셔츠입니다. 다양한 색상으로 출시되었습니다.",
   "categoryId": "CATEGORY_FASHION_MEN_001",
-  "status": "ACTIVE",
   "createdAt": "2025-07-30T10:15:00.000Z",
   "updatedAt": "2025-07-30T10:15:00.000Z",
-  "isDeleted": false,
-  "minPrice": 35000,
-  "maxPrice": 35000,
+  "basePrice": 35000,
   "productAttributes": [
     "color:white",
     "color:black",
@@ -155,12 +152,9 @@ Content-Type: application/json
   "brand": "패션블루",
   "description": "클래식한 체크 패턴의 오버핏 셔츠입니다. 캐주얼한 코디에 적합합니다.",
   "categoryId": "CATEGORY_FASHION_MEN_001",
-  "status": "ACTIVE",
   "createdAt": "2025-07-30T11:00:00.000Z",
   "updatedAt": "2025-07-30T11:00:00.000Z",
-  "isDeleted": false,
-  "minPrice": 42000,
-  "maxPrice": 42000,
+  "basePrice": 42000,
   "productAttributes": [
     "color:red",
     "color:navy",
@@ -210,12 +204,9 @@ Content-Type: application/json
   "brand": "패션블루",
   "description": "세련된 디자인의 오버핏 코트로, 가볍고 따뜻한 소재로 제작되었습니다.",
   "categoryId": "CATEGORY_FASHION_MEN_002",
-  "status": "ACTIVE",
   "createdAt": "2025-07-30T12:00:00.000Z",
   "updatedAt": "2025-07-30T12:00:00.000Z",
-  "isDeleted": false,
-  "minPrice": 125000,
-  "maxPrice": 125000,
+  "basePrice": 125000,
   "productAttributes": [
     "color:beige",
     "color:black",
@@ -264,12 +255,9 @@ Content-Type: application/json
   "brand": "베이직웨어",
   "description": "깔끔하고 몸에 잘 맞는 실루엣의 모던 슬림핏 셔츠입니다.",
   "categoryId": "CATEGORY_FASHION_MEN_001",
-  "status": "ACTIVE",
   "createdAt": "2025-07-30T13:00:00.000Z",
   "updatedAt": "2025-07-30T13:00:00.000Z",
-  "isDeleted": false,
-  "minPrice": 30000,
-  "maxPrice": 30000,
+  "basePrice": 30000,
   "productAttributes": [
     "color:white",
     "color:grey",
@@ -354,20 +342,6 @@ GET http://localhost:9200/product_index/_search
 GET http://localhost:9200/product_index/_search
 
 {
-  "suggest": {
-    "text": "모던",
-    "product-suggest": {
-      "completion": {
-        "field": "autocompleteSuggestions",
-        "fuzzy": {
-          "fuzziness": "AUTO"
-        }
-      }
-    }
-  }
-}
-
-{
   "query": {
     "bool": {
       "must": [
@@ -393,44 +367,6 @@ GET http://localhost:9200/product_index/_search
 
 ### 7. 정렬
 GET http://localhost:9200/product_index/_search
-
-{
-  "suggest": {
-    "text": "모던",
-    "product-suggest": {
-      "completion": {
-        "field": "autocompleteSuggestions",
-        "fuzzy": {
-          "fuzziness": "AUTO"
-        }
-      }
-    }
-  }
-}
-
-{
-  "query": {
-    "bool": {
-      "must": [
-        { "match": { "name": "셔츠" } }
-      ],
-      "filter": [
-        { "term": { "status": "ACTIVE" } },
-        { "term": { "productAttributes": "color:white" } },
-        { "term": { "productAttributes": "size:M" } },
-        {
-          "nested": {
-            "path": "variants",
-            "query": {
-              "term": { "variants.stock": { "value": 0, "boost": 0 } }
-            },
-            "inner_hits": {}
-          }
-        }
-      ]
-    }
-  }
-}
 
 {
   "query": {

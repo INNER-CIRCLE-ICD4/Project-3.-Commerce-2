@@ -21,12 +21,16 @@ Content-Type: application/json
           "korean_synonym_analyzer": {
             "type": "custom",
             "tokenizer": "nori_tokenizer",
-            "filter": ["my_synonym_filter"]
+            "filter": [
+              "my_synonym_filter"
+            ]
           },
           "ingredient_analyzer": {
             "type": "custom",
             "tokenizer": "nori_tokenizer",
-            "filter": ["lowercase"]
+            "filter": [
+              "lowercase"
+            ]
           }
         },
         "filter": {
@@ -44,8 +48,12 @@ Content-Type: application/json
   },
   "mappings": {
     "properties": {
-      "productId": { "type": "keyword" },
-      "sellerId": { "type": "keyword" },
+      "productId": {
+        "type": "keyword"
+      },
+      "sellerId": {
+        "type": "keyword"
+      },
       "name": {
         "type": "text",
         "analyzer": "korean_synonym_analyzer"
@@ -54,8 +62,12 @@ Content-Type: application/json
         "type": "text",
         "analyzer": "korean_synonym_analyzer"
       },
-      "categoryId": { "type": "keyword" },
-      "status": { "type": "keyword" },
+      "categoryId": {
+        "type": "keyword"
+      },
+      "status": {
+        "type": "keyword"
+      },
       "createdAt": {
         "type": "date",
         "format": "strict_date_optional_time"
@@ -64,10 +76,18 @@ Content-Type: application/json
         "type": "date",
         "format": "strict_date_optional_time"
       },
-      "isDeleted": { "type": "boolean" },
-      "minPrice": { "type": "long" },
-      "maxPrice": { "type": "long" },
-      "autocompleteSuggestions": { "type": "completion" }
+      "isDeleted": {
+        "type": "boolean"
+      },
+      "minPrice": {
+        "type": "long"
+      },
+      "maxPrice": {
+        "type": "long"
+      },
+      "autocompleteSuggestions": {
+        "type": "completion"
+      }
     }
   }
 }
@@ -82,18 +102,25 @@ Content-Type: application/json
   "productId": "salad-chicken-001",
   "sellerId": "SELLER_HEALTH_001",
   "name": "단백질 닭가슴살 샐러드",
+  "brand": "",
   "description": "신선한 채소와 고품질 닭가슴살로 만든 영양 만점 샐러드. 다이어트 식단에 최적입니다.",
   "categoryId": "CATEGORY_FOOD_SALAD",
-  "status": "ACTIVE",
   "createdAt": "2025-07-30T10:00:00.000Z",
   "updatedAt": "2025-07-30T10:00:00.000Z",
-  "isDeleted": false,
-  "minPrice": 12000,
-  "maxPrice": 12000,
+  "basePrice": 12000,
+  "productAttributes": [
+    "dressing:발사믹 드레싱",
+    "weight:200-300"
+  ],
   "autocompleteSuggestions": {
-    "input": ["닭가슴살 샐러드", "단백질 샐러드", "다이어트 도시락"],
+    "input": [
+      "닭가슴살 샐러드",
+      "단백질 샐러드",
+      "다이어트 도시락"
+    ],
     "weight": 15
-  }
+  },
+  "variants": []
 }
 
 
@@ -106,18 +133,21 @@ Content-Type: application/json
   "productId": "salad-vegan-002",
   "sellerId": "SELLER_HEALTH_002",
   "name": "비건 렌틸콩 샐러드",
+  "brand": "",
   "description": "채식주의자를 위한 렌틸콩과 신선한 야채 샐러드. 건강하고 가벼운 한 끼.",
   "categoryId": "CATEGORY_FOOD_SALAD",
-  "status": "ACTIVE",
   "createdAt": "2025-07-30T10:05:00.000Z",
   "updatedAt": "2025-07-30T10:05:00.000Z",
-  "isDeleted": false,
-  "minPrice": 10000,
-  "maxPrice": 10000,
+  "basePrice": 10000,
   "autocompleteSuggestions": {
-    "input": ["렌틸콩 샐러드", "비건 샐러드", "채식 도시락"],
+    "input": [
+      "렌틸콩 샐러드",
+      "비건 샐러드",
+      "채식 도시락"
+    ],
     "weight": 12
-  }
+  },
+  "variants": []
 }
 
 
@@ -130,18 +160,21 @@ Content-Type: application/json
   "productId": "lunchbox-steak-003",
   "sellerId": "SELLER_HEALTH_001",
   "name": "고단백 통밀 스테이크 도시락",
+  "brand": "",
   "description": "통밀밥과 부채살 스테이크, 구운 채소로 구성된 균형 잡힌 도시락. 든든한 식사 대용.",
   "categoryId": "CATEGORY_FOOD_LUNCHBOX",
-  "status": "ACTIVE",
   "createdAt": "2025-07-30T10:10:00.000Z",
   "updatedAt": "2025-07-30T10:10:00.000Z",
-  "isDeleted": false,
-  "minPrice": 18000,
-  "maxPrice": 18000,
+  "basePrice": 18000,
   "autocompleteSuggestions": {
-    "input": ["스테이크 도시락", "단백질 도시락", "통밀 도시락"],
+    "input": [
+      "스테이크 도시락",
+      "단백질 도시락",
+      "통밀 도시락"
+    ],
     "weight": 18
-  }
+  },
+  "variants": []
 }
 
 
@@ -154,18 +187,21 @@ Content-Type: application/json
   "productId": "snack-egg-004",
   "sellerId": "SELLER_FARM_001",
   "name": "훈제 구운 계란 (6개입)",
+  "brand": "농장직송",
   "description": "간편하게 즐기는 고단백 간식. 훈제향 가득한 구운 계란입니다.",
   "categoryId": "CATEGORY_FOOD_SNACK",
-  "status": "ACTIVE",
   "createdAt": "2025-07-30T10:15:00.000Z",
   "updatedAt": "2025-07-30T10:15:00.000Z",
-  "isDeleted": false,
-  "minPrice": 5000,
-  "maxPrice": 5000,
+  "basePrice": 5000,
   "autocompleteSuggestions": {
-    "input": ["구운 계란", "삶은 계란", "훈제 계란"],
+    "input": [
+      "구운 계란",
+      "삶은 계란",
+      "훈제 계란"
+    ],
     "weight": 20
-  }
+  },
+  "variants": []
 }
 
 
