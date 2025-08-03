@@ -62,7 +62,7 @@ spring:
       
   jpa:
     hibernate:
-      ddl-auto: create  # 애플리케이션 시작 시 테이블 생성
+      ddl-auto: update
     show-sql: false  # SQL 로깅 비활성화 (성능 고려)
     properties:
       hibernate:
