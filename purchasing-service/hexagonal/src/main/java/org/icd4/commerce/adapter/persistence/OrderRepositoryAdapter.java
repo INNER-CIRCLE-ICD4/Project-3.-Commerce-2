@@ -19,9 +19,11 @@ import java.util.Optional;
 @Transactional
 public class OrderRepositoryAdapter implements OrderRepositoryPort {
 
-    private OrderRepositoryPort orderRepository;
+    private final OrderRepository orderRepository;
 
-    public OrderRepositoryAdapter(OrderRepositoryPort orderRepository) {}
+    public OrderRepositoryAdapter(OrderRepository orderRepository) {
+        this.orderRepository = orderRepository;
+    }
 
     @Override
     @Transactional

@@ -71,8 +71,8 @@ public class OrderController {
     // 구매 확정
     @PostMapping("/{id}/confirmPurchase")
     @Operation(summary = "구매 확정", description = "주문을 구매 확정 상태로 전환합니다.")
-    public ResponseEntity<Void> confirmPurchase(@PathVariable String id) {
-        confirmPurchaseUseCase.execute(new ConfirmPurchaseCommand(Long.parseLong(id)));
+    public ResponseEntity<Void> confirmPurchase(@PathVariable UUID id) {
+        confirmPurchaseUseCase.execute(new ConfirmPurchaseCommand(id));
         return ResponseEntity.ok().build();
     }
 
