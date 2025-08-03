@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.UUID;
+
 @Entity
 @Table(name="order_items")
 @Getter
@@ -11,10 +13,10 @@ import lombok.NoArgsConstructor;
 public class OrderItemJpaEntity {
 
     @Id
-    private String id;
+    private UUID id;
 
     @Column(name = "product_id", nullable = false)
-    private String productId;
+    private Long productId;
 
     @Column(name = "product_name", nullable = false)
     private String productName;
@@ -38,8 +40,8 @@ public class OrderItemJpaEntity {
 
     // 생성자
     public OrderItemJpaEntity(
-            String id,
-            String productId,
+            UUID id,
+            Long productId,
             String productName,
             long unitPrice,
             long quantity,

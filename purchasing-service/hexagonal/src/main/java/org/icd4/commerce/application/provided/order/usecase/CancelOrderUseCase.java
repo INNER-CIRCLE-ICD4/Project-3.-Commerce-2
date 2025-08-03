@@ -6,9 +6,11 @@ import org.icd4.commerce.application.required.order.OrderRepositoryPort;
 import org.icd4.commerce.domain.order.Order;
 import org.icd4.commerce.domain.order.OrderId;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Service
+@Transactional
 public class CancelOrderUseCase {
 
     private final OrderRepositoryPort orderRepository;

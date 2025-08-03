@@ -24,7 +24,7 @@ public class OrderJpaEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "order_status", nullable = false)
-    private OrderStatus status;
+    private OrderStatus orderStatus;
 
     @Column(name = "total_amount", nullable = false)
     private BigDecimal totalAmount;
@@ -56,7 +56,7 @@ public class OrderJpaEntity {
     public OrderJpaEntity(
             String id,
             String customerId,
-            OrderStatus status,
+            OrderStatus orderStatus,
             BigDecimal totalAmount,
             String orderMessage,
             String paymentId,
@@ -66,23 +66,9 @@ public class OrderJpaEntity {
             LocalDateTime completedAt,
             List<OrderItemJpaEntity> orderItems
     ) {
-        this.id = id;
-        this.customerId = customerId;
-        this.status = status;
-        this.totalAmount = totalAmount;
-        this.orderMessage = orderMessage;
-        this.paymentId = paymentId;
-        this.orderChannel = orderChannel;
-        this.createdAt = createdAt;
-        this.lastModifiedAt = lastModifiedAt;
-        this.completedAt = completedAt;
-        this.orderItems = orderItems;
 
-        // 역방향 연관관계 설정
-        if (orderItems != null) {
-            for (OrderItemJpaEntity item : orderItems) {
-                item.setOrder(this);
-            }
-        }
+    }
+
+    public void setOrderItems(List<OrderItemJpaEntity> itemEntities) {
     }
 }
