@@ -195,8 +195,8 @@ class GetCartUseCaseTest {
             .containsEntry("color", "white");
         
         verify(cartRepository).findById(cartId);
-        // 동일 상품이므로 한 번만 호출
-        verify(productPriceProvider, times(1)).getPrice(productId);
+        // 동일 상품이지만 다른 옵션으로 2개의 아이템이므로 2번 호출
+        verify(productPriceProvider, times(2)).getPrice(productId);
     }
     
     @Test
