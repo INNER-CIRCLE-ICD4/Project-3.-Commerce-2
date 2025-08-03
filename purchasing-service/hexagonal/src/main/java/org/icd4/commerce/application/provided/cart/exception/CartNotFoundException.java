@@ -1,4 +1,4 @@
-package org.icd4.commerce.application.provided.cart;
+package org.icd4.commerce.application.provided.cart.exception;
 
 import org.icd4.commerce.domain.cart.CartId;
 

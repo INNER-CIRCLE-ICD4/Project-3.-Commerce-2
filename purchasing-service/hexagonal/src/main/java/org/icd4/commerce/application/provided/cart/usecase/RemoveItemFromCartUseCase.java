@@ -2,7 +2,7 @@ package org.icd4.commerce.application.provided.cart.usecase;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.icd4.commerce.application.provided.cart.CartNotFoundException;
+import org.icd4.commerce.application.provided.cart.exception.CartNotFoundException;
 import org.icd4.commerce.application.provided.cart.command.RemoveItemFromCartCommand;
 import org.icd4.commerce.application.required.CartRepositoryPort;
 import org.icd4.commerce.domain.cart.Cart;
