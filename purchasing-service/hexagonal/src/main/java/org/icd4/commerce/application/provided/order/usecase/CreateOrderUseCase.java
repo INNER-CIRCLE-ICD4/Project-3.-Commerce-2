@@ -5,11 +5,14 @@ import org.icd4.commerce.application.provided.order.command.CreateOrderCommand;
 import org.icd4.commerce.application.required.order.OrderRepositoryPort;
 import org.icd4.commerce.domain.order.*;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 
 @RequiredArgsConstructor
 @Service
+@Transactional
 public class CreateOrderUseCase {
     private final OrderRepositoryPort orderRepository;
 
@@ -18,12 +21,12 @@ public class CreateOrderUseCase {
         List<OrderItem> orderItems = command.items().stream()
                 .map(item -> new OrderItem(
                         OrderItemId.generate(),
-                        null,
+                        OrderId.generate(),
                         new ProductId(item.productId()),
-                        "",
+                        "테스트상품명",
                         item.unitPrice(),
                         item.quantity(),
-                        null
+                        Map.of()
                 ))
                 .toList();
 

@@ -107,9 +107,9 @@ public class OrderEntityMapper {
         ProductOptions options = deserializeOptions(entity.getProductOptions());
 
         return new OrderItem(
-                new OrderItemId(UUID.fromString(entity.getId())),
-                new OrderId(UUID.fromString(entity.getId())),
-                new ProductId(Long.parseLong(entity.getProductId())),
+                new OrderItemId(entity.getId()),
+                new OrderId(entity.getId()),
+                new ProductId(entity.getProductId()),
                 entity.getProductName(),
                 entity.getUnitPrice(),
                 entity.getQuantity(),

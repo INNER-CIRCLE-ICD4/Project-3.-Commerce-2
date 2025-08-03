@@ -54,6 +54,21 @@ public class Money {
     //ZERO 상수
     public static final Money ZERO = Money.of(BigDecimal.valueOf(0));
 
+    @Override
+    public int hashCode() {
+        return 31 * amount.stripTrailingZeros().hashCode() + currency.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if(this == obj) return true;
+        if(obj == null || getClass() != obj.getClass()) return false;
+
+        Money money = (Money) obj;
+        return amount.compareTo(money.amount) == 0 &&
+                currency.equals(money.currency);
+    }
+
     /**
      * 금액을 더한 새 Money 객체 반환
      *

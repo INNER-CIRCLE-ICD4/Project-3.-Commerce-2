@@ -7,11 +7,13 @@ import org.icd4.commerce.domain.order.OrderId;
 import org.icd4.commerce.domain.order.PaymentId;
 import org.icd4.commerce.application.required.order.OrderRepositoryPort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
+@Transactional
 public class ConfirmPaymentUseCase {
 
     private final OrderRepositoryPort orderRepository;
