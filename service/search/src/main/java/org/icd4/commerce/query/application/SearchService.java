@@ -1,23 +1,27 @@
 package org.icd4.commerce.query.application;
-import org.icd4.commerce.query.application.dto.SearchResultDto;
-import org.icd4.commerce.query.domain.ProductSearchRepository;
+
+import lombok.RequiredArgsConstructor;
+import org.icd4.commerce.query.adaptor.web.dto.SearchResultDto;
+import org.icd4.commerce.query.application.required.ProductSearchElasticRepository;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 // 사용자로부터 검색을 요청 받는 곳
 // dto로 변환해서 반환해줌
+@RequiredArgsConstructor
 public class SearchService {
-    private final ProductSearchRepository productSearchRepository;
-
-    public SearchService(ProductSearchRepository productSearchRepository) {
-        this.productSearchRepository = productSearchRepository;
-    }
+    private final ProductSearchElasticRepository productSearchRepository;
 
     public List<SearchResultDto> search(String keyword) {
-        return productSearchRepository.searchByKeyword(keyword)
-                .stream()
-                .map(product -> new SearchResultDto(product.getId(), product.getName(), product.getPrice()))
+        return productSearchRepository.findAllByNameAndBrandAndDescriptionAndCategoryIdMatches(keyword).stream()
+                .map(product -> SearchResultDto.of(
+                        product.getProductId(),
+                        product.getSellerId(),
+                        product.getName(),
+                        product.getBrand(),
+                        product.getPrice()
+                ))
                 .collect(Collectors.toList());
     }
 }

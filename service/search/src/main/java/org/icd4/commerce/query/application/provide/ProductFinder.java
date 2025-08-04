@@ -4,16 +4,17 @@ public interface ProductFinder {
     // 검색 관련
     /**
      * // 단순 검색
-     * List<Product> search(String keyword);
-     * List<Product> searchByCategory(String category);
+     * List<Product> searchByKeyword(String keyword);
      *
-     * // 단순 필터링
+     * // 단순 필터링(필터링은 자유롭게 추가)
+     * category,
      * List<Product> filterByPriceRange(BigDecimal min, BigDecimal max);
      * List<Product> filterByBrand(String brand);
      *
      * // 단순 정렬
      * List<Product> findAllSortedByPrice(SortDirection direction);
-     * List<Product> findAllSortedByName(SortDirection direction);
+     * List<Product> findAllSortedByCreatedAt(SortDirection direction);
+     *
      *
      * // 검색 + 필터링
      * List<Product> searchAndFilter(String keyword, ProductFilter filter);

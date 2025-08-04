@@ -4,14 +4,15 @@ import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch.core.IndexRequest;
 import co.elastic.clients.elasticsearch.core.IndexResponse;
 import lombok.RequiredArgsConstructor;
-import org.icd4.commerce.query.application.required.ProductCustomRepository;
+import org.icd4.commerce.command.application.required.ProductCommandCustomRepository;
+import org.icd4.commerce.shared.domain.Product;
 import org.springframework.stereotype.Repository;
 
 import java.io.IOException;
 
 @RequiredArgsConstructor
 @Repository
-public class ProductCustomRepositoryImpl implements ProductCustomRepository {
+public class ProductCustomRepositoryImpl implements ProductCommandCustomRepository {
     private final ElasticsearchClient esClient;
 
     @Override
@@ -26,5 +27,10 @@ public class ProductCustomRepositoryImpl implements ProductCustomRepository {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public void deleteProduct(String productId) {
+
     }
 }

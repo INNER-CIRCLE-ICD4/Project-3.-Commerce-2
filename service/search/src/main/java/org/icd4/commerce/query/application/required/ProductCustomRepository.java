@@ -1,8 +1,8 @@
 package org.icd4.commerce.query.application.required;
 
 
-import org.icd4.commerce.command.domain.Product;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public interface ProductCustomRepository {
-    String registerProduct(Product product);
 }

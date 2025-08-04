@@ -1,8 +1,7 @@
 package org.icd4.commerce.query.adaptor.web;
 
+import org.icd4.commerce.query.adaptor.web.dto.SearchResultDto;
 import org.icd4.commerce.query.application.SearchService;
-import org.icd4.commerce.query.application.dto.SearchResultDto;
-import org.icd4.commerce.query.domain.ProductSearch;
 
 import java.util.List;
 
