@@ -46,4 +46,5 @@ subprojects {
 
 project("common") { tasks.configureEach { enabled = false } }
 project("service") { tasks.configureEach { enabled = false } }
+project("purchasing-service") { tasks.configureEach { enabled = false } }
 
