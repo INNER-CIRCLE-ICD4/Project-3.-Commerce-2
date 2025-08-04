@@ -1,19 +1,21 @@
-package org.icd4.commerce.application.query;
+package org.icd4.commerce.adapter.elasticsearch;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch.core.IndexRequest;
 import co.elastic.clients.elasticsearch.core.IndexResponse;
 import lombok.RequiredArgsConstructor;
+import org.icd4.commerce.application.required.ProductCustomRepository;
 import org.icd4.commerce.domain.product.Product;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Repository;
 
 import java.io.IOException;
 
 @RequiredArgsConstructor
-@Service
-public class ProductQueryWithESConfig {
+@Repository
+public class ProductCustomRepositoryImpl implements ProductCustomRepository {
     private final ElasticsearchClient esClient;
 
+    @Override
     public String registerProduct(Product product) {
         try {
             IndexRequest<Product> request = IndexRequest.of(i -> i
