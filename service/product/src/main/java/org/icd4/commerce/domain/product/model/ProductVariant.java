@@ -1,6 +1,6 @@
 package org.icd4.commerce.domain.product.model;
 
-import board.common.dataserializer.DataSerializer;
+import commerce.common.dataserializer.DataSerializer;
 import jakarta.persistence.*;
 import lombok.Getter;
 import org.icd4.commerce.domain.product.request.ProductVariantRequest;
