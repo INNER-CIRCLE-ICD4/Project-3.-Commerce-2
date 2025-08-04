@@ -1,10 +1,14 @@
 rootProject.name = "commerce"
 
 include(
+    ":common:id-generator",
     ":common:data-serializer",
-    ":service:hexagonal",
-    ":service:layered",
+    ":common:event-contracts",
+    ":purchasing-service:hexagonal",
+    ":service:purchasing",
     ":service:product",
+    ":service:stock",
+    ":service:review"
 )
 
 // configurations

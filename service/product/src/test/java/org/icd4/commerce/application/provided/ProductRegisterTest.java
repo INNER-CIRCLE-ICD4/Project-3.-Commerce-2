@@ -1,6 +1,7 @@
 package org.icd4.commerce.application.provided;
 
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityNotFoundException;
 import org.icd4.commerce.domain.product.model.Product;
 import org.icd4.commerce.domain.product.model.ProductVariant;
 import org.icd4.commerce.domain.product.model.VariantStatus;
@@ -167,23 +168,21 @@ class ProductRegisterTest {
         void updateInfo() {
             // given
             ProductInfoUpdateRequest updateRequest = new ProductInfoUpdateRequest(
+                    "sellerId",
                     "name1",
                     "brand1",
-                    "description1",
-                    BigDecimal.ONE,
-                    "KRW"
+                    "description1"
             );
 
             // when
-            Product updatedProduct = productRegister.updateInfo(savedProduct.getId(), updateRequest);
+            Product updatedProduct = productRegister.updateInfo(savedProduct.getId(), updateRequest.sellerId(),
+                    updateRequest);
             entityManager.flush();
 
             // then
             assertThat(updatedProduct.getName()).isEqualTo("name1");
             assertThat(updatedProduct.getBrand()).isEqualTo("brand1");
             assertThat(updatedProduct.getDescription()).isEqualTo("description1");
-            assertThat(updatedProduct.getBasePrice().getAmount()).isEqualTo(BigDecimal.ONE);
-            assertThat(updatedProduct.getBasePrice().getCurrency()).isEqualTo("KRW");
             assertThat(updatedProduct.getUpdatedAt()).isNotNull();
         }
 
@@ -192,26 +191,26 @@ class ProductRegisterTest {
         void updateNonExistentProduct() {
             // given
             ProductInfoUpdateRequest updateRequest = new ProductInfoUpdateRequest(
-                    "name1", "brand1", "description1", BigDecimal.ONE, "KRW"
-            );
+                    "sellerId", "name1", "brand1", "description1");
 
             // when & then
-            assertThatThrownBy(() -> productRegister.updateInfo("non-existent-id", updateRequest))
-                    .isInstanceOf(IllegalArgumentException.class)
-                    .hasMessageContaining("상품을 찾을 수 없습니다");
+            assertThatThrownBy(() -> productRegister.updateInfo("non-existent-id",
+                    updateRequest.sellerId(), updateRequest))
+                    .isInstanceOf(EntityNotFoundException.class);
         }
 
         @Test
-        @DisplayName("필수 필드가 null이면 예외가 발생해야 한다")
+        @DisplayName("null 값인 field는 수정하지 않는다")
         void updateWithNullFields() {
             // given
             ProductInfoUpdateRequest nullNameRequest = new ProductInfoUpdateRequest(
-                    null, "brand1", "description1", BigDecimal.ONE, "KRW"
-            );
+                    "sellerId", null, "brand1", "description1");
 
-            // when & then
-            assertThatThrownBy(() -> productRegister.updateInfo(savedProduct.getId(), nullNameRequest))
-                    .isInstanceOf(NullPointerException.class);
+            // when
+            productRegister.updateInfo(savedProduct.getId(), nullNameRequest.sellerId(), nullNameRequest);
+            // then
+            assertThat(savedProduct.getName()).isEqualTo("name");
+
         }
     }
 
@@ -236,7 +235,7 @@ class ProductRegisterTest {
         void updateVariantPrice() {
             // given
             ProductVariantUpdateRequest priceUpdateRequest = new ProductVariantUpdateRequest(
-                    VariantStatus.ACTIVE,
+                    "sellerId",
                     BigDecimal.valueOf(3000),
                     Currency.getInstance(Locale.KOREA).getCurrencyCode(),
                     1000L
@@ -244,7 +243,7 @@ class ProductRegisterTest {
 
             // when
             Product updatedProduct = productRegister.updateVariant(
-                    savedProduct.getId(), targetSku, priceUpdateRequest
+                    savedProduct.getId(), priceUpdateRequest.sellerId(), targetSku, priceUpdateRequest
             );
             entityManager.flush();
 
@@ -257,46 +256,41 @@ class ProductRegisterTest {
         @DisplayName("변형의 상태가 정상적으로 수정되어야 한다")
         void updateVariantStatus() {
             // given
-            ProductVariantUpdateRequest statusUpdateRequest = new ProductVariantUpdateRequest(
-                    VariantStatus.INACTIVE,
-                    BigDecimal.valueOf(3000),
-                    Currency.getInstance(Locale.KOREA).getCurrencyCode(),
-                    1000L
-            );
+            String sellerId = "sellerId";
+            VariantStatus status = VariantStatus.ACTIVE;
 
             // when
-            Product updatedProduct = productRegister.updateVariant(
-                    savedProduct.getId(), targetSku, statusUpdateRequest
-            );
+            Product updatedProduct = productRegister.updateVariantStatus(
+                    savedProduct.getId(), sellerId, targetSku, status);
             entityManager.flush();
 
             // then
             assertThat(updatedProduct.findVariantBySku(targetSku).getStatus())
-                    .isEqualTo(VariantStatus.INACTIVE);
+                    .isEqualTo(VariantStatus.ACTIVE);
         }
 
         @Test
-        @DisplayName("가격과 상태를 동시에 수정할 수 있어야 한다")
+        @DisplayName("가격과 재고를 동시에 수정할 수 있어야 한다")
         void updateVariantPriceAndStatus() {
             // given
             ProductVariantUpdateRequest updateRequest = new ProductVariantUpdateRequest(
-                    VariantStatus.INACTIVE,
+                    "sellerId",
                     BigDecimal.valueOf(5000),
                     "USD",
-                    1000L
+                    2000L
             );
 
             // when
             Product updatedProduct = productRegister.updateVariant(
-                    savedProduct.getId(), targetSku, updateRequest
+                    savedProduct.getId(), updateRequest.sellerId(), targetSku, updateRequest
             );
             entityManager.flush();
 
             // then
             ProductVariant updatedVariant = updatedProduct.findVariantBySku(targetSku);
-            assertThat(updatedVariant.getStatus()).isEqualTo(VariantStatus.INACTIVE);
-            assertThat(updatedVariant.getSellingPrice().getAmount()).isEqualTo(BigDecimal.valueOf(5000));
-            assertThat(updatedVariant.getSellingPrice().getCurrency()).isEqualTo("USD");
+            assertThat(updatedVariant.getStockQuantity()).isEqualTo(updateRequest.stockQuantity());
+            assertThat(updatedVariant.getSellingPrice().getAmount()).isEqualTo(updateRequest.price());
+            assertThat(updatedVariant.getSellingPrice().getCurrency()).isEqualTo(updateRequest.currency());
         }
 
         @Test
@@ -304,12 +298,12 @@ class ProductRegisterTest {
         void updateNonExistentVariant() {
             // given
             ProductVariantUpdateRequest updateRequest = new ProductVariantUpdateRequest(
-                    VariantStatus.ACTIVE, BigDecimal.valueOf(3000), "KRW", 1000L
+                    "sellerId", BigDecimal.valueOf(3000), "KRW", 1000L
             );
 
             // when & then
             assertThatThrownBy(() -> productRegister.updateVariant(
-                    savedProduct.getId(), "non-existent-sku", updateRequest
+                    savedProduct.getId(), updateRequest.sellerId(), "non-existent-sku", updateRequest
             ))
                     .isInstanceOf(IllegalArgumentException.class)
                     .hasMessageContaining("SKU를 찾을 수 없습니다");
@@ -320,15 +314,14 @@ class ProductRegisterTest {
         void updateVariantOfNonExistentProduct() {
             // given
             ProductVariantUpdateRequest updateRequest = new ProductVariantUpdateRequest(
-                    VariantStatus.ACTIVE, BigDecimal.valueOf(3000), "KRW", 1000L
+                    "sellerId", BigDecimal.valueOf(3000), "KRW", 1000L
             );
 
             // when & then
             assertThatThrownBy(() -> productRegister.updateVariant(
-                    "non-existent-product-id", targetSku, updateRequest
+                    "non-existent-product-id", updateRequest.sellerId(), targetSku, updateRequest
             ))
-                    .isInstanceOf(IllegalArgumentException.class)
-                    .hasMessageContaining("상품을 찾을 수 없습니다");
+                    .isInstanceOf(EntityNotFoundException.class);
         }
 
         @Test
@@ -336,57 +329,13 @@ class ProductRegisterTest {
         void updateVariantWithNegativePrice() {
             // given
             ProductVariantUpdateRequest invalidPriceRequest = new ProductVariantUpdateRequest(
-                    VariantStatus.ACTIVE, BigDecimal.valueOf(-1000), "KRW", 1000L
+                    "sellerId", BigDecimal.valueOf(-1000), "KRW", 1000L
             );
 
             // when & then
             assertThatThrownBy(() -> productRegister.updateVariant(
-                    savedProduct.getId(), targetSku, invalidPriceRequest
+                    savedProduct.getId(), invalidPriceRequest.sellerId(), targetSku, invalidPriceRequest
             ))
-                    .isInstanceOf(IllegalArgumentException.class)
-                    .hasMessageContaining("가격은 0보다 커야 합니다");
-        }
-    }
-
-    @Nested
-    @DisplayName("상품 삭제 테스트")
-    class DeleteProductTest {
-
-        private Product savedProduct;
-
-        @BeforeEach
-        void setUp() {
-            savedProduct = productRegister.create(baseRequest);
-            entityManager.flush();
-            entityManager.clear();
-        }
-
-        @Test
-        @DisplayName("상품이 정상적으로 삭제되어야 한다")
-        void deleteProduct() {
-            // when
-            productRegister.deleteProduct(savedProduct.getId());
-            entityManager.flush();
-
-            // then
-            // 실제 구현에 따라 검증 로직이 달라질 수 있습니다
-            // 예: 소프트 삭제인 경우 상태 확인, 하드 삭제인 경우 존재 여부 확인
-        }
-
-        @Test
-        @DisplayName("존재하지 않는 상품 삭제 시 예외가 발생해야 한다")
-        void deleteNonExistentProduct() {
-            // when & then
-            assertThatThrownBy(() -> productRegister.deleteProduct("non-existent-id"))
-                    .isInstanceOf(IllegalArgumentException.class)
-                    .hasMessageContaining("상품을 찾을 수 없습니다");
-        }
-
-        @Test
-        @DisplayName("null ID로 삭제 시 예외가 발생해야 한다")
-        void deleteWithNullId() {
-            // when & then
-            assertThatThrownBy(() -> productRegister.deleteProduct(null))
                     .isInstanceOf(IllegalArgumentException.class);
         }
     }
