@@ -19,8 +19,7 @@ dependencies {
     
     // Database drivers
     runtimeOnly("com.mysql:mysql-connector-j")  // MySQL for dev/prod
-    testRuntimeOnly("com.h2database:h2")  // H2 for tests only
-    
+
     // Test dependencies
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.junit.jupiter:junit-jupiter")
