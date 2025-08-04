@@ -7,6 +7,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
@@ -50,115 +51,144 @@ class StockRegisterTest {
     }
 
     @Test
-    @DisplayName("재고 등록 - 실패 (0 이하의 수량)")
-    void register_Fail_InvalidQuantity() {
-        // Given
-        String productId = "test-product-123";
-        Long invalidQuantity = 0L;
-
-        // When & Then
-        assertThatThrownBy(() -> stockRegister.register(productId, invalidQuantity))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("재고의 값은 0 이하가 될 수 없습니다.");
-    }
-
-    @Test
     @DisplayName("재고 등록 - 실패 (null 상품 ID)")
     void register_Fail_NullProductId() {
         // Given
-        String nullProductId = null;
+        String productId = null;
         Long quantity = 100L;
 
         // When & Then
-        assertThatThrownBy(() -> stockRegister.register(nullProductId, quantity))
+        assertThatThrownBy(() -> stockRegister.register(productId, quantity))
                 .isInstanceOf(NullPointerException.class)
-                .hasMessage("상품 ID를 입력해주세요.");
+                .hasMessageContaining("상품 ID를 입력해주세요");
+    }
+
+    @Test
+    @DisplayName("재고 등록 - 실패 (0 이하의 수량)")
+    void register_Fail_InvalidQuantity() {
+        // Given
+        String productId = "test-product-456";
+        Long quantity = 0L;
+
+        // When & Then
+        assertThatThrownBy(() -> stockRegister.register(productId, quantity))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("재고의 값은 0 이하가 될 수 없습니다");
     }
 
     @Test
     @DisplayName("재고 수량 증가 - 성공")
     void increaseQuantity_Success() {
         // Given
-        String productId = "test-product-123";
-        Long initialQuantity = 100L;
-        Long increaseAmount = 50L;
-
-        Stock registeredStock = stockRegister.register(productId, initialQuantity);
-        String stockId = registeredStock.getId();
+        Stock stock = stockRepository.save(Stock.register("test-product-789", 50L));
+        Long increaseAmount = 30L;
 
         // When
-        stockRegister.increaseQuantity(stockId, increaseAmount);
+        stockRegister.increaseQuantity(stock.getId(), increaseAmount);
 
         // Then
-        Optional<Stock> updatedStock = stockRepository.findById(stockId);
+        Optional<Stock> updatedStock = stockRepository.findById(stock.getId());
         assertThat(updatedStock).isPresent();
-        assertThat(updatedStock.get().getQuantity()).isEqualTo(initialQuantity + increaseAmount);
+        assertThat(updatedStock.get().getQuantity()).isEqualTo(80L); // 50 + 30
     }
 
     @Test
-    @DisplayName("재고 수량 증가 - 실패 (존재하지 않는 재고 ID)")
-    void increaseQuantity_Fail_NonExistentStockId() {
+    @DisplayName("재고 수량 증가 - 실패 (0 이하의 증가량)")
+    void increaseQuantity_Fail_InvalidAmount() {
         // Given
-        String nonExistentStockId = "non-existent-id";
-        Long increaseAmount = 50L;
+        Stock stock = stockRepository.save(Stock.register("test-product-111", 50L));
+        Long invalidAmount = 0L;
 
         // When & Then
-        // 존재하지 않는 재고 ID에 대해서는 아무 일도 일어나지 않음 (현재 구현 기준)
-        assertThatCode(() -> stockRegister.increaseQuantity(nonExistentStockId, increaseAmount))
-                .doesNotThrowAnyException();
+        // 도메인 규칙에 의해 0 이하의 값으로 증가 시 예외 발생
+        assertThatThrownBy(() -> stockRegister.increaseQuantity(stock.getId(), invalidAmount))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("재고는 0 이하의 값이 될 수 없습니다");
+        
+        // 예외로 인해 재고 수량은 변하지 않아야 함
+        Optional<Stock> unchangedStock = stockRepository.findById(stock.getId());
+        assertThat(unchangedStock).isPresent();
+        assertThat(unchangedStock.get().getQuantity()).isEqualTo(50L); // 변경되지 않음
     }
 
     @Test
     @DisplayName("재고 수량 감소 - 성공")
     void decreaseQuantity_Success() {
         // Given
-        String productId = "test-product-123";
-        Long initialQuantity = 100L;
+        Stock stock = stockRepository.save(Stock.register("test-product-222", 100L));
         Long decreaseAmount = 30L;
 
-        Stock registeredStock = stockRegister.register(productId, initialQuantity);
-        String stockId = registeredStock.getId();
-
         // When
-        stockRegister.decreaseQuantity(stockId, decreaseAmount);
+        stockRegister.decreaseQuantity(stock.getId(), decreaseAmount);
 
         // Then
-        Optional<Stock> updatedStock = stockRepository.findById(stockId);
+        Optional<Stock> updatedStock = stockRepository.findById(stock.getId());
         assertThat(updatedStock).isPresent();
-        assertThat(updatedStock.get().getQuantity()).isEqualTo(initialQuantity - decreaseAmount);
+        assertThat(updatedStock.get().getQuantity()).isEqualTo(70L); // 100 - 30
     }
 
     @Test
-    @DisplayName("재고 수량 감소 - 실패 (존재하지 않는 재고 ID)")
-    void decreaseQuantity_Fail_NonExistentStockId() {
+    @DisplayName("재고 수량 감소 - 실패 (재고 부족)")
+    void decreaseQuantity_Fail_InsufficientStock() {
         // Given
-        String nonExistentStockId = "non-existent-id";
-        Long decreaseAmount = 30L;
+        Stock stock = stockRepository.save(Stock.register("test-product-333", 30L));
+        Long excessiveAmount = 50L;
 
         // When & Then
-        // 존재하지 않는 재고 ID에 대해서는 아무 일도 일어나지 않음 (현재 구현 기준)
-        assertThatCode(() -> stockRegister.decreaseQuantity(nonExistentStockId, decreaseAmount))
-                .doesNotThrowAnyException();
+        // 도메인 규칙에 의해 재고 부족 시 예외 발생
+        assertThatThrownBy(() -> stockRegister.decreaseQuantity(stock.getId(), excessiveAmount))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("현재 재고보다 많습니다");
+        
+        // 예외로 인해 재고는 변하지 않아야 함
+        Optional<Stock> unchangedStock = stockRepository.findById(stock.getId());
+        assertThat(unchangedStock).isPresent();
+        assertThat(unchangedStock.get().getQuantity()).isEqualTo(30L); // 변경되지 않음
     }
 
     @Test
-    @DisplayName("재고 수량 연속 변경 - 성공")
-    void multipleQuantityChanges_Success() {
+    @DisplayName("존재하지 않는 재고 ID로 수량 증가 시도")
+    void increaseQuantity_WithNonExistentStockId() {
         // Given
-        String productId = "test-product-123";
-        Long initialQuantity = 100L;
+        String nonExistentStockId = "non-existent-stock-id";
+        Long quantity = 10L;
 
-        Stock registeredStock = stockRegister.register(productId, initialQuantity);
-        String stockId = registeredStock.getId();
+        // When & Then
+        // 존재하지 않는 재고 ID에 대해 예외 발생
+        assertThatThrownBy(() -> stockRegister.increaseQuantity(nonExistentStockId, quantity))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("Stock not found");
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 재고 ID로 수량 감소 시도")
+    void decreaseQuantity_WithNonExistentStockId() {
+        // Given
+        String nonExistentStockId = "non-existent-stock-id";
+        Long quantity = 10L;
+
+        // When & Then
+        // 존재하지 않는 재고 ID에 대해 예외 발생
+        assertThatThrownBy(() -> stockRegister.decreaseQuantity(nonExistentStockId, quantity))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("Stock not found");
+    }
+
+    @Test
+    @DisplayName("대량 수량으로 재고 등록")
+    void register_WithLargeQuantity() {
+        // Given
+        String productId = "test-product-large";
+        Long largeQuantity = 1_000_000L;
 
         // When
-        stockRegister.increaseQuantity(stockId, 50L);  // 100 + 50 = 150
-        stockRegister.decreaseQuantity(stockId, 30L);  // 150 - 30 = 120
-        stockRegister.increaseQuantity(stockId, 20L);  // 120 + 20 = 140
+        Stock registeredStock = stockRegister.register(productId, largeQuantity);
 
         // Then
-        Optional<Stock> finalStock = stockRepository.findById(stockId);
-        assertThat(finalStock).isPresent();
-        assertThat(finalStock.get().getQuantity()).isEqualTo(140L);
+        assertThat(registeredStock.getQuantity()).isEqualTo(largeQuantity);
+        
+        Optional<Stock> savedStock = stockRepository.findById(registeredStock.getId());
+        assertThat(savedStock).isPresent();
+        assertThat(savedStock.get().getQuantity()).isEqualTo(largeQuantity);
     }
-}
+} 

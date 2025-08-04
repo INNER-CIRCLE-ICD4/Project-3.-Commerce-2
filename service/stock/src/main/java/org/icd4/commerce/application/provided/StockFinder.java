@@ -1,7 +1,8 @@
 package org.icd4.commerce.application.provided;
 
-// 조회?
-// read
+import org.icd4.commerce.domain.Stock;
+
 public interface StockFinder {
+    Stock getStock(String stockId);
     Long checkQuantity(String stockId);
 }
