@@ -47,10 +47,6 @@ public class StockApi {
                 .body(ApiResponse.success("재고 수량 조회 성공", quantity));
     }
 
-    /**
-     * 재고 증가
-     * PATCH /api/stocks/{stockId}/increase
-     */
     @PatchMapping("/{stockId}/increase")
     public ResponseEntity<ApiResponse<Long>> increaseStock(@PathVariable String stockId,
                                                            @Valid @RequestBody StockUpdateRequest request) {
@@ -60,10 +56,6 @@ public class StockApi {
                 .body(ApiResponse.success("재고가 성공적으로 증가되었습니다.", increaseQuantity));
     }
 
-    /**
-     * 재고 감소
-     * PATCH /api/stocks/{stockId}/decrease
-     */
     @PatchMapping("/{stockId}/decrease")
     public ResponseEntity<ApiResponse<Long>> decreaseStock(@PathVariable String stockId,
                                                            @Valid @RequestBody StockUpdateRequest request) {
