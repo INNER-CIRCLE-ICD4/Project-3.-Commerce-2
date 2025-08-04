@@ -1,7 +1,7 @@
-package org.icd4.commerce.application.command;
+package org.icd4.commerce.command.application;
 
 import lombok.RequiredArgsConstructor;
-import org.icd4.commerce.application.provided.ProductModifier;
+import org.icd4.commerce.command.application.provide.ProductModifier;
 import org.springframework.stereotype.Service;
 
 @Service

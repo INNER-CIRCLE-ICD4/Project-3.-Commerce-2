@@ -1,4 +1,4 @@
-package org.icd4.commerce.application.provided;
+package org.icd4.commerce.query.application.provide;
 
 public interface ProductFinder {
     // 검색 관련

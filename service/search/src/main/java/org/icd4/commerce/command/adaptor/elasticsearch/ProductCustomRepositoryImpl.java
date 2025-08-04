@@ -1,11 +1,10 @@
-package org.icd4.commerce.adapter.elasticsearch;
+package org.icd4.commerce.command.adaptor.elasticsearch;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch.core.IndexRequest;
 import co.elastic.clients.elasticsearch.core.IndexResponse;
 import lombok.RequiredArgsConstructor;
-import org.icd4.commerce.application.required.ProductCustomRepository;
-import org.icd4.commerce.domain.product.Product;
+import org.icd4.commerce.query.application.required.ProductCustomRepository;
 import org.springframework.stereotype.Repository;
 
 import java.io.IOException;

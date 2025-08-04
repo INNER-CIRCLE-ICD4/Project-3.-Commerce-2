@@ -1,6 +1,6 @@
-package org.icd4.commerce.application.command;
+package org.icd4.commerce.command.application;
 
-import org.icd4.commerce.application.provided.ProductRegister;
+import org.icd4.commerce.command.application.provide.ProductRegister;
 import org.springframework.stereotype.Service;
 
 @Service

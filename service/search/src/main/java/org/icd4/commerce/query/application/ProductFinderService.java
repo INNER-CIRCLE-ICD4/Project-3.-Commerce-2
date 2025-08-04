@@ -1,9 +1,9 @@
-package org.icd4.commerce.application.query;
+package org.icd4.commerce.query.application;
 
 import lombok.RequiredArgsConstructor;
-import org.icd4.commerce.application.provided.ProductFinder;
-import org.icd4.commerce.application.required.ProductCustomRepository;
+import org.icd4.commerce.query.application.provide.ProductFinder;
 import org.icd4.commerce.application.required.ProductRepository;
+import org.icd4.commerce.query.application.required.ProductCustomRepository;
 import org.springframework.stereotype.Service;
 
 @Service
