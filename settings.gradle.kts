@@ -4,9 +4,8 @@ include(
     ":common:id-generator",
     ":common:data-serializer",
     ":common:event-contracts",
-    ":service:hexagonal",
-    ":service:layered",
     ":purchasing-service:hexagonal",
+    ":service:purchasing",
     ":service:product",
     ":service:stock"
 )
