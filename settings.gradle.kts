@@ -7,8 +7,10 @@ include(
     ":service:hexagonal",
     ":service:layered",
     ":purchasing-service:hexagonal",
+    ":service:purchasing",
     ":service:product",
-    ":service:stock"
+    ":service:stock",
+    ":service:review"
 )
 
 // configurations
