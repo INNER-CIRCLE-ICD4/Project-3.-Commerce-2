@@ -16,11 +16,11 @@ public class SearchService {
     public List<SearchResultDto> search(String keyword) {
         return productSearchRepository.findAllByNameAndBrandAndDescriptionAndCategoryIdMatches(keyword).stream()
                 .map(product -> SearchResultDto.of(
-                        product.getProductId(),
+                        product.getId(),
                         product.getSellerId(),
                         product.getName(),
                         product.getBrand(),
-                        product.getPrice()
+                        product.getBasePrice()
                 ))
                 .collect(Collectors.toList());
     }
