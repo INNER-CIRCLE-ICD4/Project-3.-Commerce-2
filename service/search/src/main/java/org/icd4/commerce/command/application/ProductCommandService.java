@@ -1,7 +1,6 @@
 package org.icd4.commerce.command.application;
 
 import lombok.RequiredArgsConstructor;
-import org.icd4.commerce.shared.domain.Product;
 import org.icd4.commerce.shared.domain.ProductCreateRequest;
 import org.icd4.commerce.shared.domain.ProductUpdateRequest;
 import org.springframework.stereotype.Service;
@@ -23,7 +22,7 @@ public class ProductCommandService {
         productModifierService.modifyProductInfo(request.toProduct());
     }
 
-    //
+
     void modifyProductPrice(String productId, BigDecimal newPrice) {
         productModifierService.modifyProductPrice(productId, newPrice);
     }
