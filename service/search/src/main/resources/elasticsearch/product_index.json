@@ -37,6 +37,9 @@
         "type": "text",
         "analyzer": "korean_analyzer"
       },
+      "basePrice": {
+        "type": "keyword"
+      },
       "categoryId": {
         "type": "keyword"
       },
@@ -45,11 +48,11 @@
       },
       "createdAt": {
         "type": "date",
-        "format": "date_hour_minute_second_millis"
+        "format": "strict_date_optional_time"
       },
       "updatedAt": {
         "type": "date",
-        "format": "date_hour_minute_second_millis"
+        "format": "strict_date_optional_time"
       },
       "isDeleted": {
         "type": "boolean"

@@ -32,4 +32,11 @@ spring:
     password: elastictest
     ssl:
       certificate-validation-mode: none
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+    modules:
+      jsr310: true
+
+
 
