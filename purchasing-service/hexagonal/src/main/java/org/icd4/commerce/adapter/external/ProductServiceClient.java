@@ -43,7 +43,6 @@ public interface ProductServiceClient {
         String id,
         String name,
         BigDecimal price,
-        int availableStock,
         boolean isActive
     ) {}
 }

@@ -57,7 +57,6 @@ public class ProductServiceRestClient implements ProductServiceClient {
                 response.id(),
                 response.name(),
                 response.price(),
-                response.stock(),
                 response.active()
             );
             
@@ -160,7 +159,6 @@ public class ProductServiceRestClient implements ProductServiceClient {
         String id,
         String name,
         java.math.BigDecimal price,
-        int stock,
         boolean active
     ) {}
     
@@ -196,7 +194,6 @@ public class ProductServiceRestClient implements ProductServiceClient {
             response.id(),
             response.name(),
             response.price(),
-            response.stock(),
             response.active()
         );
     }
