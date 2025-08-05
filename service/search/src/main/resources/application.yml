@@ -37,6 +37,8 @@ spring:
       write-dates-as-timestamps: false
     modules:
       jsr310: true
-
+  docker:
+    compose:
+      lifecycle-management: start_only
 
 

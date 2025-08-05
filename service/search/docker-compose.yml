@@ -1,5 +1,8 @@
 services:
   es01:
+    build:
+      context: .
+      dockerfile: Dockerfile
     image: elastic/elasticsearch:9.0.3
     container_name: es01
     environment:
