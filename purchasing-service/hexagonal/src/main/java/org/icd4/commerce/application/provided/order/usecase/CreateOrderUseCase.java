@@ -1,8 +1,10 @@
 package org.icd4.commerce.application.provided.order.usecase;
 
 import lombok.RequiredArgsConstructor;
+import org.icd4.commerce.application.provided.cart.InsufficientStockException;
 import org.icd4.commerce.application.provided.order.command.CreateOrderCommand;
 import org.icd4.commerce.application.required.order.OrderRepositoryPort;
+import org.icd4.commerce.domain.cart.InventoryChecker;
 import org.icd4.commerce.domain.order.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,9 +17,20 @@ import java.util.Map;
 @Transactional
 public class CreateOrderUseCase {
     private final OrderRepositoryPort orderRepository;
+    private final InventoryChecker inventoryChecker;
 
     public Order execute(CreateOrderCommand command) {
-        // 주문 항목 생성
+        //1.재고 확인
+        for (var item : command.items()) {
+            ProductId productId = new ProductId(item.productId());
+            int available = inventoryChecker.getAvailableStock(productId);
+
+            if (available < item.quantity()) {
+                throw new InsufficientStockException(productId, available, item.quantity());
+            }
+        }
+
+        //2.주문 항목 생성
         List<OrderItem> orderItems = command.items().stream()
                 .map(item -> new OrderItem(
                         OrderItemId.generate(),
@@ -30,7 +43,6 @@ public class CreateOrderUseCase {
                 ))
                 .toList();
 
-        // 도메인 create 메서드 사용
         Order order = Order.create(
                 new CustomerId(command.customerId()),
                 orderItems,
