@@ -4,6 +4,8 @@ import org.icd4.commerce.domain.cart.exception.CartAlreadyConvertedException;
 import org.icd4.commerce.domain.cart.exception.CartItemLimitExceededException;
 import org.icd4.commerce.domain.cart.exception.InvalidCartStateException;
 import org.icd4.commerce.domain.cart.exception.InvalidQuantityException;
+import org.icd4.commerce.domain.common.ProductId;
+import org.icd4.commerce.domain.common.ProductPriceProvider;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;

@@ -1,6 +1,6 @@
 package org.icd4.commerce.application.provided.cart;
 
-import org.icd4.commerce.domain.cart.ProductId;
+import org.icd4.commerce.domain.common.ProductId;
 
 /**
  * 재고가 부족할 때 발생하는 예외.

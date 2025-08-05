@@ -1,6 +1,6 @@
 package org.icd4.commerce.adapter.external;
 
-import org.icd4.commerce.domain.cart.ProductId;
+import org.icd4.commerce.domain.common.ProductId;
 
 /**
  * 상품을 찾을 수 없을 때 발생하는 예외.

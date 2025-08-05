@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.icd4.commerce.adapter.persistence.entity.CartItemJpaEntity;
 import org.icd4.commerce.adapter.persistence.entity.CartJpaEntity;
 import org.icd4.commerce.domain.cart.*;
+import org.icd4.commerce.domain.common.ProductId;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
