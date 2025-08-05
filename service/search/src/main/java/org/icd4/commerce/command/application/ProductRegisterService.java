@@ -23,6 +23,6 @@ public class ProductRegisterService implements ProductRegister {
     @Override
     @Transactional
     public void deleteProductIndex(String productId) {
-
+        productCommandRepository.deleteProductById(productId);
     }
 }

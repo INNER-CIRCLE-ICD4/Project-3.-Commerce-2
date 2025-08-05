@@ -20,17 +20,12 @@ public class ProductCustomRepositoryImpl implements ProductCommandCustomReposito
         try {
             IndexRequest<Product> request = IndexRequest.of(i -> i
                     .index("product_index")
-                    .id(product.getProductId())
+                    .id(product.getId())
                     .document(product));
             IndexResponse response = esClient.index(request);
             return response.id();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    @Override
-    public void deleteProduct(String productId) {
-
     }
 }

@@ -1,26 +1,102 @@
 package org.icd4.commerce.shared.domain;
 
-import lombok.Getter;
+import lombok.*;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.elasticsearch.annotations.Document;
+import org.springframework.data.elasticsearch.annotations.*;
+import org.springframework.data.elasticsearch.core.suggest.Completion;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
 
-@Getter
+@Data
+@Builder
+@NoArgsConstructor(access=AccessLevel.PROTECTED)
+@AllArgsConstructor
 @Document(indexName = "product_index")
+@Setting(settingPath = "elasticsearch/product_index.json")
 public class Product {
+
     @Id
-    String productId;
-    String sellerId;
-    String categoryId;
-    String name;
-    String brand;
-    String description;
-    BigDecimal price;
-    /************************/
-    // String status;
-    LocalDateTime createdAt;
-    LocalDateTime updatedAt;
-    // Boolean isDeleted;
+    private String id;
+
+    @Field(type = FieldType.Keyword)
+    private String sellerId;
+
+    @Field(type = FieldType.Text, analyzer = "korean_analyzer")
+    private String name;
+
+    @MultiField(
+            mainField = @Field(type = FieldType.Text, analyzer = "korean_analyzer"),
+            otherFields = {
+                    @InnerField(suffix = "keyword", type = FieldType.Keyword, ignoreAbove = 256)
+            }
+    )
+    private String brand;
+
+    @Field(type = FieldType.Text, analyzer = "korean_analyzer")
+    private String description;
+
+    @Field(type = FieldType.Keyword)
+    private BigDecimal basePrice;
+
+    @Field(type = FieldType.Keyword)
+    private String categoryId;
+
+    @Field(type = FieldType.Keyword)
+    private String status;
+
+    @Field(type = FieldType.Date, format = DateFormat.strict_date_optional_time)
+    private String createdAt;
+
+    @Field(type = FieldType.Date, format = DateFormat.strict_date_optional_time)
+    private String updatedAt;
+
+    @Field(type = FieldType.Boolean)
+    private Boolean isDeleted;
+
+    @Field(type = FieldType.Keyword)
+    private List<String> productAttributes;
+
+    @CompletionField
+    private Completion autocompleteSuggestions;
+
+    @Field(type = FieldType.Nested)
+    private List<ProductVariant> variants;
+
+    @Field(type = FieldType.Object, enabled = false)
+    private Map<String, Object> rawOptions;
+
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class ProductVariant {
+        @Field(type = FieldType.Keyword)
+        private String sku;
+
+        @Field(type = FieldType.Long)
+        private Long price;
+
+        @Field(type = FieldType.Integer)
+        private Integer stock;
+
+        @Field(type = FieldType.Keyword)
+        private String status;
+
+        @Field(type = FieldType.Nested)
+        private List<ProductOption> optionCombination;
+    }
+
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class ProductOption {
+        @Field(type = FieldType.Keyword)
+        private String name;
+
+        @Field(type = FieldType.Keyword)
+        private String value;
+    }
 }
