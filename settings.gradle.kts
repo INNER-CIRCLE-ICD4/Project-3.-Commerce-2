@@ -3,9 +3,9 @@ rootProject.name = "commerce"
 include(
     ":common:id-generator",
     ":common:data-serializer",
-    ":service:hexagonal",
-    ":service:layered",
+    ":common:event-contracts",
     ":service:product",
+    ":service:purchasing",
     ":service:search",
     ":service:stock"
 )
