@@ -2,6 +2,7 @@ package org.icd4.commerce.application.provided.order.usecase;
 
 import lombok.RequiredArgsConstructor;
 import org.icd4.commerce.application.provided.cart.InsufficientStockException;
+import org.icd4.commerce.application.provided.common.ProductDetailsProvider;
 import org.icd4.commerce.application.provided.order.command.CreateOrderCommand;
 import org.icd4.commerce.application.required.order.OrderRepositoryPort;
 import org.icd4.commerce.application.required.common.InventoryChecker;
@@ -18,37 +19,42 @@ import java.util.Map;
 @Transactional
 public class CreateOrderUseCase {
     private final OrderRepositoryPort orderRepository;
+    private final ProductDetailsProvider productDetailsProvider;
     private final InventoryChecker inventoryChecker;
 
     public Order execute(CreateOrderCommand command) {
-        //1.재고 확인
-        for (var item : command.items()) {
-            ProductId productId = new ProductId(item.productId().toString());
-            int available = inventoryChecker.getAvailableStock(productId);
-
-            if (available < item.quantity()) {
-                throw new InsufficientStockException(productId, available, (int) item.quantity());
-            }
-        }
-
-        //2.주문 항목 생성
+        OrderId orderId = OrderId.generate();
+        //주문 항목 생성
         List<OrderItem> orderItems = command.items().stream()
-                .map(item -> new OrderItem(
-                        OrderItemId.generate(),
-                        OrderId.generate(),
-                        new ProductId(item.productId().toString()),
-                        "테스트상품명",
-                        item.unitPrice(),
-                        item.quantity(),
-                        Map.of()
-                ))
-                .toList();
+            .map(item -> {
+                ProductId productId = new ProductId(item.productId().toString());
+
+                int available = inventoryChecker.getAvailableStock(productId);
+                if (available < item.quantity()) {
+                    throw new InsufficientStockException(productId, available, (int) item.quantity());
+                }
+
+                ProductDetailsProvider.ProductDetails product = productDetailsProvider.getProductInfo(productId);
+                if (!product.active()) {
+                    throw new IllegalArgumentException("비활성 상품입니다: " + productId.value());
+                }
+
+                return new OrderItem(
+                    OrderItemId.generate(),
+                    orderId,
+                    productId,
+                    product.name(),
+                    product.price().longValue(),
+                    item.quantity(),
+                    Map.of()
+                );
+            }).toList();
 
         Order order = Order.create(
-                new CustomerId(command.customerId()),
-                orderItems,
-                command.orderMessage(),
-                command.orderChannel()
+            new CustomerId(command.customerId()),
+            orderItems,
+            command.orderMessage(),
+            command.orderChannel()
         );
 
         return orderRepository.save(order);
