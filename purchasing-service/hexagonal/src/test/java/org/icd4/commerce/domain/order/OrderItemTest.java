@@ -1,5 +1,6 @@
 package org.icd4.commerce.domain.order;
 
+import org.icd4.commerce.domain.common.ProductId;
 import org.junit.jupiter.api.*;
 import java.util.Map;
 import java.util.UUID;
@@ -16,7 +17,7 @@ class OrderItemTest {
         OrderItem item = new OrderItem(
                 new OrderItemId(UUID.randomUUID()),
                 new OrderId(UUID.randomUUID()),
-                new ProductId(1L),
+                new ProductId("1"),
                 "테스트상품",
                 10_000L, // unitPrice
                 3L,      // quantity
@@ -38,7 +39,7 @@ class OrderItemTest {
         assertThatThrownBy(() -> new OrderItem(
                 new OrderItemId(UUID.randomUUID()),
                 new OrderId(UUID.randomUUID()),
-                new ProductId(1L),
+                new ProductId("1"),
                 null,
                 10000L,
                 1,
@@ -56,7 +57,7 @@ class OrderItemTest {
         assertThatThrownBy(() -> new OrderItem(
                 new OrderItemId(UUID.randomUUID()),
                 new OrderId(UUID.randomUUID()),
-                new ProductId(1L),
+                new ProductId("1"),
                 " ",
                 10000L,
                 1,
@@ -74,7 +75,7 @@ class OrderItemTest {
         assertThatThrownBy(() -> new OrderItem(
                 new OrderItemId(UUID.randomUUID()),
                 new OrderId(UUID.randomUUID()),
-                new ProductId(1L),
+                new ProductId("1"),
                 "테스트상품",
                 -10000L,
                 1,
@@ -92,7 +93,7 @@ class OrderItemTest {
         assertThatThrownBy(() -> new OrderItem(
                 new OrderItemId(UUID.randomUUID()),
                 new OrderId(UUID.randomUUID()),
-                new ProductId(1L),
+                new ProductId("1"),
                 "테스트상품",
                 10000L,
                 0,

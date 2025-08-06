@@ -1,4 +1,4 @@
-package org.icd4.commerce.application.required;
+package org.icd4.commerce.application.required.cart;
 
 import org.icd4.commerce.domain.cart.Cart;
 import org.icd4.commerce.domain.cart.CartId;

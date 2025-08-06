@@ -6,6 +6,7 @@ import jakarta.persistence.EntityNotFoundException;
 import org.icd4.commerce.adapter.persistence.entity.OrderItemJpaEntity;
 import org.icd4.commerce.adapter.persistence.entity.OrderJpaEntity;
 import org.icd4.commerce.domain.cart.ProductOptions;
+import org.icd4.commerce.domain.common.ProductId;
 import org.icd4.commerce.domain.order.*;
 import org.springframework.stereotype.Component;
 
@@ -109,7 +110,7 @@ public class OrderEntityMapper {
         return new OrderItem(
                 new OrderItemId(entity.getId()),
                 new OrderId(entity.getId()),
-                new ProductId(entity.getProductId()),
+                new ProductId(entity.getProductId().toString()),
                 entity.getProductName(),
                 entity.getUnitPrice(),
                 entity.getQuantity(),

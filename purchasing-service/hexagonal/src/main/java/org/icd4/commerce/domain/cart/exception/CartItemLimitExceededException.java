@@ -1,7 +1,7 @@
 package org.icd4.commerce.domain.cart.exception;
 
 import org.icd4.commerce.domain.cart.Cart;
-import org.icd4.commerce.domain.cart.ProductId;
+import org.icd4.commerce.domain.common.ProductId;
 import org.icd4.commerce.domain.cart.ProductOptions;
 
 /**

@@ -1,6 +1,6 @@
 package org.icd4.commerce.adapter.external;
 
-import org.icd4.commerce.domain.cart.ProductId;
+import org.icd4.commerce.domain.common.ProductId;
 
 import java.math.BigDecimal;
 
@@ -43,7 +43,6 @@ public interface ProductServiceClient {
         String id,
         String name,
         BigDecimal price,
-        int availableStock,
         boolean isActive
     ) {}
 }

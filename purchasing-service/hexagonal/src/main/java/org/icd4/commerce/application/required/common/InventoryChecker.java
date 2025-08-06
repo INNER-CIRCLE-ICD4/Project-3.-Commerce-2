@@ -1,4 +1,6 @@
-package org.icd4.commerce.domain.cart;
+package org.icd4.commerce.application.required.common;
+
+import org.icd4.commerce.domain.common.ProductId;
 
 /**
  * 재고 확인 인터페이스.
