@@ -1,8 +1,8 @@
 package org.icd4.commerce.application.provided.cart.command;
 
 import org.icd4.commerce.domain.cart.CartId;
-import org.icd4.commerce.domain.cart.ProductId;
 import org.icd4.commerce.domain.cart.ProductOptions;
+import org.icd4.commerce.domain.common.ProductId;
 
 /**
  * 장바구니에 상품 추가 커맨드.

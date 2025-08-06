@@ -1,8 +1,9 @@
-package org.icd4.commerce.application.required;
+package org.icd4.commerce.application.required.cart;
 
 import org.icd4.commerce.domain.cart.Cart;
 import org.icd4.commerce.domain.cart.CartId;
 import org.icd4.commerce.domain.cart.CustomerId;
+import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -20,6 +21,7 @@ import java.util.Optional;
  * @author Jooeun
  * @since 1.0
  */
+@Repository
 public interface CartRepositoryPort {
     
     /**
