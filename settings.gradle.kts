@@ -8,8 +8,8 @@ include(
     ":service:layered",
     ":service:purchasing",
     ":service:product",
-    ":service:stock",
-    ":service:review"
+    ":service:search",
+    ":service:stock"
 )
 
 // configurations

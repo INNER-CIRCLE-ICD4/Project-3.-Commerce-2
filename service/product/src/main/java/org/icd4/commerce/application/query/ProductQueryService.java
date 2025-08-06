@@ -11,10 +11,11 @@ import java.util.List;
 @Service
 public class ProductQueryService {
     private final ProductFinderService productFinderService;
+    private final ProductCacheService productCacheService;
     private final ProductVariantFinderService productVariantFinderService;
 
     public ProductResponse findById(String productId) {
-        return ProductResponse.fromDomain(productFinderService.findById(productId));
+        return productCacheService.findByIdFromCache(productId);
     }
 
     public List<ProductVariantResponse> findAllVariants(String productId) {

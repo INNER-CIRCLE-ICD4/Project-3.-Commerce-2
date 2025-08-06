@@ -1,6 +1,6 @@
 package org.icd4.commerce.domain.product.request;
 
-import board.common.dataserializer.DataSerializer;
+import commerce.common.dataserializer.DataSerializer;
 import org.icd4.commerce.domain.product.model.ProductMoney;
 
 import java.math.BigDecimal;
