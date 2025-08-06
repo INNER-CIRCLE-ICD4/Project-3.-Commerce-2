@@ -2,6 +2,8 @@ package org.icd4.commerce.application.provided.order.usecase;
 
 import lombok.RequiredArgsConstructor;
 import org.icd4.commerce.application.provided.order.command.ConfirmPaymentCommand;
+import org.icd4.commerce.application.required.common.InventoryChecker;
+import org.icd4.commerce.application.required.common.InventoryReducer;
 import org.icd4.commerce.domain.order.Order;
 import org.icd4.commerce.domain.order.OrderId;
 import org.icd4.commerce.domain.order.PaymentId;
@@ -29,7 +31,6 @@ public class ConfirmPaymentUseCase {
         }
 
         Order order = orderOptional.get();
-        order.confirmPayment(paymentId);
 
         orderRepository.save(order);
     }

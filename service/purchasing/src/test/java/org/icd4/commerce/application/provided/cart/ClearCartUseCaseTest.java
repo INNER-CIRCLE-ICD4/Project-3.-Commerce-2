@@ -1,13 +1,10 @@
 package org.icd4.commerce.application.provided.cart;
 
-import org.icd4.commerce.application.provided.cart.command.ClearCartCommand;
-import org.icd4.commerce.application.provided.cart.exception.CartNotFoundException;
-import org.icd4.commerce.application.provided.cart.usecase.ClearCartUseCase;
-import org.icd4.commerce.application.required.CartRepositoryPort;
+import org.icd4.commerce.application.required.cart.CartRepositoryPort;
 import org.icd4.commerce.domain.cart.Cart;
 import org.icd4.commerce.domain.cart.CartId;
 import org.icd4.commerce.domain.cart.CustomerId;
-import org.icd4.commerce.domain.cart.ProductId;
+import org.icd4.commerce.domain.common.ProductId;
 import org.icd4.commerce.domain.cart.ProductOptions;
 import org.icd4.commerce.domain.cart.TimeProvider;
 import org.junit.jupiter.api.BeforeEach;
