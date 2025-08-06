@@ -1,9 +1,12 @@
 package org.icd4.commerce.domain.cart;
 
+import org.icd4.commerce.adapter.external.ProductPriceProviderAdapter;
 import org.icd4.commerce.domain.cart.exception.CartAlreadyConvertedException;
 import org.icd4.commerce.domain.cart.exception.CartItemLimitExceededException;
 import org.icd4.commerce.domain.cart.exception.InvalidCartStateException;
 import org.icd4.commerce.domain.cart.exception.InvalidQuantityException;
+import org.icd4.commerce.domain.common.ProductId;
+import org.icd4.commerce.domain.common.ProductPriceProvider;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -72,7 +75,7 @@ public class Cart {
      * @param timeProvider 시간 제공자
      */
     public Cart(CartId id, CustomerId customerId, List<CartItem> items,
-                LocalDateTime createdAt, LocalDateTime lastModifiedAt, 
+                LocalDateTime createdAt, LocalDateTime lastModifiedAt,
                 boolean isConverted, TimeProvider timeProvider) {
         this.id = requireNonNull(id, "CartId cannot be null");
         this.customerId = requireNonNull(customerId, "CustomerId cannot be null");
@@ -170,7 +173,7 @@ public class Cart {
      * @return 총 금액
      * @throws NullPointerException priceProvider가 null인 경우
      */
-    public BigDecimal calculateTotal(ProductPriceProvider priceProvider) {
+    public BigDecimal calculateTotal(ProductPriceProviderAdapter priceProvider) {
         requireNonNull(priceProvider, "PriceProvider cannot be null");
         
         return items.stream()

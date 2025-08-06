@@ -2,6 +2,7 @@ package org.icd4.commerce.domain.cart;
 
 import org.icd4.commerce.domain.cart.exception.InvalidQuantityException;
 import org.icd4.commerce.domain.cart.exception.RequiredOptionMissingException;
+import org.icd4.commerce.domain.common.ProductId;
 
 import java.time.LocalDateTime;
 import java.util.Map;

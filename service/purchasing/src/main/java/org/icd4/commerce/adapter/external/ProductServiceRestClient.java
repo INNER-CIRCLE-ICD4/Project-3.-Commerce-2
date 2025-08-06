@@ -2,7 +2,7 @@ package org.icd4.commerce.adapter.external;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.icd4.commerce.domain.cart.ProductId;
+import org.icd4.commerce.domain.common.ProductId;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
@@ -11,8 +11,6 @@ import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
 
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * REST API를 통한 상품 서비스 클라이언트 구현.
@@ -57,7 +55,6 @@ public class ProductServiceRestClient implements ProductServiceClient {
                 response.id(),
                 response.name(),
                 response.price(),
-                response.stock(),
                 response.active()
             );
             
@@ -160,7 +157,6 @@ public class ProductServiceRestClient implements ProductServiceClient {
         String id,
         String name,
         java.math.BigDecimal price,
-        int stock,
         boolean active
     ) {}
     
@@ -196,7 +192,6 @@ public class ProductServiceRestClient implements ProductServiceClient {
             response.id(),
             response.name(),
             response.price(),
-            response.stock(),
             response.active()
         );
     }

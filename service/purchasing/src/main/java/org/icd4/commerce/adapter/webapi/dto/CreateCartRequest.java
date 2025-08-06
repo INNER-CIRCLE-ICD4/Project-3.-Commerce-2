@@ -3,7 +3,7 @@ package org.icd4.commerce.adapter.webapi.dto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Builder;
-import org.icd4.commerce.application.provided.cart.CreateCartCommand;
+import org.icd4.commerce.application.provided.cart.command.CreateCartCommand;
 import org.icd4.commerce.domain.cart.CustomerId;
 
 /**

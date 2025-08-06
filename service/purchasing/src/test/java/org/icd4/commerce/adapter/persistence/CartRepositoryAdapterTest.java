@@ -1,6 +1,6 @@
 package org.icd4.commerce.adapter.persistence;
 
-import org.icd4.commerce.application.required.CartRepositoryPort;
+import org.icd4.commerce.application.required.cart.CartRepositoryPort;
 import org.icd4.commerce.domain.cart.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

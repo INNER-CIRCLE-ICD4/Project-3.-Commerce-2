@@ -5,7 +5,7 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Builder;
-import org.icd4.commerce.application.provided.cart.AddItemToCartCommand;
+import org.icd4.commerce.application.provided.cart.command.AddItemToCartCommand;
 import org.icd4.commerce.domain.cart.CartId;
 import org.icd4.commerce.domain.common.ProductId;
 import org.icd4.commerce.domain.cart.ProductOptions;

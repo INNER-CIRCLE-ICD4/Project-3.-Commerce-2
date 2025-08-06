@@ -16,7 +16,7 @@ public class OrderItemJpaEntity {
     private UUID id;
 
     @Column(name = "product_id", nullable = false)
-    private Long productId;
+    private String productId;
 
     @Column(name = "product_name", nullable = false)
     private String productName;
@@ -41,7 +41,7 @@ public class OrderItemJpaEntity {
     // 생성자
     public OrderItemJpaEntity(
             UUID id,
-            Long productId,
+            String productId,
             String productName,
             long unitPrice,
             long quantity,
