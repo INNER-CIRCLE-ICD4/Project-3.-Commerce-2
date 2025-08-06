@@ -19,8 +19,6 @@ import java.util.Optional;
 public class ConfirmPaymentUseCase {
 
     private final OrderRepositoryPort orderRepository;
-    private final InventoryChecker inventoryChecker;
-    private final InventoryReducer inventoryReducer;
 
     public void execute(ConfirmPaymentCommand command) {
         OrderId orderId = new OrderId(command.orderId());
@@ -33,27 +31,6 @@ public class ConfirmPaymentUseCase {
         }
 
         Order order = orderOptional.get();
-
-        //1.결제 성공
-        order.confirmPayment(paymentId);
-
-        //2.재고 확인
-        boolean outOfStock = order.getOrderItems().stream().anyMatch(item -> {
-            int available = inventoryChecker.getAvailableStock(item.getProductId());
-            return available < item.getQuantity();
-        });
-
-        if (outOfStock) {
-            //3-1.재고 부족 → 결제 취소 + 주문 취소 처리
-            order.failPayment();
-            orderRepository.save(order);
-            throw new IllegalStateException("결제는 성공했지만 재고가 부족하여 주문이 취소되었습니다.");
-        }
-
-        //3-2.재고 충분 → 재고 차감
-        order.getOrderItems().forEach(item -> {
-            inventoryReducer.reduce(item.getProductId(), item.getQuantity());
-        });
 
         orderRepository.save(order);
     }
