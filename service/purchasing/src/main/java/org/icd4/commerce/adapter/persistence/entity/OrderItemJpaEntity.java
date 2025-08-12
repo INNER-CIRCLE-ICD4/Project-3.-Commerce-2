@@ -15,23 +15,22 @@ public class OrderItemJpaEntity {
     @Id
     private UUID id;
 
-    @Column(name = "product_id", nullable = false)
+    @Column(nullable = false)
     private String productId;
 
-    @Column(name = "product_name", nullable = false)
+    @Column(nullable = false)
     private String productName;
 
-    @Column(name = "unit_price", nullable = false)
+    @Column(nullable = false)
     private long unitPrice;
 
     @Column(nullable = false)
     private long quantity;
 
-    @Column(name = "item_amount",nullable = false)
+    @Column(nullable = false)
     private long itemAmount;
 
     @Lob
-    @Column(name = "product_options")
     private String productOptions;
 
     @ManyToOne(fetch = FetchType.LAZY)

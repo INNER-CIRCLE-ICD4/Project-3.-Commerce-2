@@ -16,35 +16,28 @@ import java.util.List;
 public class OrderJpaEntity {
 
     @Id
-    @Column(name = "id")
     private String id;
 
-    @Column(name = "customer_id", nullable = false)
+    @Column(nullable = false)
     private String customerId;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "order_status", nullable = false)
+    @Column(nullable = false)
     private OrderStatus orderStatus;
 
-    @Column(name = "total_amount", nullable = false)
+    @Column(nullable = false)
     private BigDecimal totalAmount;
 
-    @Column(name = "order_message")
     private String orderMessage;
 
-    @Column(name = "payment_id")
     private String paymentId;
 
-    @Column(name = "order_channel")
     private String orderChannel;
 
-    @Column(name = "created_at")
     private LocalDateTime createdAt;
 
-    @Column(name = "last_modified_at")
     private LocalDateTime lastModifiedAt;
 
-    @Column(name = "completed_at")
     private LocalDateTime completedAt;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
