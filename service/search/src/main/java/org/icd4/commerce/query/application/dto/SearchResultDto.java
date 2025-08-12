@@ -1,7 +1,4 @@
-package org.icd4.commerce.query.adaptor.web.dto;
-
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+package org.icd4.commerce.query.application.dto;
 
 import java.math.BigDecimal;
 
