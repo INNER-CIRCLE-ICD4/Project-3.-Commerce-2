@@ -1,4 +1,4 @@
-package org.icd4.commerce.command.application.consumer;
+package org.icd4.commerce.command.adaptor;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
