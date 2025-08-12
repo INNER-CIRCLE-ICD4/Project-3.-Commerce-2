@@ -1,5 +1,7 @@
 package org.icd4.commerce.domain.cart;
 
+import org.icd4.commerce.domain.common.ProductId;
+
 import java.math.BigDecimal;
 
 /**

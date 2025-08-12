@@ -2,8 +2,8 @@ package org.icd4.commerce.adapter.external;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.icd4.commerce.domain.cart.InventoryChecker;
-import org.icd4.commerce.domain.cart.ProductId;
+import org.icd4.commerce.application.required.common.InventoryChecker;
+import org.icd4.commerce.domain.common.ProductId;
 import org.springframework.stereotype.Component;
 
 /**

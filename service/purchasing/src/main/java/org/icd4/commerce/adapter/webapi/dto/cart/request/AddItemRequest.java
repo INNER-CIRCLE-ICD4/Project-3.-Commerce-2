@@ -7,8 +7,8 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Builder;
 import org.icd4.commerce.application.provided.cart.command.AddItemToCartCommand;
 import org.icd4.commerce.domain.cart.CartId;
-import org.icd4.commerce.domain.cart.ProductId;
 import org.icd4.commerce.domain.cart.ProductOptions;
+import org.icd4.commerce.domain.common.ProductId;
 
 import java.util.Map;
 

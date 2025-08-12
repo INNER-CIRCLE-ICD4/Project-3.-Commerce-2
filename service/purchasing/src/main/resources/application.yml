@@ -59,10 +59,10 @@ spring:
       maximum-pool-size: 10  # 최대 커넥션 수 (개발 환경이므로 적절히 제한)
       minimum-idle: 5  # 최소 유휴 커넥션 수
       connection-timeout: 30000  # 커넥션 타임아웃 (30초)
-      
+
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate  # 엔티티와 DB 스키마 검증만 수행 (자동 변경 방지)
     show-sql: false  # SQL 로깅 비활성화 (성능 고려)
     properties:
       hibernate:

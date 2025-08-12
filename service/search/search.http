@@ -1,0 +1,131 @@
+### 상품 인덱스 생성
+POST http://localhost:8081/api/v1/search/_index
+Content-Type: application/json
+
+{
+  "productId": "7a8c3d9b-2e6f-4c8d-8a2b-3c4e5f6d7a8f",
+  "sellerId": "SELLER_FASHION_002",
+  "name": "모던 오버핏 셔츠",
+  "brand": "패션블루",
+  "description": "부드러운 코튼 소재의 오버핏 셔츠입니다. 다양한 색상으로 출시되었습니다.",
+  "categoryId": "CATEGORY_FASHION_MEN_001",
+  "createdAt": "2025-07-30T10:15:00.000Z",
+  "updatedAt": "2025-07-30T10:15:00.000Z",
+  "basePrice": 35000,
+  "productAttributes": [
+    "color:white",
+    "color:black",
+    "color:navy",
+    "size:M",
+    "size:L",
+    "size:XL",
+    "material:cotton"
+  ],
+  "autocompleteSuggestions": {
+    "input": ["모던 셔츠", "패션블루 셔츠", "오버핏 셔츠"],
+    "weight": 10
+  },
+  "variants": [
+    {
+      "sku": "SHIRT-MODERN-M-WHITE",
+      "price": 35000,
+      "stock": 50,
+      "status": "ACTIVE",
+      "optionCombination": [
+        { "name": "color", "value": "white" },
+        { "name": "size", "value": "M" }
+      ]
+    },
+    {
+      "sku": "SHIRT-MODERN-L-BLACK",
+      "price": 35000,
+      "stock": 50,
+      "status": "ACTIVE",
+      "optionCombination": [
+        { "name": "color", "value": "black" },
+        { "name": "size", "value": "L" }
+      ]
+    },
+    {
+      "sku": "SHIRT-MODERN-XL-NAVY",
+      "price": 35000,
+      "stock": 50,
+      "status": "ACTIVE",
+      "optionCombination": [
+        { "name": "color", "value": "navy" },
+        { "name": "size", "value": "XL" }
+      ]
+    }
+  ]
+}
+
+
+### 상품 인덱스 수정
+POST http://localhost:8081/api/v1/search/_index
+Content-Type: application/json
+
+{
+  "productId": "7a8c3d9b-2e6f-4c8d-8a2b-3c4e5f6d7a8f",
+  "sellerId": "SELLER_FASHION_002",
+  "name": "모던 오버핏 셔츠",
+  "brand": "패션블루",
+  "description": "부드러운 코튼 소재의 오버핏 셔츠입니다. 다양한 색상으로 출시되었습니다.",
+  "categoryId": "CATEGORY_FASHION_MEN_001",
+  "createdAt": "2025-07-30T10:15:00.000Z",
+  "updatedAt": "2025-07-30T10:15:00.000Z",
+  "basePrice": 35000,
+  "productAttributes": [
+    "color:white",
+    "color:black",
+    "color:navy",
+    "size:M",
+    "size:L",
+    "size:XL",
+    "material:cotton"
+  ],
+  "autocompleteSuggestions": {
+    "input": ["모던 셔츠", "패션블루 셔츠", "오버핏 셔츠"],
+    "weight": 10
+  },
+  "variants": [
+    {
+      "sku": "SHIRT-MODERN-M-WHITE",
+      "price": 35000,
+      "stock": 50,
+      "status": "ACTIVE",
+      "optionCombination": [
+        { "name": "color", "value": "white" },
+        { "name": "size", "value": "M" }
+      ]
+    },
+    {
+      "sku": "SHIRT-MODERN-L-BLACK",
+      "price": 35000,
+      "stock": 50,
+      "status": "ACTIVE",
+      "optionCombination": [
+        { "name": "color", "value": "black" },
+        { "name": "size", "value": "L" }
+      ]
+    },
+    {
+      "sku": "SHIRT-MODERN-XL-NAVY",
+      "price": 35000,
+      "stock": 50,
+      "status": "ACTIVE",
+      "optionCombination": [
+        { "name": "color", "value": "navy" },
+        { "name": "size", "value": "XL" }
+      ]
+    }
+  ]
+}
+
+
+### 상품 인덱스 삭제
+DELETE http://localhost:8081/api/v1/search/_index/7a8c3d9b-2e6f-4c8d-8a2b-3c4e5f6d7a8f
+
+
+
+
+

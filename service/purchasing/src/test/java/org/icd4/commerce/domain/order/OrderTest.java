@@ -1,5 +1,6 @@
 package org.icd4.commerce.domain.order;
 
+import org.icd4.commerce.domain.common.ProductId;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -21,7 +22,7 @@ class OrderTest {
                 List.of(new OrderItem(
                         new OrderItemId(UUID.randomUUID()),
                         new OrderId(UUID.randomUUID()),
-                        new ProductId(1L),
+                        new ProductId("1"),
                         "테스트상품",
                         10_000L, // unitPrice
                         3L,      // quantity
@@ -64,7 +65,7 @@ class OrderTest {
         OrderItem item1 = new OrderItem(
                 new OrderItemId(UUID.randomUUID()),
                 new OrderId(UUID.randomUUID()),
-                new ProductId(1L),
+                new ProductId("1"),
                 "테스트상품",
                 10_000L,
                 3L,
@@ -73,7 +74,7 @@ class OrderTest {
         OrderItem item2 = new OrderItem(
                 new OrderItemId(UUID.randomUUID()),
                 new OrderId(UUID.randomUUID()),
-                new ProductId(1L),
+                new ProductId("1"),
                 "테스트상품",
                 10_000L,
                 3L,

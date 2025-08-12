@@ -1,6 +1,8 @@
 package org.icd4.commerce.domain;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -25,6 +27,9 @@ public class Stock {
 
     private Long quantity;
 
+    @Enumerated(EnumType.STRING)
+    private StockStatus stockStatus;
+
     private LocalDateTime createdAt;
 
     private LocalDateTime updatedAt;
@@ -38,6 +43,7 @@ public class Stock {
         stock.id = UUID.randomUUID().toString();
         stock.productId = requireNonNull(productId, "상품 ID를 입력해주세요.");
         stock.quantity = requireNonNull(quantity, "재고를 입력해주세요.");
+        stock.stockStatus = StockStatus.AVAILABLE;
         stock.createdAt = LocalDateTime.now();
         stock.updatedAt = LocalDateTime.now();
         return stock;
@@ -64,11 +70,13 @@ public class Stock {
     }
 
     public Long checkQuantity() {
+
         return this.quantity;
     }
 
     public void empty() {
         this.quantity = 0L;
+        this.stockStatus = StockStatus.OUT_OF_STOCK;
     }
 
 

@@ -27,6 +27,9 @@ class ProductQueryServiceTest {
     private ProductFinderService productFinderService;
 
     @Mock
+    private ProductCacheService productCacheService;
+
+    @Mock
     private ProductVariantFinderService productVariantFinderService;
 
     @InjectMocks
@@ -37,16 +40,16 @@ class ProductQueryServiceTest {
     void findById() {
         // Given
         String productId = "productId";
-        Product mockProduct = createProduct(productId);
-        when(productFinderService.findById(productId)).thenReturn(mockProduct);
+        ProductResponse mockProduct = ProductResponse.fromDomain(createProduct(productId));
+        when(productCacheService.findByIdFromCache(productId)).thenReturn(mockProduct);
 
         // When
         ProductResponse response = productQueryService.findById(productId);
 
         // Then
         assertThat(response.id()).isEqualTo(productId);
-        assertThat(response.name()).isEqualTo(mockProduct.getName());
-        verify(productFinderService).findById(productId);
+        assertThat(response.name()).isEqualTo(mockProduct.name());
+        verify(productCacheService).findByIdFromCache(productId);
     }
 
     @Test

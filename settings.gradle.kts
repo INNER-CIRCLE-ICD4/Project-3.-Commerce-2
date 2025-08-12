@@ -4,11 +4,12 @@ include(
     ":common:id-generator",
     ":common:data-serializer",
     ":common:event-contracts",
-    ":purchasing-service:hexagonal",
+    ":service:hexagonal",
+    ":service:layered",
     ":service:purchasing",
     ":service:product",
-    ":service:stock",
-    ":service:review"
+    ":service:search",
+    ":service:stock"
 )
 
 // configurations

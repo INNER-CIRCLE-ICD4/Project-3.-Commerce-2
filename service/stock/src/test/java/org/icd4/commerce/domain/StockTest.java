@@ -18,6 +18,7 @@ class StockTest {
         assertNotNull(stock.getId());
         assertEquals(productId, stock.getProductId());
         assertEquals(quantity, stock.getQuantity());
+        assertEquals(stock.getStockStatus(), StockStatus.AVAILABLE);
         assertNotNull(stock.getCreatedAt());
         assertNotNull(stock.getUpdatedAt());
     }
@@ -108,5 +109,6 @@ class StockTest {
         stock.empty();
 
         assertEquals(0L, stock.checkQuantity());
+        assertEquals(stock.getStockStatus(), StockStatus.OUT_OF_STOCK);
     }
 }

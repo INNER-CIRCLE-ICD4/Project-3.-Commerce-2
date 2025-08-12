@@ -16,7 +16,7 @@ import java.util.List;
 public class OrderJpaEntity {
 
     @Id
-    @Column(name = "order_id")
+    @Column(name = "id")
     private String id;
 
     @Column(name = "customer_id", nullable = false)

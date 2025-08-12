@@ -1,6 +1,7 @@
 package org.icd4.commerce.domain.order;
 
 import lombok.Getter;
+import org.icd4.commerce.domain.common.ProductId;
 
 import java.util.Map;
 import java.util.Objects;
