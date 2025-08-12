@@ -32,7 +32,7 @@ public class ElasticSearchProductSearcher implements ProductSearcher {
         // 이름과, 브랜드 필드에 키워드가 포함돼있는지 검색하는 쿼리
         Query q = Query.of(qq -> qq
                 .multiMatch(mm -> mm
-                        .fields("name", "brand")
+                        .fields("name", "brand", "description")
                         .query(keyword)
                 )
         );

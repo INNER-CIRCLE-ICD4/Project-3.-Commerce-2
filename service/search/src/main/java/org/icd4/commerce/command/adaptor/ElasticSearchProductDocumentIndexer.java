@@ -19,7 +19,7 @@ public class ElasticSearchProductDocumentIndexer implements ProductDocumentIndex
     public void indexProduct(Product product) throws IOException {
         // 실제 Elasticsearch 클라이언트를 사용하여 상품 문서를 생성 또는 업데이트하는 로직 구현
         IndexRequest<Product> indexRequest = IndexRequest.of(i -> i
-            .index("product-index")
+            .index("product_index")
             .id(product.getId())
             .document(product)
         );
