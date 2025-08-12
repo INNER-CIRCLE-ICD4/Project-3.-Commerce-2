@@ -3,7 +3,7 @@ package org.icd4.commerce.command.adaptor;
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch.core.IndexRequest;
 import lombok.RequiredArgsConstructor;
-import org.icd4.commerce.command.application.ProductDocumentIndexer;
+import org.icd4.commerce.command.application.provided.ProductDocumentIndexer;
 import org.icd4.commerce.shared.domain.Product;
 import org.springframework.stereotype.Component;
 

@@ -1,4 +1,4 @@
-package org.icd4.commerce.query.application;
+package org.icd4.commerce.query.application.provided;
 
 import lombok.RequiredArgsConstructor;
 import org.icd4.commerce.query.application.dto.SearchResultDto;

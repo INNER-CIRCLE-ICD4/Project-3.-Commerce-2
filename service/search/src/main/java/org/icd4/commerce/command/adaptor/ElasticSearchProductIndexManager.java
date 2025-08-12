@@ -2,7 +2,7 @@ package org.icd4.commerce.command.adaptor;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import lombok.RequiredArgsConstructor;
-import org.icd4.commerce.command.application.ProductIndexManager;
+import org.icd4.commerce.command.application.provided.ProductIndexManager;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;

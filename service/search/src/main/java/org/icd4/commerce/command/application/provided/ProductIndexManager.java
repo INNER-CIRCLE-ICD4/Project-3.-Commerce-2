@@ -1,4 +1,4 @@
-package org.icd4.commerce.command.application;
+package org.icd4.commerce.command.application.provided;
 
 import java.io.IOException;
 

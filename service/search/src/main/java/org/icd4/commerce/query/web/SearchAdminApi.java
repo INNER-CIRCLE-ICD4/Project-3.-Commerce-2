@@ -1,7 +1,7 @@
 package org.icd4.commerce.query.web;
 
 import lombok.RequiredArgsConstructor;
-import org.icd4.commerce.command.application.ProductIndexManager;
+import org.icd4.commerce.command.application.provided.ProductIndexManager;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;

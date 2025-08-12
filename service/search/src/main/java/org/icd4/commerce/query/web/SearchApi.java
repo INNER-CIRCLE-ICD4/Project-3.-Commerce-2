@@ -2,7 +2,7 @@ package org.icd4.commerce.query.web;
 
 import lombok.RequiredArgsConstructor;
 import org.icd4.commerce.query.application.dto.SearchResultDto;
-import org.icd4.commerce.query.application.SearchService;
+import org.icd4.commerce.query.application.provided.SearchService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;

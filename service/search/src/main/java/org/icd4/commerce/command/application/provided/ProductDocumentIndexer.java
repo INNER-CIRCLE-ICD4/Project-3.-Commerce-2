@@ -1,4 +1,4 @@
-package org.icd4.commerce.command.application;
+package org.icd4.commerce.command.application.provided;
 
 import org.icd4.commerce.shared.domain.Product;
 
