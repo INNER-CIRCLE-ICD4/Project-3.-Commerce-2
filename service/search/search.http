@@ -1,11 +1,11 @@
 ### 상품 인덱스 생성
-POST http://localhost:8081/api/v1/search/_index
+POST http://localhost:8081/api/v1/product/_index
 Content-Type: application/json
 
 {
-  "productId": "7a8c3d9b-2e6f-4c8d-8a2b-3c4e5f6d7a8f",
+  "id": "7a8c3d9b-2e6f-4c8d-8a2b-3c4e5f6d7a8f",
   "sellerId": "SELLER_FASHION_002",
-  "name": "모던 오버핏 셔츠",
+  "name": "모던 오버핏",
   "brand": "패션블루",
   "description": "부드러운 코튼 소재의 오버핏 셔츠입니다. 다양한 색상으로 출시되었습니다.",
   "categoryId": "CATEGORY_FASHION_MEN_001",
@@ -121,9 +121,12 @@ Content-Type: application/json
   ]
 }
 
+###
+GET http://localhost:8081/api/v1/product?keywords=모던&sortField=basePrice&sortOrder=asc
+
 
 ### 상품 인덱스 삭제
-DELETE http://localhost:8081/api/v1/search/_index/7a8c3d9b-2e6f-4c8d-8a2b-3c4e5f6d7a8f
+DELETE http://localhost:8081/api/v1/product/7a8c3d9b-2e6f-4c8d-8a2b-3c4e5f6d7a8e
 
 
 
