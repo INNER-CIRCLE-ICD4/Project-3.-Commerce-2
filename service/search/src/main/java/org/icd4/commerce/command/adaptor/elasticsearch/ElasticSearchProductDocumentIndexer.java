@@ -7,9 +7,14 @@ import lombok.RequiredArgsConstructor;
 import org.icd4.commerce.command.application.required.ProductDocumentIndexer;
 import org.icd4.commerce.command.application.required.ProductRepository;
 import org.icd4.commerce.shared.domain.Product;
+import org.springframework.data.elasticsearch.core.suggest.Completion;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
@@ -20,18 +25,46 @@ public class ElasticSearchProductDocumentIndexer implements ProductDocumentIndex
 
     @Override
     public String indexProduct(Product product) throws IOException {
-        // 실제 Elasticsearch 클라이언트를 사용하여 상품 문서를 생성 또는 업데이트하는 로직 구현
+        Product index = createProduct(product);
         IndexRequest<Product> indexRequest = IndexRequest.of(i -> i
             .index("product_index")
             .id(product.getId())
-            .document(product)
+            .document(index)
         );
-        IndexResponse index = esClient.index(indexRequest);
-        return index.id();
+        IndexResponse response = esClient.index(indexRequest);
+        return response.id();
     }
 
     @Override
     public int deleteProduct(String productId) {
         return productRepository.deleteById(productId);
     }
+
+    private Product createProduct(Product product) {
+        List<String> suggestions = generateSuggestions(product);
+        Completion completion = new Completion(suggestions.toArray(new String[0]));
+        product.addCompletion(completion);
+        return product;
+    }
+
+    private List<String> generateSuggestions(Product product) {
+        List<String> suggestions = new ArrayList<>();
+
+        if (product.getName() != null) {
+            suggestions.add(product.getName());
+            suggestions.addAll(Arrays.asList(product.getName().split("\\s+")));
+        }
+
+        if (product.getBrand() != null) {
+            suggestions.add(product.getBrand());
+            suggestions.add(product.getBrand() + " " + product.getName());
+        }
+
+        return suggestions.stream()
+                .filter(s -> s != null && !s.trim().isEmpty())
+                .distinct()
+                .collect(Collectors.toList());
+    }
+
+
 }

@@ -67,6 +67,11 @@ public class Product {
     @Field(type = FieldType.Object, enabled = false)
     private Map<String, Object> rawOptions;
 
+    public void addCompletion(Completion completion) {
+        this.autocompleteSuggestions = completion;
+
+    }
+
     @Data
     @Builder
     @NoArgsConstructor
