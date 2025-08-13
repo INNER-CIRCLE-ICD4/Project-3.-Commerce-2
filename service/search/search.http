@@ -12,19 +12,6 @@ Content-Type: application/json
   "createdAt": "2025-07-30T10:15:00.000Z",
   "updatedAt": "2025-07-30T10:15:00.000Z",
   "basePrice": 35000,
-  "productAttributes": [
-    "color:white",
-    "color:black",
-    "color:navy",
-    "size:M",
-    "size:L",
-    "size:XL",
-    "material:cotton"
-  ],
-  "autocompleteSuggestions": {
-    "input": ["모던 셔츠", "패션블루 셔츠", "오버핏 셔츠"],
-    "weight": 10
-  },
   "variants": [
     {
       "sku": "SHIRT-MODERN-M-WHITE",
