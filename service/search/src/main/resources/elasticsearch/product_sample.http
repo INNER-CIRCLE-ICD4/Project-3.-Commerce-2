@@ -69,7 +69,8 @@ Content-Type: application/json
         "type": "keyword"
       },
       "autocompleteSuggestions": {
-        "type": "completion"
+        "type": "completion",
+        "analyzer": "korean_analyzer"
       },
       "variants": {
         "type": "nested",
