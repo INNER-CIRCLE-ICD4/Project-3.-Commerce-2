@@ -1,7 +1,7 @@
-package org.icd4.commerce.query.web;
+package org.icd4.commerce.command.adaptor;
 
 import lombok.RequiredArgsConstructor;
-import org.icd4.commerce.command.application.provided.ProductIndexManager;
+import org.icd4.commerce.command.application.required.IndexManager;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,17 +14,17 @@ import java.io.IOException;
 @RequiredArgsConstructor
 @RequestMapping("/admin/index")
 public class SearchAdminApi {
-    private final ProductIndexManager productIndexManager;
+    private final IndexManager indexManager;
 
-    @PostMapping("/create/product")
+    @PostMapping
     public ResponseEntity<String> createProductIndex() throws IOException {
-        productIndexManager.createIndex();
+        indexManager.createIndex();
         return ResponseEntity.ok("Product index creation initiated.");
     }
 
-    @DeleteMapping("/delete/product")
+    @DeleteMapping
     public ResponseEntity<String> deleteProductIndex() throws IOException {
-        productIndexManager.deleteIndex();
+        indexManager.deleteIndex();
         return ResponseEntity.ok("Product index deletion initiated.");
     }
 }
