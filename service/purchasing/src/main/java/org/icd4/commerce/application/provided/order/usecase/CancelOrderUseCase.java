@@ -17,7 +17,7 @@ public class CancelOrderUseCase {
 
     public void execute(CancelOrderCommand command) {
         // 1. 주문 조회
-        Order order = orderRepository.findById(OrderId.from(String.valueOf(command.orderId())))
+        Order order = orderRepository.findById(OrderId.from(command.orderId()))
                 .orElseThrow(() -> new IllegalArgumentException("주문을 찾을 수 없습니다."));
 
         // 2. 도메인 로직 수행

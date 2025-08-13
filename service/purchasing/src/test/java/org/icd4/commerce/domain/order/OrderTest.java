@@ -17,11 +17,14 @@ import static org.assertj.core.api.Assertions.*;
 class OrderTest {
     //주문 객체 생성용 헬퍼 메서드
     private Order createOrder(OrderStatus status, LocalDateTime completedAt) {
+        OrderId orderId = OrderId.generate();
+
         Order order = Order.create(
+                        orderId,
                 new CustomerId("test-customer"),
                 List.of(new OrderItem(
                         new OrderItemId(UUID.randomUUID()),
-                        new OrderId(UUID.randomUUID()),
+                        orderId,
                         new ProductId("1"),
                         "테스트상품",
                         10_000L, // unitPrice
@@ -62,9 +65,11 @@ class OrderTest {
     @Test
     @DisplayName("주문 생성 시 총 금액이 정상적으로 계산된다")
     void createOrder_calculatesTotalAmount() {
+        OrderId orderId = OrderId.generate();
+
         OrderItem item1 = new OrderItem(
                 new OrderItemId(UUID.randomUUID()),
-                new OrderId(UUID.randomUUID()),
+                orderId,
                 new ProductId("1"),
                 "테스트상품",
                 10_000L,
@@ -73,7 +78,7 @@ class OrderTest {
         );
         OrderItem item2 = new OrderItem(
                 new OrderItemId(UUID.randomUUID()),
-                new OrderId(UUID.randomUUID()),
+                orderId,
                 new ProductId("1"),
                 "테스트상품",
                 10_000L,
@@ -82,6 +87,7 @@ class OrderTest {
         );
 
         Order order = Order.create(
+                orderId,
                 new CustomerId("c1"),
                 List.of(item1, item2),
                 "빠른 배송",
@@ -148,7 +154,10 @@ class OrderTest {
     @Test
     @DisplayName("주문 항목이 비어있으면 생성 시 예외가 발생한다")
     void createOrder_throwsException_whenOrderItemsEmpty() {
+        OrderId orderId = OrderId.generate();
+
         assertThatThrownBy(() -> Order.create(
+                orderId,
                 new CustomerId("c1"),
                 Collections.emptyList(),
                 "메모",

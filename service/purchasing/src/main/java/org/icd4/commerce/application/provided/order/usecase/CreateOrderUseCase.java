@@ -51,10 +51,11 @@ public class CreateOrderUseCase {
             }).toList();
 
         Order order = Order.create(
-            new CustomerId(command.customerId()),
-            orderItems,
-            command.orderMessage(),
-            command.orderChannel()
+                orderId,
+                new CustomerId(command.customerId()),
+                orderItems,
+                command.orderMessage(),
+                command.orderChannel()
         );
 
         return orderRepository.save(order);

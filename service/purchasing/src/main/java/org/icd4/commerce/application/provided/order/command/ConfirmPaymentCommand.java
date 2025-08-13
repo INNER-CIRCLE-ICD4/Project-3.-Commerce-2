@@ -8,7 +8,7 @@ import java.util.UUID;
  * @param orderId 주문 ID
  * @param paymentId 결제 ID
  */
-public record ConfirmPaymentCommand(UUID orderId, UUID paymentId) {
+public record ConfirmPaymentCommand(String orderId, UUID paymentId) {
 
     public ConfirmPaymentCommand {
         if (orderId == null) {

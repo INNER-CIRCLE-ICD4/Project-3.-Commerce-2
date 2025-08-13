@@ -42,12 +42,13 @@ class ConfirmPaymentUseCaseTest {
     @Test
     @DisplayName("결제 완료 처리 성공")
     void confirmPayment_success() {
+        OrderId orderId = OrderId.generate();
         // given
         Order mockOrder = mock(Order.class);
-        when(orderRepository.findById(new OrderId(orderId)))
+        when(orderRepository.findById(orderId))
                 .thenReturn(Optional.of(mockOrder));
 
-        ConfirmPaymentCommand command = new ConfirmPaymentCommand(orderId, paymentId);
+        ConfirmPaymentCommand command = new ConfirmPaymentCommand(orderId.toString(), paymentId);
 
         // when
         confirmPaymentUseCase.execute(command);
@@ -60,11 +61,13 @@ class ConfirmPaymentUseCaseTest {
     @Test
     @DisplayName("주문이 존재하지 않으면 예외 발생")
     void confirmPayment_orderNotFound_throwsException() {
+        OrderId orderId = OrderId.generate();
+
         // given
-        when(orderRepository.findById(new OrderId(orderId)))
+        when(orderRepository.findById(orderId))
                 .thenReturn(Optional.empty());
 
-        ConfirmPaymentCommand command = new ConfirmPaymentCommand(orderId, paymentId);
+        ConfirmPaymentCommand command = new ConfirmPaymentCommand(orderId.toString(), paymentId);
 
         // when & then
         assertThatThrownBy(() -> confirmPaymentUseCase.execute(command))

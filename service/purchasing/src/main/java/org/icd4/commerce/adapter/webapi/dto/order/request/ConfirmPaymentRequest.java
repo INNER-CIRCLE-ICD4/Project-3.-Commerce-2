@@ -7,7 +7,7 @@ import java.util.UUID;
 public record ConfirmPaymentRequest(String paymentId) {
     public ConfirmPaymentCommand toCommand(String orderId) {
         return new ConfirmPaymentCommand(
-                UUID.fromString(orderId),
+                orderId,
                 UUID.fromString(paymentId)
         );
     }
