@@ -108,8 +108,11 @@ Content-Type: application/json
   ]
 }
 
-###
+### 검색 & 정렬 & 필터링
 GET http://localhost:8081/api/v1/product?keywords=모던&sortField=basePrice&sortOrder=asc
+
+### 자동완성
+GET http://localhost:8081/api/v1/product/autocomplete?prefix=오
 
 
 ### 상품 인덱스 삭제
