@@ -53,4 +53,17 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(404)
                 .body(ApiResponse.error(e.getMessage()));
     }
+
+    /**
+     * 모든 예외 처리 (기타 예상치 못한 예외들)
+     * - 위에서 처리되지 않은 모든 예외를 캐치
+     * - 시스템 오류, 데이터베이스 연결 오류 등
+     */
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ApiResponse<Void>> handleException(Exception e) {
+        log.error("예상치 못한 오류 발생: {}", e.getMessage(), e);
+        
+        return ResponseEntity.status(500)
+                .body(ApiResponse.error("서버 내부 오류가 발생했습니다. 잠시 후 다시 시도해주세요."));
+    }
 } 

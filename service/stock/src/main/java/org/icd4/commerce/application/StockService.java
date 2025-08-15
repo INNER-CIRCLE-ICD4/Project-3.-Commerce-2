@@ -32,6 +32,45 @@ public class StockService implements StockRegister, StockFinder {
                 .orElseThrow(() -> new IllegalArgumentException("Stock not found: " + stockId));
     }
 
+    public Long increaseQuantityV1(String stockId, Long quantity) {
+        if (stockId == null || stockId.trim().isEmpty()) {
+            throw new IllegalArgumentException("재고 ID는 필수입니다.");
+        }
+        if (quantity == null || quantity < 0) {
+            throw new IllegalArgumentException("수량은 0 이상이어야 합니다.");
+        }
+
+        int result = stockRepository.increaseStock(stockId, quantity);
+
+        if (result == 0) {
+            throw new IllegalArgumentException("재고를 찾을 수 없습니다: " + stockId);
+        }
+
+        return stockRepository.findById(stockId)
+                .orElseThrow().getQuantity();
+    }
+
+    public Long decreaseQuantityV1(String stockId, Long quantity) {
+        if (stockId == null || stockId.trim().isEmpty()) {
+            throw new IllegalArgumentException("재고 ID는 필수입니다.");
+        }
+        if (quantity == null || quantity < 0) {
+            throw new IllegalArgumentException("수량은 0 이상이어야 합니다.");
+        }
+        int result = stockRepository.decreaseStock(stockId, quantity);
+
+        if (result == 0) {
+            if (!stockRepository.findById(stockId).isPresent()) {
+                throw new IllegalArgumentException("재고를 찾을 수 없습니다: " + stockId);
+            } else {
+                throw new IllegalArgumentException("재고 수량이 부족합니다. stockId: " + stockId);
+            }
+        }
+
+        return stockRepository.findById(stockId)
+                .orElseThrow().getQuantity();
+    }
+
 
     @Override
     public Long decreaseQuantity(String stockId, Long quantity) {
