@@ -32,8 +32,7 @@ public class StockService implements StockRegister, StockFinder {
                 .orElseThrow(() -> new IllegalArgumentException("Stock not found: " + stockId));
     }
 
-    public Integer increaseQuantityV1(String stockId, Long quantity) {
-        // 입력 검증
+    public Long increaseQuantityV1(String stockId, Long quantity) {
         if (stockId == null || stockId.trim().isEmpty()) {
             throw new IllegalArgumentException("재고 ID는 필수입니다.");
         }
@@ -41,32 +40,26 @@ public class StockService implements StockRegister, StockFinder {
             throw new IllegalArgumentException("수량은 0 이상이어야 합니다.");
         }
 
-        // 벌크 업데이트 실행 (재고 존재 여부 확인 없이)
-        Integer result = stockRepository.increaseStock(stockId, quantity);
+        int result = stockRepository.increaseStock(stockId, quantity);
 
-        // 결과 검증
         if (result == 0) {
             throw new IllegalArgumentException("재고를 찾을 수 없습니다: " + stockId);
         }
 
-        return result;
+        return stockRepository.findById(stockId)
+                .orElseThrow().getQuantity();
     }
 
-    public Integer decreaseQuantityV1(String stockId, Long quantity) {
-        // 입력 검증
+    public Long decreaseQuantityV1(String stockId, Long quantity) {
         if (stockId == null || stockId.trim().isEmpty()) {
             throw new IllegalArgumentException("재고 ID는 필수입니다.");
         }
         if (quantity == null || quantity < 0) {
             throw new IllegalArgumentException("수량은 0 이상이어야 합니다.");
         }
+        int result = stockRepository.decreaseStock(stockId, quantity);
 
-        // 벌크 업데이트 실행
-        Integer result = stockRepository.decreaseStock(stockId, quantity);
-
-        // 결과 검증
         if (result == 0) {
-            // 재고 존재 여부 확인
             if (!stockRepository.findById(stockId).isPresent()) {
                 throw new IllegalArgumentException("재고를 찾을 수 없습니다: " + stockId);
             } else {
@@ -74,7 +67,8 @@ public class StockService implements StockRegister, StockFinder {
             }
         }
 
-        return result;
+        return stockRepository.findById(stockId)
+                .orElseThrow().getQuantity();
     }
 
 

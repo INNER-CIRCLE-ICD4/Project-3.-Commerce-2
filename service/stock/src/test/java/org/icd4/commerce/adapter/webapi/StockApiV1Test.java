@@ -55,7 +55,7 @@ class StockApiV1Test {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.message").value("재고가 성공적으로 증가되었습니다."))
-                .andExpect(jsonPath("$.data").value(1));
+                .andExpect(jsonPath("$.data").value(150L)); // 증가된 후의 재고 수량
 
         // 재고가 실제로 증가했는지 확인
         assertThat(stockService.checkQuantity(stockId)).isEqualTo(150L);
@@ -137,13 +137,13 @@ class StockApiV1Test {
         StockUpdateRequest request = new StockUpdateRequest(30L);
 
         // When & Then
-        mockMvc.perform(patch("/api/stocks/v1/{stockId}/v1/decrease", stockId)
+        mockMvc.perform(patch("/api/stocks/v1/{stockId}/decrease", stockId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.message").value("재고가 성공적으로 감소되었습니다."))
-                .andExpect(jsonPath("$.data").value(1));
+                .andExpect(jsonPath("$.data").value(70L)); // 감소된 후의 재고 수량
 
         // 재고가 실제로 감소했는지 확인
         assertThat(stockService.checkQuantity(stockId)).isEqualTo(70L);
@@ -157,7 +157,7 @@ class StockApiV1Test {
         StockUpdateRequest request = new StockUpdateRequest(30L);
 
         // When & Then
-        mockMvc.perform(patch("/api/stocks/v1/{stockId}/v1/decrease", nonExistentStockId)
+        mockMvc.perform(patch("/api/stocks/v1/{stockId}/decrease", nonExistentStockId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isBadRequest())
@@ -174,7 +174,7 @@ class StockApiV1Test {
         StockUpdateRequest request = new StockUpdateRequest(100L);
 
         // When & Then
-        mockMvc.perform(patch("/api/stocks/v1/{stockId}/v1/decrease", stockId)
+        mockMvc.perform(patch("/api/stocks/v1/{stockId}/decrease", stockId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isBadRequest())
@@ -194,12 +194,12 @@ class StockApiV1Test {
         StockUpdateRequest request = new StockUpdateRequest(50L);
 
         // When & Then
-        mockMvc.perform(patch("/api/stocks/v1/{stockId}/v1/decrease", stockId)
+        mockMvc.perform(patch("/api/stocks/v1/{stockId}/decrease", stockId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
-                .andExpect(jsonPath("$.data").value(1));
+                .andExpect(jsonPath("$.data").value(0L)); // 감소된 후의 재고 수량 (50 - 50 = 0)
 
         // 재고가 0이 되었는지 확인
         assertThat(stockService.checkQuantity(stockId)).isEqualTo(0L);
@@ -214,7 +214,7 @@ class StockApiV1Test {
         StockUpdateRequest request = new StockUpdateRequest(-10L);
 
         // When & Then
-        mockMvc.perform(patch("/api/stocks/v1/{stockId}/v1/decrease", stockId)
+        mockMvc.perform(patch("/api/stocks/v1/{stockId}/decrease", stockId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isBadRequest())
@@ -231,7 +231,7 @@ class StockApiV1Test {
         StockUpdateRequest request = new StockUpdateRequest(null);
 
         // When & Then
-        mockMvc.perform(patch("/api/stocks/v1/{stockId}/v1/decrease", stockId)
+        mockMvc.perform(patch("/api/stocks/v1/{stockId}/decrease", stockId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isBadRequest())
@@ -248,7 +248,7 @@ class StockApiV1Test {
         StockUpdateRequest request = new StockUpdateRequest(0L);
 
         // When & Then
-        mockMvc.perform(patch("/api/stocks/v1/{stockId}/v1/decrease", stockId)
+        mockMvc.perform(patch("/api/stocks/v1/{stockId}/decrease", stockId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isBadRequest())
@@ -269,16 +269,16 @@ class StockApiV1Test {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(increaseRequest)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data").value(1));
+                .andExpect(jsonPath("$.data").value(150L)); // 증가된 후의 재고 수량 (100 + 50 = 150)
 
         assertThat(stockService.checkQuantity(stockId)).isEqualTo(150L);
 
         StockUpdateRequest decreaseRequest = new StockUpdateRequest(30L);
-        mockMvc.perform(patch("/api/stocks/v1/{stockId}/v1/decrease", stockId)
+        mockMvc.perform(patch("/api/stocks/v1/{stockId}/decrease", stockId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(decreaseRequest)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data").value(1));
+                .andExpect(jsonPath("$.data").value(120L)); // 감소된 후의 재고 수량 (150 - 30 = 120)
 
         assertThat(stockService.checkQuantity(stockId)).isEqualTo(120L);
     }
@@ -303,7 +303,7 @@ class StockApiV1Test {
                 .andExpect(status().isOk());
 
         // stock2 감소
-        mockMvc.perform(patch("/api/stocks/v1/{stockId}/v1/decrease", stockId2)
+        mockMvc.perform(patch("/api/stocks/v1/{stockId}/decrease", stockId2)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(decreaseRequest)))
                 .andExpect(status().isOk());
@@ -322,11 +322,11 @@ class StockApiV1Test {
 
         // When & Then - 최소 수량에서 감소
         StockUpdateRequest decreaseRequest = new StockUpdateRequest(1L);
-        mockMvc.perform(patch("/api/stocks/v1/{stockId}/v1/decrease", stockId)
+        mockMvc.perform(patch("/api/stocks/v1/{stockId}/decrease", stockId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(decreaseRequest)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data").value(1));
+                .andExpect(jsonPath("$.data").value(0L)); // 감소된 후의 재고 수량 (1 - 1 = 0)
 
         assertThat(stockService.checkQuantity(stockId)).isEqualTo(0L);
 
@@ -336,7 +336,7 @@ class StockApiV1Test {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(increaseRequest)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data").value(1));
+                .andExpect(jsonPath("$.data").value(1L)); // 증가된 후의 재고 수량 (0 + 1 = 1)
 
         assertThat(stockService.checkQuantity(stockId)).isEqualTo(1L);
     }

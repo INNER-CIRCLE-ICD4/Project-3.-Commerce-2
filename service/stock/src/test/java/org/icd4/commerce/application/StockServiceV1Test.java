@@ -2,28 +2,30 @@ package org.icd4.commerce.application;
 
 import org.icd4.commerce.application.required.StockRepository;
 import org.icd4.commerce.domain.Stock;
+import org.icd4.commerce.domain.StockStatus;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.ActiveProfiles;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.when;
 
-@SpringBootTest
-@ActiveProfiles("test")
+@ExtendWith(MockitoExtension.class)
 class StockServiceV1Test {
 
-    @Autowired
-    private StockService stockService;
-
-    @MockBean
+    @Mock
     private StockRepository stockRepository;
+
+    @InjectMocks
+    private StockService stockService;
 
     @Test
     @DisplayName("increaseQuantityV1 - 성공")
@@ -31,13 +33,15 @@ class StockServiceV1Test {
         // Given
         String stockId = "test-stock-123";
         Long increaseQuantity = 50L;
+        Stock increasedStock = Stock.register("test-product", 150L); // 증가 후 수량 (100 + 50)
         when(stockRepository.increaseStock(stockId, increaseQuantity)).thenReturn(1);
+        when(stockRepository.findById(stockId)).thenReturn(Optional.of(increasedStock));
 
         // When
-        Integer result = stockService.increaseQuantityV1(stockId, increaseQuantity);
+        Long result = stockService.increaseQuantityV1(stockId, increaseQuantity);
 
         // Then
-        assertThat(result).isEqualTo(1);
+        assertThat(result).isEqualTo(150L); // 100 + 50
     }
 
     @Test
@@ -112,13 +116,15 @@ class StockServiceV1Test {
         // Given
         String stockId = "test-stock-123";
         Long decreaseQuantity = 30L;
+        Stock decreasedStock = Stock.register("test-product", 70L); // 감소 후 수량 (100 - 30)
         when(stockRepository.decreaseStock(stockId, decreaseQuantity)).thenReturn(1);
+        when(stockRepository.findById(stockId)).thenReturn(Optional.of(decreasedStock));
 
         // When
-        Integer result = stockService.decreaseQuantityV1(stockId, decreaseQuantity);
+        Long result = stockService.decreaseQuantityV1(stockId, decreaseQuantity);
 
         // Then
-        assertThat(result).isEqualTo(1);
+        assertThat(result).isEqualTo(70L); // 100 - 30
     }
 
     @Test
@@ -206,33 +212,20 @@ class StockServiceV1Test {
     }
 
     @Test
-    @DisplayName("decreaseQuantityV1 - 정확히 남은 수량만큼 감소")
-    void decreaseQuantityV1_ExactRemainingQuantity() {
-        // Given
-        String stockId = "test-stock-123";
-        Long decreaseQuantity = 50L;
-        when(stockRepository.decreaseStock(stockId, decreaseQuantity)).thenReturn(1);
-
-        // When
-        Integer result = stockService.decreaseQuantityV1(stockId, decreaseQuantity);
-
-        // Then
-        assertThat(result).isEqualTo(1);
-    }
-
-    @Test
     @DisplayName("decreaseQuantityV1 - 0으로 감소")
     void decreaseQuantityV1_ZeroQuantity() {
         // Given
         String stockId = "test-stock-123";
         Long decreaseQuantity = 0L;
+        Stock unchangedStock = Stock.register("test-product", 100L); // 변경되지 않은 수량 (100 - 0)
         when(stockRepository.decreaseStock(stockId, decreaseQuantity)).thenReturn(1);
+        when(stockRepository.findById(stockId)).thenReturn(Optional.of(unchangedStock));
 
         // When
-        Integer result = stockService.decreaseQuantityV1(stockId, decreaseQuantity);
+        Long result = stockService.decreaseQuantityV1(stockId, decreaseQuantity);
 
         // Then
-        assertThat(result).isEqualTo(1);
+        assertThat(result).isEqualTo(100L); // 100 - 0
     }
 
     @Test
@@ -243,15 +236,21 @@ class StockServiceV1Test {
         Long increaseQuantity = 100L;
         Long decreaseQuantity = 30L;
         
+        Stock increasedStock = Stock.register("test-product", 200L); // 증가 후 수량 (100 + 100)
+        Stock decreasedStock = Stock.register("test-product", 170L); // 감소 후 수량 (200 - 30)
+        
         when(stockRepository.increaseStock(stockId, increaseQuantity)).thenReturn(1);
         when(stockRepository.decreaseStock(stockId, decreaseQuantity)).thenReturn(1);
+        when(stockRepository.findById(stockId))
+                .thenReturn(Optional.of(increasedStock))  // increaseQuantityV1에서 사용
+                .thenReturn(Optional.of(decreasedStock)); // decreaseQuantityV1에서 사용
 
         // When
-        Integer increaseResult = stockService.increaseQuantityV1(stockId, increaseQuantity);
-        Integer decreaseResult = stockService.decreaseQuantityV1(stockId, decreaseQuantity);
+        Long increaseResult = stockService.increaseQuantityV1(stockId, increaseQuantity);
+        Long decreaseResult = stockService.decreaseQuantityV1(stockId, decreaseQuantity);
 
         // Then
-        assertThat(increaseResult).isEqualTo(1);
-        assertThat(decreaseResult).isEqualTo(1);
+        assertThat(increaseResult).isEqualTo(200L); // 100 + 100
+        assertThat(decreaseResult).isEqualTo(170L); // 200 - 30
     }
 } 
