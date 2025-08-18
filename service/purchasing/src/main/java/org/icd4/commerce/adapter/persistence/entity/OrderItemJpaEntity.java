@@ -4,16 +4,19 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.UUID;
-
 @Entity
 @Table(name="order_items")
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
 public class OrderItemJpaEntity {
 
-    @Id
-    private UUID id;
+    @MapsId("orderId")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "order_id")
+    private OrderJpaEntity order;
+
+    @EmbeddedId
+    private OrderItemIdEmbeddable id;
 
     @Column(nullable = false)
     private String productId;
@@ -22,29 +25,26 @@ public class OrderItemJpaEntity {
     private String productName;
 
     @Column(nullable = false)
-    private long unitPrice;
+    private Long unitPrice;
 
     @Column(nullable = false)
-    private long quantity;
+    private int quantity;
 
     @Column(nullable = false)
-    private long itemAmount;
+    private Long itemAmount;
 
     @Lob
     private String productOptions;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "order_id")
-    private OrderJpaEntity order;
 
     // 생성자
     public OrderItemJpaEntity(
-            UUID id,
+            OrderItemIdEmbeddable id,
             String productId,
             String productName,
-            long unitPrice,
-            long quantity,
-            long itemAmount,
+            Long unitPrice,
+            int quantity,
+            Long itemAmount,
             String productOptions
     ) {
         this.id = id;

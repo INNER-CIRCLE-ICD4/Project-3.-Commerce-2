@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.IntStream;
 
 @RequiredArgsConstructor
 @Service
@@ -22,25 +23,26 @@ public class CreateOrderUseCase {
     private final ProductDetailsProvider productDetailsProvider;
     private final InventoryChecker inventoryChecker;
 
-    public Order execute(CreateOrderCommand command) {
+    public Order createOrder(CreateOrderCommand command) {
         OrderId orderId = OrderId.generate();
         //주문 항목 생성
-        List<OrderItem> orderItems = command.items().stream()
-            .map(item -> {
-                ProductId productId = new ProductId(item.productId().toString());
-
-                int available = inventoryChecker.getAvailableStock(productId);
-                if (available < item.quantity()) {
-                    throw new InsufficientStockException(productId, available, (int) item.quantity());
-                }
+        List<OrderItem> orderItems = IntStream.range(0, command.items().size())
+            .mapToObj(i -> {
+                var item = command.items().get(i);
+                ProductId productId = new ProductId(item.productId());
 
                 ProductDetailsProvider.ProductDetails product = productDetailsProvider.getProductInfo(productId);
                 if (!product.active()) {
                     throw new IllegalArgumentException("비활성 상품입니다: " + productId.value());
                 }
 
+                int available = inventoryChecker.getAvailableStock(productId);
+                if (available < item.quantity()) {
+                    throw new InsufficientStockException(productId, available, (int) item.quantity());
+                }
+
                 return new OrderItem(
-                    OrderItemId.generate(),
+                    OrderItemId.of(i+1),
                     orderId,
                     productId,
                     product.name(),

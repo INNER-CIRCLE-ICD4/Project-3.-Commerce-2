@@ -30,13 +30,11 @@ class ConfirmPaymentUseCaseTest {
     @InjectMocks
     private ConfirmPaymentUseCase confirmPaymentUseCase;
 
-    private UUID orderId;
-    private UUID paymentId;
+    private PaymentId paymentId;
 
     @BeforeEach
     void setUp() {
-        orderId = UUID.randomUUID();
-        paymentId = UUID.randomUUID();
+        paymentId = new PaymentId("12345");
     }
 
     @Test
@@ -48,13 +46,13 @@ class ConfirmPaymentUseCaseTest {
         when(orderRepository.findById(orderId))
                 .thenReturn(Optional.of(mockOrder));
 
-        ConfirmPaymentCommand command = new ConfirmPaymentCommand(orderId.toString(), paymentId);
+        ConfirmPaymentCommand command = new ConfirmPaymentCommand(orderId, paymentId);
 
         // when
-        confirmPaymentUseCase.execute(command);
+        confirmPaymentUseCase.confirmPayment(command);
 
         // then
-        verify(mockOrder).confirmPayment(new PaymentId(paymentId));
+        verify(mockOrder).confirmPayment(paymentId);
         verify(orderRepository).save(mockOrder);
     }
 
@@ -67,10 +65,10 @@ class ConfirmPaymentUseCaseTest {
         when(orderRepository.findById(orderId))
                 .thenReturn(Optional.empty());
 
-        ConfirmPaymentCommand command = new ConfirmPaymentCommand(orderId.toString(), paymentId);
+        ConfirmPaymentCommand command = new ConfirmPaymentCommand(orderId, paymentId);
 
         // when & then
-        assertThatThrownBy(() -> confirmPaymentUseCase.execute(command))
+        assertThatThrownBy(() -> confirmPaymentUseCase.confirmPayment(command))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("해당 주문이 존재하지 않습니다");
     }

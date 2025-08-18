@@ -21,9 +21,9 @@ public record CreateOrderRequest(
     }
 
     public record OrderItemRequest(
-            Long productId,
-            long unitPrice,
-            Long quantity
+            String productId,
+            Long unitPrice,
+            int quantity
     ) {
         public CreateOrderCommand.OrderItemCommand toCommand() {
             return new CreateOrderCommand.OrderItemCommand(

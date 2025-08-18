@@ -2,7 +2,7 @@ package org.icd4.commerce.adapter.persistence.mapper;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.persistence.EntityNotFoundException;
+import org.icd4.commerce.adapter.persistence.entity.OrderItemIdEmbeddable;
 import org.icd4.commerce.adapter.persistence.entity.OrderItemJpaEntity;
 import org.icd4.commerce.adapter.persistence.entity.OrderJpaEntity;
 import org.icd4.commerce.domain.cart.ProductOptions;
@@ -26,8 +26,8 @@ public class OrderEntityMapper {
 
     //도메인 → JPA: Order
     public OrderJpaEntity toEntity(Order order) {
-        OrderJpaEntity entity = new OrderJpaEntity(
-                order.getOrderId().value().toString(),
+        OrderJpaEntity entity = OrderJpaEntity.of(
+                order.getOrderId().value(),
                 order.getCustomerId().value(),
                 order.getOrderStatus(),
                 order.getTotalAmount().getAmount(),
@@ -36,10 +36,7 @@ public class OrderEntityMapper {
                 order.getOrderChannel(),
                 order.getCreatedAt(),
                 order.getLastModifiedAt(),
-                order.getCompletedAt(),
-                order.getOrderItems().stream()
-                        .map(this::toEntity)
-                        .collect(Collectors.toList())
+                order.getCompletedAt()
         );
 
         // 연관관계 설정
@@ -51,18 +48,6 @@ public class OrderEntityMapper {
         return entity;
     }
 
-    private OrderItemJpaEntity toEntity(OrderItem item) {
-        return new OrderItemJpaEntity(
-                item.getOrderItemId().value(),
-                item.getProductId().value(),
-                item.getProductName(),
-                item.getUnitPrice(),
-                item.getQuantity(),
-                item.getItemAmount(),
-                serializeOptions(ProductOptions.of(item.getProductOptions()))
-        );
-    }
-
     //JPA → 도메인: Order
     public Order toDomain(OrderJpaEntity entity) {
         List<OrderItem> items = entity.getOrderItems().stream()
@@ -70,13 +55,13 @@ public class OrderEntityMapper {
                 .collect(Collectors.toList());
 
         Order order = Order.restore(
-                new OrderId(UUID.fromString(entity.getId())),
+                new OrderId(entity.getId()),
                 new CustomerId(entity.getCustomerId()),
                 items,
                 entity.getOrderStatus(),
                 Money.of(entity.getTotalAmount()),
                 entity.getOrderMessage(),
-                entity.getPaymentId() != null ? new PaymentId(UUID.fromString(entity.getPaymentId())) : null,
+                entity.getPaymentId() != null ? new PaymentId(entity.getPaymentId()) : null,
                 entity.getOrderChannel(),
                 entity.getCreatedAt(),
                 entity.getLastModifiedAt(),
@@ -89,9 +74,10 @@ public class OrderEntityMapper {
     //도메인 → JPA: OrderItem
     private OrderItemJpaEntity toItemEntity(OrderItem item, OrderJpaEntity order) {
         String optionsJson = serializeOptions(ProductOptions.of(item.getProductOptions()));
+        OrderItemIdEmbeddable key = new OrderItemIdEmbeddable(order.getId(), item.getOrderItemId().value());
 
         OrderItemJpaEntity entity = new OrderItemJpaEntity(
-                item.getOrderItemId().value(),
+                key,
                 item.getProductId().value(),
                 item.getProductName(),
                 item.getUnitPrice(),
@@ -105,12 +91,13 @@ public class OrderEntityMapper {
 
     //JPA → 도메인: OrderItem
     private OrderItem toItemDomain(OrderItemJpaEntity entity) {
+        var key = entity.getId();
         ProductOptions options = deserializeOptions(entity.getProductOptions());
 
         return new OrderItem(
-                new OrderItemId(entity.getId()),
-                new OrderId(entity.getId()),
-                new ProductId(entity.getProductId().toString()),
+                OrderItemId.of(key.getItemNo()),          // ← int 순번만 꺼내서
+                OrderId.from(key.getOrderId()),
+                new ProductId(entity.getProductId()),
                 entity.getProductName(),
                 entity.getUnitPrice(),
                 entity.getQuantity(),

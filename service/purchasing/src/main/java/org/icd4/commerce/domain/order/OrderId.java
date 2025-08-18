@@ -1,7 +1,5 @@
 package org.icd4.commerce.domain.order;
 
-import jakarta.validation.constraints.NotNull;
-
 import java.util.UUID;
 
 /**

@@ -23,12 +23,12 @@ class OrderTest {
                         orderId,
                 new CustomerId("test-customer"),
                 List.of(new OrderItem(
-                        new OrderItemId(UUID.randomUUID()),
+                        new OrderItemId(1),
                         orderId,
                         new ProductId("1"),
                         "테스트상품",
                         10_000L, // unitPrice
-                        3L,      // quantity
+                        3,      // quantity
                         Map.of("색상", "빨강")
                         )
                 ),
@@ -38,12 +38,12 @@ class OrderTest {
 
         //주문상태 설정(실제 코드에서는 setter 대신 리플렉션 사용 권장 안 함)
         if (status != OrderStatus.PENDING) {
-            if (status == OrderStatus.PAID) order.confirmPayment(new PaymentId(UUID.randomUUID()));
+            if (status == OrderStatus.PAID) order.confirmPayment(new PaymentId("1"));
             else if (status == OrderStatus.COMPLETED) {
-                order.confirmPayment(new PaymentId(UUID.randomUUID()));
+                order.confirmPayment(new PaymentId("1"));
                 order.confirmPurchase();
             } else if (status == OrderStatus.REFUND_IN_PROGRESS) {
-                order.confirmPayment(new PaymentId(UUID.randomUUID()));
+                order.confirmPayment(new PaymentId("1"));
                 order.confirmPurchase();
                 order.requestRefund();
             }
@@ -68,21 +68,21 @@ class OrderTest {
         OrderId orderId = OrderId.generate();
 
         OrderItem item1 = new OrderItem(
-                new OrderItemId(UUID.randomUUID()),
+                new OrderItemId(1),
                 orderId,
                 new ProductId("1"),
                 "테스트상품",
                 10_000L,
-                3L,
+                3,
                 Map.of("색상", "빨강")
         );
         OrderItem item2 = new OrderItem(
-                new OrderItemId(UUID.randomUUID()),
+                new OrderItemId(1),
                 orderId,
                 new ProductId("1"),
                 "테스트상품",
                 10_000L,
-                3L,
+                3,
                 Map.of("색상", "빨강")
         );
 
@@ -104,7 +104,7 @@ class OrderTest {
     void confirmPayment_updatesStatus() {
         Order order = createOrder(OrderStatus.PENDING, null);
 
-        order.confirmPayment(new PaymentId(UUID.randomUUID()));
+        order.confirmPayment(new PaymentId("1"));
 
         assertThat(order.getOrderStatus()).isEqualTo(OrderStatus.PAID);
     }

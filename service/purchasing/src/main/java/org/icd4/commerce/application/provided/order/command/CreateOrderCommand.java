@@ -18,9 +18,9 @@ public record CreateOrderCommand(
     }
 
     public record OrderItemCommand(
-            Long productId,
-            long quantity,
-            Long unitPrice
+            String productId,
+            Long unitPrice,
+            int quantity
     ) {
         public OrderItemCommand {
             if (productId == null) {

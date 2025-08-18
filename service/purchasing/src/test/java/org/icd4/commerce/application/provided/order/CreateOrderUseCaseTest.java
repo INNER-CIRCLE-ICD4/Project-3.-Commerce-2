@@ -35,8 +35,8 @@ class CreateOrderUseCaseTest {
         command = new CreateOrderCommand(
                 "CUST-001",
                 List.of(
-                        new CreateOrderCommand.OrderItemCommand(1L, 1000L, 2L),
-                        new CreateOrderCommand.OrderItemCommand(2L, 500L, 1L)
+                        new CreateOrderCommand.OrderItemCommand("1", 1000L, 2),
+                        new CreateOrderCommand.OrderItemCommand("2", 500L, 1)
                 ),
                 "요청사항입니다",
                 "WEB"

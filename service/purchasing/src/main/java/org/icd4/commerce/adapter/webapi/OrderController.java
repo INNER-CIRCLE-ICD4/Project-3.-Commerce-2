@@ -7,11 +7,10 @@ import org.icd4.commerce.adapter.webapi.spec.OrderApi;
 import org.icd4.commerce.application.provided.order.command.ConfirmPurchaseCommand;
 import org.icd4.commerce.application.provided.order.usecase.*;
 import org.icd4.commerce.domain.order.Order;
+import org.icd4.commerce.domain.order.OrderId;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/orders")
@@ -29,42 +28,42 @@ public class OrderController implements OrderApi {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public OrderResponse createOrder(@RequestBody CreateOrderRequest request) {
-        Order order = createOrderUseCase.execute(request.toCommand());
+        Order order = createOrderUseCase.createOrder(request.toCommand());
         return OrderResponse.from(order);
     }
 
     // 주문 취소
     @PostMapping("/{id}/cancel")
     public ResponseEntity<Void> cancelOrder(@PathVariable String id, @RequestBody CancelOrderRequest request) {
-        cancelOrderUseCase.execute(request.toCommand(id));
+        cancelOrderUseCase.cancelOrder(request.toCommand(id));
         return ResponseEntity.ok().build();
     }
 
     // 결제 성공
     @PostMapping("/{id}/confirmPayment")
     public ResponseEntity<Void> confirmPayment(@PathVariable String id, @RequestBody ConfirmPaymentRequest request) {
-        confirmPaymentUseCase.execute(request.toCommand(id));
+        confirmPaymentUseCase.confirmPayment(request.toCommand(id));
         return ResponseEntity.ok().build();
     }
 
     // 결제 실패
     @PostMapping("/{id}/failPayment")
     public ResponseEntity<Void> failPayment(@PathVariable String id, @RequestBody FailPaymentRequest request) {
-        failPaymentUseCase.execute(request.toCommand(id));
+        failPaymentUseCase.failPayment(request.toCommand(id));
         return ResponseEntity.ok().build();
     }
 
     // 구매 확정
     @PostMapping("/{id}/confirmPurchase")
-    public ResponseEntity<Void> confirmPurchase(@PathVariable UUID id) {
-        confirmPurchaseUseCase.execute(new ConfirmPurchaseCommand(id));
+    public ResponseEntity<Void> confirmPurchase(@PathVariable String id) {
+        confirmPurchaseUseCase.confirmPurchase(new ConfirmPurchaseCommand(OrderId.from(id)));
         return ResponseEntity.ok().build();
     }
 
     // 환불 요청
     @PostMapping("/{id}/refund")
     public ResponseEntity<Void> requestRefund(@PathVariable String id, @RequestBody RequestRefundRequest request) {
-        requestRefundUseCase.execute(request.toCommand(id));
+        requestRefundUseCase.requestRefund(request.toCommand(id));
         return ResponseEntity.ok().build();
     }
 
