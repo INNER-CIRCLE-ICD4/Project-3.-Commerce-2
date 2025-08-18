@@ -9,6 +9,8 @@ public record ProductSearchOptions(
         String categoryId,
         BigDecimal minPrice,
         BigDecimal maxPrice,
+        int page,
+        int size,
         String sortField,
         String sortOrder,
         Map<String, List<String>> filters

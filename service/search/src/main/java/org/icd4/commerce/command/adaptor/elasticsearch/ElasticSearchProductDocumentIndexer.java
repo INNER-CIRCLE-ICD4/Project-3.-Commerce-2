@@ -5,7 +5,7 @@ import co.elastic.clients.elasticsearch.core.IndexRequest;
 import co.elastic.clients.elasticsearch.core.IndexResponse;
 import lombok.RequiredArgsConstructor;
 import org.icd4.commerce.command.application.required.ProductDocumentIndexer;
-import org.icd4.commerce.command.application.required.ProductRepository;
+import org.icd4.commerce.command.application.required.ProductCommandRepository;
 import org.icd4.commerce.shared.domain.Product;
 import org.springframework.data.elasticsearch.core.suggest.Completion;
 import org.springframework.stereotype.Component;
@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 public class ElasticSearchProductDocumentIndexer implements ProductDocumentIndexer {
 
     private final ElasticsearchClient esClient;
-    private final ProductRepository productRepository;
+    private final ProductCommandRepository productCommandRepository;
 
     @Override
     public String indexProduct(Product product) throws IOException {
@@ -37,7 +37,7 @@ public class ElasticSearchProductDocumentIndexer implements ProductDocumentIndex
 
     @Override
     public int deleteProduct(String productId) {
-        return productRepository.deleteById(productId);
+        return productCommandRepository.deleteById(productId);
     }
 
     private Product createProduct(Product product) {
@@ -65,6 +65,4 @@ public class ElasticSearchProductDocumentIndexer implements ProductDocumentIndex
                 .distinct()
                 .collect(Collectors.toList());
     }
-
-
 }
