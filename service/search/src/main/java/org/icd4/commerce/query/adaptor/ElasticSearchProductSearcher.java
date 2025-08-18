@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+// 삭제
 @Component
 @RequiredArgsConstructor
 public class ElasticSearchProductSearcher implements ProductSearcher {

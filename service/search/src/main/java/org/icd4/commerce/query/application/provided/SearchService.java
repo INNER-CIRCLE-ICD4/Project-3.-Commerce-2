@@ -1,14 +1,20 @@
 package org.icd4.commerce.query.application.provided;
 
 import lombok.RequiredArgsConstructor;
+import org.icd4.commerce.query.adaptor.ProductRepository;
 import org.icd4.commerce.query.application.dto.SearchResultDto;
-import org.icd4.commerce.query.application.required.ProductSearcher;
 import org.icd4.commerce.shared.domain.Product;
+import org.icd4.commerce.shared.domain.ProductSearchOptions;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
+import org.springframework.data.elasticsearch.core.SearchHits;
+import org.springframework.data.elasticsearch.core.query.StringQuery;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 // 사용자로부터 검색을 요청 받는 곳
@@ -16,23 +22,38 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class SearchService {
-    private final ProductSearcher productSearcher;
 
-    public List<SearchResultDto> search(String keyword, String categoryId, Map<String, Object> filters, String sortField, String sortOrder) throws IOException {
+    private final ProductRepository productRepository;
+    private final ElasticsearchOperations elasticsearchOperations;
+
+    public List<SearchResultDto> search(ProductSearchOptions options) throws IOException {
+
         List<Product> products;
 
-        // filters, sortField, sortOrder가 없는 경우를 단순 검색으로 간주
-        boolean isSimpleSearch = (filters == null || filters.isEmpty()) && sortField == null && sortOrder == null;
+        Sort sort = Sort.unsorted();
+        if (options.sortField() != null && !options.sortField().isBlank()) {
+            Sort.Direction direction = "desc".equalsIgnoreCase(options.sortOrder()) ? Sort.Direction.DESC : Sort.Direction.ASC;
+            sort = Sort.by(direction, options.sortField());
+        }
+        Pageable pageable = PageRequest.of(0, 10, sort);
 
-        if (keyword != null && !keyword.isBlank() && categoryId == null && isSimpleSearch) {
+        boolean isSimpleSearch = (options.filters() == null || options.filters().isEmpty())
+                && options.minPrice() == null && options.maxPrice() == null;
+
+        if (options.keyword() != null && !options.keyword().isBlank() && options.categoryId() == null && isSimpleSearch) {
             // 1. 키워드만 있는 경우
-            products = productSearcher.searchByKeyword(keyword);
-        } else if (categoryId != null && !categoryId.isBlank() && keyword == null && isSimpleSearch) {
+            products = productRepository.findByNameOrBrandOrDescriptionContaining(options.keyword(), pageable);
+        } else if (options.categoryId() != null && !options.categoryId().isBlank() && options.keyword() == null && isSimpleSearch) {
             // 2. 카테고리만 있는 경우
-            products = productSearcher.searchByCategory(categoryId);
+            products = productRepository.findByCategoryId(options.categoryId(), pageable);
         } else {
             // 3. 그 외 모든 복잡한 케이스 (키워드+필터, 키워드+카테고리, 정렬 등)
-            products = productSearcher.searchWithAdvancedOptions(keyword, filters, sortField, sortOrder);
+            products = productRepository.searchAdvanced(
+                    options.keyword(),
+                    options.categoryId(),
+                    options.minPrice(),
+                    options.maxPrice(),
+                    pageable);
         }
 
         return products.stream()
@@ -47,7 +68,29 @@ public class SearchService {
     }
 
     public List<String> getAutocompleteSuggestions(String prefix) throws IOException {
-        return productSearcher.getAutocompleteSuggestions(prefix);
+        String jsonQuery = String.format("""
+            {
+              "suggest": {
+                "product-suggester": {
+                  "prefix": "%s",
+                  "completion": {
+                    "field": "autocompleteSuggestions",
+                    "size": 5
+                  }
+                }
+              }
+            }
+        """, prefix); // 다섯개의 추천결과
+
+        SearchHits<Product> searchHits = elasticsearchOperations.search(new StringQuery(jsonQuery), Product.class);
+
+        return searchHits.getSuggest()
+                .getSuggestion("product-suggester")
+                .getEntries()
+                .stream()
+                .flatMap(entry -> entry.getOptions().stream())
+                .map(option -> option.getText())
+                .collect(Collectors.toList());
     }
 
 

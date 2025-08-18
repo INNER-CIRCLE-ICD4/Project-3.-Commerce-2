@@ -3,14 +3,11 @@ package org.icd4.commerce.query.web;
 import lombok.RequiredArgsConstructor;
 import org.icd4.commerce.query.application.dto.SearchResultDto;
 import org.icd4.commerce.query.application.provided.SearchService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.icd4.commerce.shared.domain.ProductSearchOptions;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 
 // 검색 API
 @RestController
@@ -20,15 +17,12 @@ public class SearchApi {
 
     private final SearchService searchService;
 
-    @GetMapping("/search")
+    // 얼마나 많은 옵션의 데이터가 들어올지 몰라서 Post로 변경
+    @PostMapping("/search")
     public List<SearchResultDto> searchProducts(
-            @RequestParam(required = false) String keyword,
-            @RequestParam(required = false) String categoryId,
-            @RequestParam(required = false) Map<String, Object> filters,
-            @RequestParam(required = false) String sortField,
-            @RequestParam(required = false) String sortOrder
-    ) throws IOException {
-        return searchService.search(keyword, categoryId, filters, sortField, sortOrder);
+            @RequestBody ProductSearchOptions options
+            ) throws IOException {
+        return searchService.search(options);
     }
 
     @GetMapping("/autocomplete")
