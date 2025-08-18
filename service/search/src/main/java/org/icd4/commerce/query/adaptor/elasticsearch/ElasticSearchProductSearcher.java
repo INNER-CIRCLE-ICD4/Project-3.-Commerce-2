@@ -6,6 +6,7 @@ import co.elastic.clients.elasticsearch.core.SearchResponse;
 import co.elastic.clients.elasticsearch.core.search.Hit;
 import lombok.RequiredArgsConstructor;
 import org.icd4.commerce.query.adaptor.web.dto.ProductSearch;
+import org.icd4.commerce.query.adaptor.web.dto.SearchResultDto;
 import org.icd4.commerce.query.application.required.ProductSearcher;
 import org.icd4.commerce.shared.domain.Product;
 import org.springframework.stereotype.Component;
@@ -24,7 +25,7 @@ public class ElasticSearchProductSearcher implements ProductSearcher {
     private static final String INDEX_NAME = "product_index";
 
     @Override
-    public List<Product> searchWithAdvancedOptions(ProductSearch criteria) throws IOException {
+    public List<SearchResultDto> searchWithAdvancedOptions(ProductSearch criteria) throws IOException {
         SearchRequest request = new ElasticQueryBuilder()
                 .index(INDEX_NAME)
                 .keyword(criteria.keyword())
@@ -36,6 +37,7 @@ public class ElasticSearchProductSearcher implements ProductSearcher {
         SearchResponse<Product> response = esClient.search(request, Product.class);
         return response.hits().hits().stream()
                 .map(Hit::source)
+                .map(SearchResultDto::of)
                 .collect(Collectors.toList());
     }
 

@@ -1,4 +1,4 @@
-package org.icd4.commerce.command.adaptor;
+package org.icd4.commerce.command.adaptor.web;
 
 import lombok.RequiredArgsConstructor;
 import org.icd4.commerce.command.application.required.IndexManager;

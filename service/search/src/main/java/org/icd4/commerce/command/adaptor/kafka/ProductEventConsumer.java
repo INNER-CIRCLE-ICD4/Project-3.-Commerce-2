@@ -1,4 +1,4 @@
-package org.icd4.commerce.command.adaptor;
+package org.icd4.commerce.command.adaptor.kafka;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

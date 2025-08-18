@@ -17,13 +17,6 @@ public class ProductIndexingService {
     }
 
     public int delete(String productId) {
-    private final ProductDocumentIndexer productDocumentIndexer;
-
-    public String indexing(Product product) throws IOException {
-        return productDocumentIndexer.indexProduct(product);
-    }
-
-    public int delete(String productId) {
-        return productDocumentIndexer.deleteProduct(productId);
+        return elasticSearchProductDocumentIndexer.deleteProduct(productId);
     }
 }
