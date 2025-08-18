@@ -21,6 +21,7 @@ import static org.assertj.core.data.Percentage.withPercentage;
 import static java.time.temporal.ChronoUnit.MILLIS;
 
 @SpringBootTest
+@org.springframework.context.annotation.Import(org.icd4.commerce.config.TestConfig.class)
 @Transactional
 class StockServiceTest {
 

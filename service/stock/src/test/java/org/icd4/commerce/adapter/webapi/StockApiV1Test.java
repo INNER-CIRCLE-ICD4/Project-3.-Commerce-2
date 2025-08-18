@@ -91,7 +91,7 @@ class StockApiV1Test {
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.success").value(false))
-                .andExpect(jsonPath("$.message").value("수량은 0보다 커야 합니다."));
+                .andExpect(jsonPath("$.message").value("수량은 0 이상이어야 합니다."));
     }
 
     @Test
@@ -123,9 +123,13 @@ class StockApiV1Test {
         mockMvc.perform(patch("/api/stocks/v1/{stockId}/increase", stockId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.success").value(false))
-                .andExpect(jsonPath("$.message").value("수량은 0보다 커야 합니다."));
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.message").value("재고가 성공적으로 증가되었습니다."))
+                .andExpect(jsonPath("$.data").value(100L)); // 증가되지 않은 재고 수량 (100 + 0 = 100)
+
+        // 재고가 변하지 않았는지 확인
+        assertThat(stockService.checkQuantity(stockId)).isEqualTo(100L);
     }
 
     @Test
@@ -219,7 +223,7 @@ class StockApiV1Test {
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.success").value(false))
-                .andExpect(jsonPath("$.message").value("수량은 0보다 커야 합니다."));
+                .andExpect(jsonPath("$.message").value("수량은 0 이상이어야 합니다."));
     }
 
     @Test
@@ -251,9 +255,13 @@ class StockApiV1Test {
         mockMvc.perform(patch("/api/stocks/v1/{stockId}/decrease", stockId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.success").value(false))
-                .andExpect(jsonPath("$.message").value("수량은 0보다 커야 합니다."));
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.message").value("재고가 성공적으로 감소되었습니다."))
+                .andExpect(jsonPath("$.data").value(100L)); // 감소되지 않은 재고 수량 (100 - 0 = 100)
+
+        // 재고가 변하지 않았는지 확인
+        assertThat(stockService.checkQuantity(stockId)).isEqualTo(100L);
     }
 
     @Test

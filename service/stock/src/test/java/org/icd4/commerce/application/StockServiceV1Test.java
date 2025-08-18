@@ -1,6 +1,7 @@
 package org.icd4.commerce.application;
 
-import org.icd4.commerce.application.required.StockRepository;
+import org.icd4.commerce.adapter.persistence.StockJpaRepositoryAdapter;
+import org.icd4.commerce.adapter.persistence.StockRedisRepositoryAdapter;
 import org.icd4.commerce.domain.Stock;
 import org.icd4.commerce.domain.StockStatus;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,7 +23,10 @@ import static org.mockito.Mockito.when;
 class StockServiceV1Test {
 
     @Mock
-    private StockRepository stockRepository;
+    private StockJpaRepositoryAdapter stockRepositoryAdapter;
+    
+    @Mock
+    private StockRedisRepositoryAdapter stockRedisRepositoryAdapter;
 
     @InjectMocks
     private StockService stockService;
@@ -31,11 +35,14 @@ class StockServiceV1Test {
     @DisplayName("increaseQuantityV1 - 성공")
     void increaseQuantityV1_Success() {
         // Given
-        String stockId = "test-stock-123";
+        Long initialQuantity = 100L;
         Long increaseQuantity = 50L;
-        Stock increasedStock = Stock.register("test-product", 150L); // 증가 후 수량 (100 + 50)
-        when(stockRepository.increaseStock(stockId, increaseQuantity)).thenReturn(1);
-        when(stockRepository.findById(stockId)).thenReturn(Optional.of(increasedStock));
+        Stock initialStock = Stock.register("test-product", initialQuantity);
+        String stockId = initialStock.getId(); // Use the actual ID
+        Stock increasedStock = Stock.register("test-product", initialQuantity + increaseQuantity);
+        when(stockRepositoryAdapter.increaseStock(stockId, increaseQuantity)).thenReturn(1);
+        when(stockRepositoryAdapter.findById(stockId))
+                .thenReturn(Optional.of(increasedStock));
 
         // When
         Long result = stockService.increaseQuantityV1(stockId, increaseQuantity);
@@ -102,7 +109,7 @@ class StockServiceV1Test {
         // Given
         String stockId = "non-existent-stock";
         Long increaseQuantity = 50L;
-        when(stockRepository.increaseStock(stockId, increaseQuantity)).thenReturn(0);
+        when(stockRepositoryAdapter.increaseStock(stockId, increaseQuantity)).thenReturn(0);
 
         // When & Then
         assertThatThrownBy(() -> stockService.increaseQuantityV1(stockId, increaseQuantity))
@@ -114,11 +121,14 @@ class StockServiceV1Test {
     @DisplayName("decreaseQuantityV1 - 성공")
     void decreaseQuantityV1_Success() {
         // Given
-        String stockId = "test-stock-123";
+        Long initialQuantity = 100L;
         Long decreaseQuantity = 30L;
-        Stock decreasedStock = Stock.register("test-product", 70L); // 감소 후 수량 (100 - 30)
-        when(stockRepository.decreaseStock(stockId, decreaseQuantity)).thenReturn(1);
-        when(stockRepository.findById(stockId)).thenReturn(Optional.of(decreasedStock));
+        Stock initialStock = Stock.register("test-product", initialQuantity);
+        String stockId = initialStock.getId(); // Use the actual ID
+        Stock decreasedStock = Stock.register("test-product", initialQuantity - decreaseQuantity);
+        when(stockRepositoryAdapter.decreaseStock(stockId, decreaseQuantity)).thenReturn(1);
+        when(stockRepositoryAdapter.findById(stockId))
+                .thenReturn(Optional.of(decreasedStock));
 
         // When
         Long result = stockService.decreaseQuantityV1(stockId, decreaseQuantity);
@@ -185,8 +195,8 @@ class StockServiceV1Test {
         // Given
         String stockId = "non-existent-stock";
         Long decreaseQuantity = 30L;
-        when(stockRepository.decreaseStock(stockId, decreaseQuantity)).thenReturn(0);
-        when(stockRepository.findById(stockId)).thenReturn(Optional.empty());
+        when(stockRepositoryAdapter.decreaseStock(stockId, decreaseQuantity)).thenReturn(0);
+        when(stockRepositoryAdapter.findById(stockId)).thenReturn(Optional.empty());
 
         // When & Then
         assertThatThrownBy(() -> stockService.decreaseQuantityV1(stockId, decreaseQuantity))
@@ -202,8 +212,8 @@ class StockServiceV1Test {
         Long decreaseQuantity = 100L;
         Stock existingStock = Stock.register("test-product", 50L);
         
-        when(stockRepository.decreaseStock(stockId, decreaseQuantity)).thenReturn(0);
-        when(stockRepository.findById(stockId)).thenReturn(Optional.of(existingStock));
+        when(stockRepositoryAdapter.decreaseStock(stockId, decreaseQuantity)).thenReturn(0);
+        when(stockRepositoryAdapter.findById(stockId)).thenReturn(Optional.of(existingStock));
 
         // When & Then
         assertThatThrownBy(() -> stockService.decreaseQuantityV1(stockId, decreaseQuantity))
@@ -215,11 +225,13 @@ class StockServiceV1Test {
     @DisplayName("decreaseQuantityV1 - 0으로 감소")
     void decreaseQuantityV1_ZeroQuantity() {
         // Given
-        String stockId = "test-stock-123";
+        Long initialQuantity = 100L;
         Long decreaseQuantity = 0L;
-        Stock unchangedStock = Stock.register("test-product", 100L); // 변경되지 않은 수량 (100 - 0)
-        when(stockRepository.decreaseStock(stockId, decreaseQuantity)).thenReturn(1);
-        when(stockRepository.findById(stockId)).thenReturn(Optional.of(unchangedStock));
+        Stock initialStock = Stock.register("test-product", initialQuantity);
+        String stockId = initialStock.getId(); // Use the actual ID
+        Stock unchangedStock = Stock.register("test-product", initialQuantity); // 변경되지 않은 수량 (100 - 0)
+        when(stockRepositoryAdapter.decreaseStock(stockId, decreaseQuantity)).thenReturn(1);
+        when(stockRepositoryAdapter.findById(stockId)).thenReturn(Optional.of(unchangedStock));
 
         // When
         Long result = stockService.decreaseQuantityV1(stockId, decreaseQuantity);
@@ -232,16 +244,18 @@ class StockServiceV1Test {
     @DisplayName("increaseQuantityV1과 decreaseQuantityV1 연속 실행")
     void increaseQuantityV1AndDecreaseQuantityV1_Sequential() {
         // Given
-        String stockId = "test-stock-123";
+        Long initialQuantity = 100L;
         Long increaseQuantity = 100L;
         Long decreaseQuantity = 30L;
         
-        Stock increasedStock = Stock.register("test-product", 200L); // 증가 후 수량 (100 + 100)
-        Stock decreasedStock = Stock.register("test-product", 170L); // 감소 후 수량 (200 - 30)
+        Stock initialStock = Stock.register("test-product", initialQuantity);
+        String stockId = initialStock.getId(); // Use the actual ID
+        Stock increasedStock = Stock.register("test-product", initialQuantity + increaseQuantity); // 증가 후 수량 (100 + 100)
+        Stock decreasedStock = Stock.register("test-product", initialQuantity + increaseQuantity - decreaseQuantity); // 감소 후 수량 (200 - 30)
         
-        when(stockRepository.increaseStock(stockId, increaseQuantity)).thenReturn(1);
-        when(stockRepository.decreaseStock(stockId, decreaseQuantity)).thenReturn(1);
-        when(stockRepository.findById(stockId))
+        when(stockRepositoryAdapter.increaseStock(stockId, increaseQuantity)).thenReturn(1);
+        when(stockRepositoryAdapter.decreaseStock(stockId, decreaseQuantity)).thenReturn(1);
+        when(stockRepositoryAdapter.findById(stockId))
                 .thenReturn(Optional.of(increasedStock))  // increaseQuantityV1에서 사용
                 .thenReturn(Optional.of(decreasedStock)); // decreaseQuantityV1에서 사용
 

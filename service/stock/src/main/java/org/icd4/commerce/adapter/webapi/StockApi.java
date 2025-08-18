@@ -82,4 +82,22 @@ public class StockApi {
         return ResponseEntity.ok()
                 .body(ApiResponse.success("재고가 성공적으로 감소되었습니다.", decreaseQuantity));
     }
+
+    @PatchMapping("/v2/{stockId}/increase")
+    public ResponseEntity<ApiResponse<Long>> increaseStockV2(@PathVariable String stockId,
+                                                           @Valid @RequestBody StockUpdateRequest request) {
+        Long increaseQuantity = stockService.increaseQuantityV2(stockId, request.getQuantity());
+
+        return ResponseEntity.ok()
+                .body(ApiResponse.success("재고가 성공적으로 증가되었습니다. (Redis)", increaseQuantity));
+    }
+
+    @PatchMapping("/v2/{stockId}/decrease")
+    public ResponseEntity<ApiResponse<Long>> decreaseStockV2(@PathVariable String stockId,
+                                                           @Valid @RequestBody StockUpdateRequest request) {
+        Long decreaseQuantity = stockService.decreaseQuantityV2(stockId, request.getQuantity());
+
+        return ResponseEntity.ok()
+                .body(ApiResponse.success("재고가 성공적으로 감소되었습니다. (Redis)", decreaseQuantity));
+    }
 }
