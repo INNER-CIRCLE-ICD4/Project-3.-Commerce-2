@@ -1,9 +1,9 @@
 ### 상품 인덱스 생성
-POST http://localhost:8081/api/v1/product/_index
+POST http://localhost:8081/api/v1/product
 Content-Type: application/json
 
 {
-  "id": "7a8c3d9b-2e6f-4c8d-8a2b-3c4e5f6d7a8e",
+  "productId": "7a8c3d9b-2e6f-4c8d-8a2b-3c4e5f6d7a8e",
   "sellerId": "SELLER_FASHION_002",
   "name": "모던 오버핏 자동완성v2",
   "brand": "넌필터아님",
@@ -12,6 +12,7 @@ Content-Type: application/json
   "createdAt": "2025-07-30T10:15:00.000Z",
   "updatedAt": "2025-07-30T10:15:00.000Z",
   "basePrice": 30000,
+  "autoCompleteSuggestions": [],
   "variants": [
     {
       "sku": "SHIRT-MODERN-M-WHITE",
@@ -47,16 +48,17 @@ Content-Type: application/json
 }
 
 ### 검색 & 정렬 & 필터링
-GET http://localhost:8081/api/v1/product/search?keyword=모던&sortField=basePrice&sortOrder=asc&page=0&size=10
+GET http://localhost:8081/api/v1/product/search_2?keyword=모던&sortField=basePrice&sortOrder=asc&page=0&size=10
 
 ### 자동완성
 GET http://localhost:8081/api/v1/product/autocomplete_2?prefix=오
 
 
 ### 상품 인덱스 삭제
-DELETE http://localhost:8081/api/v1/product/7a8c3d9b-2e6f-4c8d-8a2b-3c4e5f6d7a8e
+DELETE http://localhost:8081/api/v1/product/{{productId}}
 
 
 
 
 
+https://www.coupang.com/np/categories/186764?listSize=60&filterType=&rating=0&isPriceRange=false&minPrice=&maxPrice=&component=&sorter=bestAsc&brand=33408&offerCondition=&filter=&fromComponent=N&channel=user&selectedPlpKeepFilter=
