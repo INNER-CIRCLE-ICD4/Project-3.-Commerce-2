@@ -9,6 +9,7 @@ import org.icd4.commerce.query.adaptor.web.dto.ProductSearchRequest;
 import org.icd4.commerce.query.adaptor.web.dto.SearchResultResponse;
 import org.icd4.commerce.query.application.required.ProductSearcher;
 import org.icd4.commerce.shared.domain.Product;
+import org.springframework.data.elasticsearch.client.elc.NativeQuery;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -25,13 +26,14 @@ public class ElasticSearchProductSearcher implements ProductSearcher {
     private static final String INDEX_NAME = "product_index";
 
     @Override
-    public List<SearchResultResponse> searchWithAdvancedOptions(ProductSearchRequest criteria) throws IOException {
+    public List<SearchResultResponse> searchWithAdvancedOptions(ProductSearchRequest criteria, int page, int size) throws IOException {
         SearchRequest request = new ElasticQueryBuilder()
                 .index(INDEX_NAME)
                 .keyword(criteria.keyword())
                 .category(criteria.categoryId())
                 .filters(criteria.filters())
                 .sort(criteria.sortField(), criteria.sortOrder())
+                .page(page, size)
                 .build();
 
         SearchResponse<Product> response = esClient.search(request, Product.class);

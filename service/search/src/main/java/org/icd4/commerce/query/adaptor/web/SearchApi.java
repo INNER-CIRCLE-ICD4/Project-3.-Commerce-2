@@ -30,8 +30,10 @@ public class SearchApi {
     }
 
     @GetMapping("/search_2")
-    public List<SearchResultResponse> searchProducts2(ProductSearchRequest options) throws IOException {
-        return elasticSearchProductSearcher.searchWithAdvancedOptions(options);
+    public List<SearchResultResponse> searchProducts2(ProductSearchRequest request,
+                                                      @RequestParam(defaultValue = "0", required = false) int page,
+                                                      @RequestParam(defaultValue = "10", required = false) int size) throws IOException {
+        return elasticSearchProductSearcher.searchWithAdvancedOptions(request, page, size);
     }
 
     @GetMapping("/autocomplete")

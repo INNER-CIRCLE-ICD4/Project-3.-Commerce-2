@@ -62,6 +62,11 @@ public class ElasticQueryBuilder {
         return this;
     }
 
+    public ElasticQueryBuilder page(int page, int size) {
+        searchBuilder.from(page * size).size(size);
+        return this;
+    }
+
     public SearchRequest build() {
         return searchBuilder.query(boolQuery.build()._toQuery()).build();
     }
