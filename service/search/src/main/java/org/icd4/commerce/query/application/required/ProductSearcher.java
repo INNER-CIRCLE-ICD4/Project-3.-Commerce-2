@@ -1,12 +1,10 @@
 package org.icd4.commerce.query.application.required;
 
-import org.icd4.commerce.query.adaptor.web.dto.ProductSearch;
-import org.icd4.commerce.query.adaptor.web.dto.SearchResultDto;
-import org.icd4.commerce.shared.domain.Product;
+import org.icd4.commerce.query.adaptor.web.dto.ProductSearchRequest;
+import org.icd4.commerce.query.adaptor.web.dto.SearchResultResponse;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 
 public interface ProductSearcher {
     /**
@@ -19,7 +17,7 @@ public interface ProductSearcher {
      * @throws IOException 통신 오류 발생 시
      */
 
-    List<SearchResultDto> searchWithAdvancedOptions(ProductSearch criteria) throws IOException;
+    List<SearchResultResponse> searchWithAdvancedOptions(ProductSearchRequest criteria) throws IOException;
 
     /**
      * 검색어 접두어를 기반으로 자동완성 제안을 반환합니다.

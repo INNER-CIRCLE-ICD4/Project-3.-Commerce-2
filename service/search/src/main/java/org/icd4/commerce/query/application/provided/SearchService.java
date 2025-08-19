@@ -2,9 +2,9 @@ package org.icd4.commerce.query.application.provided;
 
 import lombok.RequiredArgsConstructor;
 import org.icd4.commerce.query.application.required.ProductQueryRepository;
-import org.icd4.commerce.query.adaptor.web.dto.SearchResultDto;
+import org.icd4.commerce.query.adaptor.web.dto.SearchResultResponse;
 import org.icd4.commerce.shared.domain.Product;
-import org.icd4.commerce.shared.domain.ProductSearchOptions;
+import org.icd4.commerce.query.adaptor.web.dto.ProductSearchOptions;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -27,7 +27,7 @@ public class SearchService {
     private final ProductQueryRepository productQueryRepository;
     private final ElasticsearchOperations elasticsearchOperations;
 
-    public List<SearchResultDto> search(ProductSearchOptions options) throws IOException {
+    public List<SearchResultResponse> search(ProductSearchOptions options) throws IOException {
 
         List<Product> products;
 
@@ -53,7 +53,7 @@ public class SearchService {
                     pageable);
         }
         return products.stream()
-                .map(SearchResultDto::of)
+                .map(SearchResultResponse::of)
                 .collect(Collectors.toList());
     }
 

@@ -1,6 +1,5 @@
 package org.icd4.commerce.shared.domain;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.data.elasticsearch.core.suggest.Completion;
 
 import java.math.BigDecimal;
@@ -9,13 +8,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public record ProductCreateRequest(
-        @JsonProperty("productId")
         String productId,
         String sellerId,
         String name,
         String brand,
         String description,
-        @JsonProperty("basePrice")
         BigDecimal basePrice,
         String categoryId,
         String status,
@@ -23,36 +20,24 @@ public record ProductCreateRequest(
         ZonedDateTime updatedAt,
         Boolean isDeleted,
         List<String> productAttributes,
-        @JsonProperty("autocompleteSuggestions")
-        AutocompleteSuggestionsDto autocompleteSuggestions,
+        List<String> autoCompleteSuggestions,
         List<ProductVariantDto> variants
 ) {
-
-    public record AutocompleteSuggestionsDto(
-            List<String> input,
-            Integer weight
-    ) {
-        public Completion toCompletion() {
-            Completion completion = new Completion(input.toArray(new String[0]));
-            completion.setWeight(weight);
-            return completion;
-        }
-    }
-
     public record ProductVariantDto(
             String sku,
             Long price,
             Integer stock,
             String status,
             List<ProductOptionDto> optionCombination
-    ) {}
+    ) {
+    }
 
     public record ProductOptionDto(
             String name,
             String value
-    ) {}
+    ) {
+    }
 
-    // Product 엔티티로 변환하는 메서드
     public Product toProduct() {
         return Product.builder()
                 .id(this.productId)
@@ -67,8 +52,8 @@ public record ProductCreateRequest(
                 .updatedAt(this.updatedAt.toString())
                 .isDeleted(this.isDeleted)
                 .productAttributes(this.productAttributes)
-                .autocompleteSuggestions(this.autocompleteSuggestions != null ?
-                        this.autocompleteSuggestions.toCompletion() : null)
+                .autoCompleteSuggestions(this.autoCompleteSuggestions != null ?
+                        new Completion(autoCompleteSuggestions.toArray(new String[0])) : null)
                 .variants(this.variants != null ?
                         this.variants.stream()
                                 .map(this::convertToProductVariant)

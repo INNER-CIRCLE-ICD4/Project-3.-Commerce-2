@@ -1,4 +1,4 @@
-package org.icd4.commerce.shared.domain;
+package org.icd4.commerce.query.adaptor.web.dto;
 
 import java.math.BigDecimal;
 import java.util.List;

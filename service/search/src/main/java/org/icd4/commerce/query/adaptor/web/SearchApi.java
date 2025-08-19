@@ -2,12 +2,14 @@ package org.icd4.commerce.query.adaptor.web;
 
 import lombok.RequiredArgsConstructor;
 import org.icd4.commerce.query.adaptor.elasticsearch.ElasticSearchProductSearcher;
-import org.icd4.commerce.query.adaptor.web.dto.ProductSearch;
-import org.icd4.commerce.query.adaptor.web.dto.SearchResultDto;
+import org.icd4.commerce.query.adaptor.web.dto.ProductSearchOptions;
+import org.icd4.commerce.query.adaptor.web.dto.ProductSearchRequest;
+import org.icd4.commerce.query.adaptor.web.dto.SearchResultResponse;
 import org.icd4.commerce.query.application.provided.SearchService;
-import org.icd4.commerce.shared.domain.Product;
-import org.icd4.commerce.shared.domain.ProductSearchOptions;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
 import java.util.List;
@@ -23,16 +25,12 @@ public class SearchApi {
 
     // 얼마나 많은 옵션의 데이터가 들어올지 몰라서 Post로 변경
     @GetMapping("/search")
-    public List<SearchResultDto> searchProducts(
-            ProductSearchOptions options
-            ) throws IOException {
+    public List<SearchResultResponse> searchProducts(ProductSearchOptions options) throws IOException {
         return searchService.search(options);
     }
 
     @GetMapping("/search_2")
-    public List<SearchResultDto> searchProducts2(
-            ProductSearch options
-    ) throws IOException {
+    public List<SearchResultResponse> searchProducts2(ProductSearchRequest options) throws IOException {
         return elasticSearchProductSearcher.searchWithAdvancedOptions(options);
     }
 
