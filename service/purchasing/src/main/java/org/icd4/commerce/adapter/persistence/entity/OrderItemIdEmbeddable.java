@@ -17,11 +17,11 @@ public class OrderItemIdEmbeddable implements Serializable {
     @Column(name = "order_id", nullable = false, length = 36)
     private String orderId;
 
-    @Column(name = "item_no", nullable = false)
-    private int itemNo;       // 주문 내부 순번(1..n)
+    @Column(name = "line_no", nullable = false)
+    private int lineNo;       // 주문 내부 순번(1..n)
 
     public OrderItemIdEmbeddable(String orderId, int itemNo) {
         this.orderId = orderId;
-        this.itemNo = itemNo;
+        this.lineNo = itemNo;
     }
 }

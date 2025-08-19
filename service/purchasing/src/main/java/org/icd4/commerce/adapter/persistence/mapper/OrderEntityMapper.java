@@ -12,7 +12,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Component
@@ -55,7 +54,7 @@ public class OrderEntityMapper {
                 .collect(Collectors.toList());
 
         Order order = Order.restore(
-                new OrderId(entity.getId()),
+                OrderId.from(entity.getId()),
                 new CustomerId(entity.getCustomerId()),
                 items,
                 entity.getOrderStatus(),
@@ -95,7 +94,7 @@ public class OrderEntityMapper {
         ProductOptions options = deserializeOptions(entity.getProductOptions());
 
         return new OrderItem(
-                OrderItemId.of(key.getItemNo()),          // ← int 순번만 꺼내서
+                OrderItemId.of(key.getLineNo()),          // ← int 순번만 꺼내서
                 OrderId.from(key.getOrderId()),
                 new ProductId(entity.getProductId()),
                 entity.getProductName(),
