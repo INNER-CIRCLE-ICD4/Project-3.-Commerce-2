@@ -1,9 +1,8 @@
 package org.icd4.commerce.command.adaptor.web;
 
 import lombok.RequiredArgsConstructor;
-import org.icd4.commerce.command.adaptor.elasticsearch.ElasticSearchProductDocumentIndexer;
 import org.icd4.commerce.command.application.provided.ProductIndexingService;
-import org.icd4.commerce.shared.domain.Product;
+import org.icd4.commerce.shared.domain.ProductCreateRequest;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -16,13 +15,13 @@ public class SearchCommandApi {
 
     private final ProductIndexingService indexer;
 
-    @PostMapping("/_index")
-    public String searchProducts(@RequestBody Product request) throws IOException {
+    @PostMapping
+    public String create(@RequestBody ProductCreateRequest request) throws IOException {
         return indexer.indexing(request);
     }
 
-    @DeleteMapping("/_index/{productId}")
-    public int getAutocompleteSuggestions(@PathVariable String productId)  {
-        return indexer.delete(productId);
+    @DeleteMapping("/{productId}")
+    public void delete(@PathVariable String productId) {
+        indexer.delete(productId);
     }
 }

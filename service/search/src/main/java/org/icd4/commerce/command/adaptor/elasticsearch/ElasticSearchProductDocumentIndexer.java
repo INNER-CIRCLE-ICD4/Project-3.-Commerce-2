@@ -3,11 +3,12 @@ package org.icd4.commerce.command.adaptor.elasticsearch;
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch.core.IndexRequest;
 import co.elastic.clients.elasticsearch.core.IndexResponse;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.icd4.commerce.command.application.required.ProductDocumentIndexer;
 import org.icd4.commerce.command.application.required.ProductCommandRepository;
+import org.icd4.commerce.command.application.required.ProductDocumentIndexer;
 import org.icd4.commerce.shared.domain.Product;
-import org.springframework.data.elasticsearch.core.suggest.Completion;
+import org.icd4.commerce.shared.domain.ProductCreateRequest;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -23,41 +24,41 @@ public class ElasticSearchProductDocumentIndexer implements ProductDocumentIndex
     private final ElasticsearchClient esClient;
     private final ProductCommandRepository productCommandRepository;
 
+    @Transactional
     @Override
-    public String indexProduct(Product product) throws IOException {
-        Product index = createProduct(product);
+    public String indexProduct(ProductCreateRequest request) throws IOException {
+        Product index = createProduct(request);
         IndexRequest<Product> indexRequest = IndexRequest.of(i -> i
-            .index("product_index")
-            .id(product.getId())
-            .document(index)
+                .index("product_index")
+                .id(request.productId())
+                .document(index)
         );
         IndexResponse response = esClient.index(indexRequest);
         return response.id();
     }
 
+    @Transactional
     @Override
-    public int deleteProduct(String productId) {
-        return productCommandRepository.deleteById(productId);
+    public void deleteProduct(String productId) {
+        productCommandRepository.deleteById(productId);
     }
 
-    private Product createProduct(Product product) {
-        List<String> suggestions = generateSuggestions(product);
-        Completion completion = new Completion(suggestions.toArray(new String[0]));
-        product.addCompletion(completion);
-        return product;
+    private Product createProduct(ProductCreateRequest request) {
+        request.autoCompleteSuggestions().addAll(generateSuggestions(request));
+        return request.toProduct();
     }
 
-    private List<String> generateSuggestions(Product product) {
+    private List<String> generateSuggestions(ProductCreateRequest request) {
         List<String> suggestions = new ArrayList<>();
 
-        if (product.getName() != null) {
-            suggestions.add(product.getName());
-            suggestions.addAll(Arrays.asList(product.getName().split("\\s+")));
+        if (request.name() != null) {
+            suggestions.add(request.name());
+            suggestions.addAll(Arrays.asList(request.name().split("\\s+")));
         }
 
-        if (product.getBrand() != null) {
-            suggestions.add(product.getBrand());
-            suggestions.add(product.getBrand() + " " + product.getName());
+        if (request.brand() != null) {
+            suggestions.add(request.brand());
+            suggestions.add(request.brand() + " " + request.name());
         }
 
         return suggestions.stream()
