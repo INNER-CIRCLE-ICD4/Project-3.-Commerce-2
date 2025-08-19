@@ -60,7 +60,7 @@
       "productAttributes": {
         "type": "keyword"
       },
-      "autocompleteSuggestions": {
+      "autoCompleteSuggestions": {
         "type": "completion",
         "analyzer": "korean_analyzer"
       },
