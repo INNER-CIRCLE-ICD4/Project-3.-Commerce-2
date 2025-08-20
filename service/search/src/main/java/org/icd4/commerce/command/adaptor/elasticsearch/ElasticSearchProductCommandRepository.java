@@ -58,6 +58,7 @@ public class ElasticSearchProductCommandRepository implements ProductCommandRepo
         return response.id();
     }
 
+    // TODO 로직 개선 사항
     @Transactional
     @Override
     public String updateStock(String productId, String sku, int stock, String updateAt) throws IOException {

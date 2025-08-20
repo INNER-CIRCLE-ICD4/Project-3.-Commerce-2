@@ -7,6 +7,7 @@ import co.elastic.clients.elasticsearch._types.query_dsl.BoolQuery;
 import co.elastic.clients.elasticsearch._types.query_dsl.QueryBuilders;
 import co.elastic.clients.elasticsearch.core.SearchRequest;
 
+import java.util.List;
 import java.util.Map;
 
 public class ElasticQueryBuilder {
@@ -38,7 +39,7 @@ public class ElasticQueryBuilder {
         return this;
     }
 
-    public ElasticQueryBuilder filters(Map<String, Object> filters) {
+    public ElasticQueryBuilder filters(Map<String, List<String>> filters) {
         if (filters != null && !filters.isEmpty()) {
             filters.forEach((key, value) -> {
                 boolQuery.filter(QueryBuilders.term()

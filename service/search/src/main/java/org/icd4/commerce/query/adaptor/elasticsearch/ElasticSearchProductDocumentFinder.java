@@ -50,7 +50,6 @@ public class ElasticSearchProductDocumentFinder implements ElasticProductDocumen
         SearchResponse<Product> response = esClient.search(request, Product.class);
 
         return getCollectedResponse(response);
-
     }
 
     private boolean invalidPrefix(String prefix) {

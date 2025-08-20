@@ -2,7 +2,6 @@ package org.icd4.commerce.query.application.provided;
 
 import lombok.RequiredArgsConstructor;
 import org.icd4.commerce.query.adaptor.elasticsearch.ElasticSearchProductDocumentFinder;
-import org.icd4.commerce.query.adaptor.web.dto.ProductSearchOptions;
 import org.icd4.commerce.query.adaptor.web.dto.ProductSearchRequest;
 import org.icd4.commerce.query.adaptor.web.dto.SearchResultResponse;
 import org.icd4.commerce.shared.domain.Product;
@@ -22,8 +21,8 @@ public class ProductQueryService {
         return productDocumentFinderService.findById(productId);
     }
 
-    public List<SearchResultResponse> search(ProductSearchOptions options) throws IOException {
-        return searchService.search(options);
+    public List<SearchResultResponse> search(ProductSearchRequest options,int page, int size) throws IOException {
+        return searchService.search(options, page, size);
     }
 
     public List<SearchResultResponse> searchWithAdvancedOptions(ProductSearchRequest request, int page, int size) throws IOException {

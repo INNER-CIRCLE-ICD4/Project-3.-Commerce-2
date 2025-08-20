@@ -1,7 +1,6 @@
 package org.icd4.commerce.query.adaptor.web;
 
 import lombok.RequiredArgsConstructor;
-import org.icd4.commerce.query.adaptor.web.dto.ProductSearchOptions;
 import org.icd4.commerce.query.adaptor.web.dto.ProductSearchRequest;
 import org.icd4.commerce.query.adaptor.web.dto.SearchResultResponse;
 import org.icd4.commerce.query.application.provided.ProductQueryService;
@@ -26,8 +25,10 @@ public class ProductQueryApi {
 
     // 얼마나 많은 옵션의 데이터가 들어올지 몰라서 Post로 변경
     @GetMapping("/search")
-    public List<SearchResultResponse> searchProducts(ProductSearchOptions options) throws IOException {
-        return productQueryService.search(options);
+    public List<SearchResultResponse> searchProducts(ProductSearchRequest options,
+                                                     @RequestParam(defaultValue = "0", required = false) int page,
+                                                     @RequestParam(defaultValue = "10", required = false) int size) throws IOException {
+        return productQueryService.search(options, page, size);
     }
 
     @GetMapping("/search_2")

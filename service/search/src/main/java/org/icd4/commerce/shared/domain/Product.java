@@ -55,6 +55,7 @@ public class Product {
     @Field(type = FieldType.Boolean)
     private Boolean isDeleted;
 
+    //TODO 평탄화 개선 필드
     @Field(type = FieldType.Keyword)
     private List<String> productAttributes;
 
@@ -64,6 +65,7 @@ public class Product {
     @Field(type = FieldType.Nested)
     private List<ProductVariant> variants;
 
+    //TODO 평탄화 개선 필드
     @Field(type = FieldType.Object, enabled = false)
     private Map<String, Object> rawOptions;
 
