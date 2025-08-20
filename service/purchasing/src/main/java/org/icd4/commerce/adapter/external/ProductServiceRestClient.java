@@ -2,6 +2,9 @@ package org.icd4.commerce.adapter.external;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.icd4.commerce.adapter.external.exception.NotEnoughStockException;
+import org.icd4.commerce.adapter.external.exception.ProductNotFoundException;
+import org.icd4.commerce.adapter.external.exception.ProductServiceException;
 import org.icd4.commerce.domain.common.ProductId;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -149,7 +152,41 @@ public class ProductServiceRestClient implements ProductServiceClient {
             );
         }
     }
-    
+
+    @Override
+    public void reduceStock(ProductId productId, int quantity) {
+        log.debug("Reducing stock for product: {}", productId);
+
+        try {
+            StockResponse response = getRestClient()
+                    .patch()
+                    .uri("/api/stocks/v1/{productId}/decrease", productId.value())
+                    .retrieve()
+                    .body(StockResponse.class);
+
+            if (response == null) {
+                throw new ProductNotFoundException(productId);
+            }
+
+        } catch (HttpClientErrorException e) {
+            if (e.getStatusCode() == HttpStatus.NOT_FOUND) {
+                throw new ProductNotFoundException(productId);
+            }
+            if (e.getStatusCode() == HttpStatus.CONFLICT) {
+                throw new NotEnoughStockException(
+                        "재고 부족: productId=%s, requested=%d".formatted(productId.value(), quantity)
+                );
+            }
+            throw new ProductServiceException(
+                    "Failed to check stock: " + productId, e
+            );
+        } catch (RestClientException e) {
+            throw new ProductServiceException(
+                    "Product service communication error", e
+            );
+        }
+    }
+
     /**
      * 상품 서비스 응답 DTO.
      */
