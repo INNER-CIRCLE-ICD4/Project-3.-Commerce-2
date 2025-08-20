@@ -7,9 +7,8 @@ import co.elastic.clients.elasticsearch.core.search.Hit;
 import lombok.RequiredArgsConstructor;
 import org.icd4.commerce.query.adaptor.web.dto.ProductSearchRequest;
 import org.icd4.commerce.query.adaptor.web.dto.SearchResultResponse;
-import org.icd4.commerce.query.application.required.ProductSearcher;
+import org.icd4.commerce.query.application.provided.ElasticProductDocumentFinder;
 import org.icd4.commerce.shared.domain.Product;
-import org.springframework.data.elasticsearch.client.elc.NativeQuery;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -20,7 +19,7 @@ import java.util.stream.Stream;
 
 @Component
 @RequiredArgsConstructor
-public class ElasticSearchProductSearcher implements ProductSearcher {
+public class ElasticSearchProductDocumentFinder implements ElasticProductDocumentFinder {
 
     private final ElasticsearchClient esClient;
     private static final String INDEX_NAME = "product_index";

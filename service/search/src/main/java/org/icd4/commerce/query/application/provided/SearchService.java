@@ -1,7 +1,7 @@
 package org.icd4.commerce.query.application.provided;
 
 import lombok.RequiredArgsConstructor;
-import org.icd4.commerce.query.application.required.ProductQueryRepository;
+import org.icd4.commerce.query.application.required.ProductRepository;
 import org.icd4.commerce.query.adaptor.web.dto.SearchResultResponse;
 import org.icd4.commerce.shared.domain.Product;
 import org.icd4.commerce.query.adaptor.web.dto.ProductSearchOptions;
@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class SearchService {
 
-    private final ProductQueryRepository productQueryRepository;
+    private final ProductRepository productRepository;
     private final ElasticsearchOperations elasticsearchOperations;
 
     public List<SearchResultResponse> search(ProductSearchOptions options) throws IOException {
@@ -38,14 +38,14 @@ public class SearchService {
 
         if (options.keyword() != null && !options.keyword().isBlank() && options.categoryId() == null && isSimpleSearch) {
             // 1. 키워드만 있는 경우
-            products = productQueryRepository.findByNameOrBrandOrDescriptionMatches(options.keyword(),options.keyword(),
+            products = productRepository.findByNameOrBrandOrDescriptionMatches(options.keyword(),options.keyword(),
                     options.keyword(), pageable);
         } else if (options.categoryId() != null && !options.categoryId().isBlank() && options.keyword() == null && isSimpleSearch) {
             // 2. 카테고리만 있는 경우
-            products = productQueryRepository.findByCategoryId(options.categoryId(), pageable);
+            products = productRepository.findByCategoryId(options.categoryId(), pageable);
         } else {
             // 3. 그 외 모든 복잡한 케이스(키워드 + 필터, 키워드 + 카테고리, 정렬 등)
-            products = productQueryRepository.searchAdvanced(
+            products = productRepository.searchAdvanced(
                     options.keyword(),
                     options.categoryId(),
                     options.minPrice(),

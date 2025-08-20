@@ -3,12 +3,15 @@ package org.icd4.commerce.query.application.required;
 import org.icd4.commerce.shared.domain.Product;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.elasticsearch.annotations.Query;
-import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
+import org.springframework.data.repository.Repository;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
-public interface ProductQueryRepository extends ElasticsearchRepository<Product,String> {
+public interface ProductRepository extends Repository<Product,String> {
+    Optional<Product> findById(String productId);
+
     // 1. 키워드만 검색 (메서드 기반 쿼리)
     List<Product> findByNameOrBrandOrDescriptionMatches(String keyword, String keyword2,
                                                            String keyword3,  Pageable pageable);

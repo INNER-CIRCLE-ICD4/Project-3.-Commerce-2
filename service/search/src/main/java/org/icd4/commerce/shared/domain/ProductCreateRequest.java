@@ -3,7 +3,7 @@ package org.icd4.commerce.shared.domain;
 import org.springframework.data.elasticsearch.core.suggest.Completion;
 
 import java.math.BigDecimal;
-import java.time.ZonedDateTime;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -16,8 +16,8 @@ public record ProductCreateRequest(
         BigDecimal basePrice,
         String categoryId,
         String status,
-        ZonedDateTime createdAt,
-        ZonedDateTime updatedAt,
+        LocalDateTime createdAt,
+        LocalDateTime updatedAt,
         Boolean isDeleted,
         List<String> productAttributes,
         List<String> autoCompleteSuggestions,

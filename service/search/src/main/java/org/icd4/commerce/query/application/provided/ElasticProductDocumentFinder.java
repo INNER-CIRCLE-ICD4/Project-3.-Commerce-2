@@ -1,4 +1,4 @@
-package org.icd4.commerce.query.application.required;
+package org.icd4.commerce.query.application.provided;
 
 import org.icd4.commerce.query.adaptor.web.dto.ProductSearchRequest;
 import org.icd4.commerce.query.adaptor.web.dto.SearchResultResponse;
@@ -6,7 +6,7 @@ import org.icd4.commerce.query.adaptor.web.dto.SearchResultResponse;
 import java.io.IOException;
 import java.util.List;
 
-public interface ProductSearcher {
+public interface ElasticProductDocumentFinder {
     /**
      * 검색 쿼리, 필터(예: 색상, 사이즈), 정렬 조건을 모두 포함하여 상품을 검색합니다.
      *
