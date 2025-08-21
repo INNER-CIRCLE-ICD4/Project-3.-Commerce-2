@@ -8,7 +8,7 @@ public record ProductSearchRequest(
         String categoryId,
         Integer minPrice,
         Integer maxPrice,
-        Map<String, List<String>> filters,
+        String filters,
         String sortField,
         String sortOrder
 ) {
