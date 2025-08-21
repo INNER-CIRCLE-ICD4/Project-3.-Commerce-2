@@ -6,8 +6,8 @@ import java.util.Map;
 public record ProductSearchRequest(
         String keyword,
         String categoryId,
-        int minPrice,
-        int maxPrice,
+        Integer minPrice,
+        Integer maxPrice,
         Map<String, List<String>> filters,
         String sortField,
         String sortOrder
