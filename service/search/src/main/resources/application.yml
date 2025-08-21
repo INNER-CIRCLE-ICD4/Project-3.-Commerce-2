@@ -43,5 +43,5 @@ spring:
 
 logging:
   level:
-    org.elasticsearch.client.RestClient: TRACE
+    org.elasticsearch.client: TRACE
 
