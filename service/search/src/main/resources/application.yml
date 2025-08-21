@@ -41,4 +41,7 @@ spring:
     compose:
       lifecycle-management: start_only
 
+logging:
+  level:
+    org.elasticsearch.client.RestClient: TRACE
 

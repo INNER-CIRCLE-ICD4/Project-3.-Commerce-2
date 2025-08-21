@@ -5,10 +5,12 @@ import co.elastic.clients.elasticsearch.core.SearchRequest;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
 import co.elastic.clients.elasticsearch.core.search.Hit;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.icd4.commerce.query.adaptor.web.dto.ProductSearchRequest;
 import org.icd4.commerce.query.adaptor.web.dto.SearchResultResponse;
 import org.icd4.commerce.query.application.provided.ElasticProductDocumentFinder;
 import org.icd4.commerce.shared.domain.Product;
+import org.icd4.commerce.shared.utils.EsQueryLogger;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -17,12 +19,15 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class ElasticSearchProductDocumentFinder implements ElasticProductDocumentFinder {
 
     private final ElasticsearchClient esClient;
     private static final String INDEX_NAME = "product_index";
+    private final EsQueryLogger queryLogger;
+
 
     @Override
     public List<SearchResultResponse> searchWithAdvancedOptions(ProductSearchRequest criteria, int page, int size) throws IOException {
@@ -34,6 +39,8 @@ public class ElasticSearchProductDocumentFinder implements ElasticProductDocumen
                 .sort(criteria.sortField(), criteria.sortOrder())
                 .page(page, size)
                 .build();
+
+        log.info("Elasticsearch 요청 body:\n{}", queryLogger.toPrettyJson(request));
 
         SearchResponse<Product> response = esClient.search(request, Product.class);
         return response.hits().hits().stream()
