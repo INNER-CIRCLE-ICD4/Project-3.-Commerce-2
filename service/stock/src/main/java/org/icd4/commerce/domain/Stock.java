@@ -84,7 +84,7 @@ public class Stock {
     public static Stock fromRedis(String stockId, Long quantity) {
         Stock stock = new Stock();
         stock.id = stockId;
-        stock.productId = "unknown";
+        stock.productId = null; // Redis에서는 productId가 필요하지 않음
         stock.quantity = quantity;
         stock.stockStatus = (quantity <= 0) ? StockStatus.OUT_OF_STOCK : StockStatus.AVAILABLE;
         stock.createdAt = LocalDateTime.now();

@@ -83,7 +83,7 @@ class StockRedisRepositoryAdapterIntegrationTest {
         Stock stock = foundStock.get();
         assertThat(stock.getId()).isEqualTo(stockId);
         assertThat(stock.getQuantity()).isEqualTo(quantity);
-        assertThat(stock.getProductId()).isEqualTo("unknown");
+        assertThat(stock.getProductId()).isEqualTo(null);
         assertThat(stock.getStockStatus()).isEqualTo(StockStatus.AVAILABLE);
     }
 

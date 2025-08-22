@@ -65,7 +65,7 @@ class StockRedisRepositoryAdapterTest {
         Stock stock = foundStock.get();
         assertThat(stock.getId()).isEqualTo(stockId);
         assertThat(stock.getQuantity()).isEqualTo(quantity);
-        assertThat(stock.getProductId()).isEqualTo("unknown");
+        assertThat(stock.getProductId()).isEqualTo(null);
         assertThat(stock.getStockStatus()).isEqualTo(StockStatus.AVAILABLE);
         verify(stockRedisRepository, times(1)).getStock(stockId);
     }
@@ -235,7 +235,7 @@ class StockRedisRepositoryAdapterTest {
         // 기본값 확인
         assertThat(stock.getId()).isEqualTo(stockId);
         assertThat(stock.getQuantity()).isEqualTo(quantity);
-        assertThat(stock.getProductId()).isEqualTo("unknown"); // Redis에는 productId가 없으므로 기본값
+        assertThat(stock.getProductId()).isNull(); // Redis에는 productId가 없으므로 null
         assertThat(stock.getStockStatus()).isEqualTo(StockStatus.AVAILABLE); // 수량 > 0이므로 AVAILABLE
         assertThat(stock.getCreatedAt()).isNotNull();
         assertThat(stock.getUpdatedAt()).isNotNull();

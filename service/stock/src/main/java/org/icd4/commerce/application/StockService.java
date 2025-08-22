@@ -27,6 +27,33 @@ public class StockService implements StockRegister, StockFinder {
         return stock;
     }
 
+    public Stock registerV2(String productId, Long quantity) {
+        Stock stock = Stock.register(productId, quantity);
+
+        stockRedisRepositoryAdapter.save(stock);
+
+        return stock;
+    }
+
+    public Stock getStockV2(String stockId) {
+        if (stockId == null || stockId.trim().isEmpty()) {
+            throw new IllegalArgumentException("재고 ID는 필수입니다.");
+        }
+
+        return stockRedisRepositoryAdapter.findById(stockId)
+                .orElseThrow(() -> new IllegalArgumentException("재고를 찾을 수 없습니다: " + stockId));
+    }
+
+    public Long checkQuantityV2(String stockId) {
+        if (stockId == null || stockId.trim().isEmpty()) {
+            throw new IllegalArgumentException("재고 ID는 필수입니다.");
+        }
+
+        return stockRedisRepositoryAdapter.findById(stockId)
+                .orElseThrow(() -> new IllegalArgumentException("재고를 찾을 수 없습니다: " + stockId))
+                .getQuantity();
+    }
+
     @Override
     public Long increaseQuantity(String stockId, Long quantity) {
         return stockRepositoryAdapter.findById(stockId)

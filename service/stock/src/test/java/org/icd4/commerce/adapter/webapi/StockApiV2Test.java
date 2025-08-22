@@ -16,6 +16,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(StockApi.class)
@@ -29,6 +30,29 @@ class StockApiV2Test {
 
     @MockBean
     private StockService stockService;
+
+    @Test
+    @DisplayName("POST /api/stocks/v2 - Redis 재고 등록 성공")
+    void registerStockV2_Success() throws Exception {
+        // Given
+        String productId = "test-product-123";
+        Long quantity = 100L;
+        Stock registeredStock = Stock.register(productId, quantity);
+        
+        when(stockService.registerV2(eq(productId), eq(quantity)))
+                .thenReturn(registeredStock);
+
+        // When & Then
+        mockMvc.perform(post("/api/stocks/v2")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"productId\":\"" + productId + "\",\"quantity\":" + quantity + "}"))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.message").value("재고가 성공적으로 등록되었습니다. (Redis)"))
+                .andExpect(jsonPath("$.data.stockId").value(registeredStock.getId()))
+                .andExpect(jsonPath("$.data.productId").value(productId))
+                .andExpect(jsonPath("$.data.quantity").value(quantity));
+    }
 
     @Test
     @DisplayName("PATCH /api/stocks/v2/{stockId}/increase - 성공")

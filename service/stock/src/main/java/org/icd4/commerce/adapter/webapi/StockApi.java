@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.icd4.commerce.adapter.webapi.dto.ApiResponse;
 import org.icd4.commerce.adapter.webapi.dto.StockRegisterRequest;
 import org.icd4.commerce.adapter.webapi.dto.StockResponse;
+import org.icd4.commerce.adapter.webapi.dto.StockRedisResponse;
 import org.icd4.commerce.adapter.webapi.dto.StockUpdateRequest;
 import org.icd4.commerce.application.StockService;
 import org.icd4.commerce.domain.Stock;
@@ -29,6 +30,15 @@ public class StockApi {
                     .body(ApiResponse.success("재고가 성공적으로 등록되었습니다.", response));
     }
 
+    @PostMapping("/v2")
+    public ResponseEntity<ApiResponse<StockResponse>> registerStockV2(@Valid @RequestBody StockRegisterRequest request) {
+            Stock registeredStock = stockService.registerV2(request.getProductId(), request.getQuantity());
+
+            StockResponse response = StockResponse.from(registeredStock);
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(ApiResponse.success("재고가 성공적으로 등록되었습니다. (Redis)", response));
+    }
+
     @GetMapping("/{stockId}")
     public ResponseEntity<ApiResponse<StockResponse>> getStock(@PathVariable String stockId) {
         Stock stock = stockService.getStock(stockId);
@@ -45,6 +55,24 @@ public class StockApi {
 
         return ResponseEntity.ok()
                 .body(ApiResponse.success("재고 수량 조회 성공", quantity));
+    }
+
+    @GetMapping("/v2/{stockId}")
+    public ResponseEntity<ApiResponse<StockRedisResponse>> getStockV2(@PathVariable String stockId) {
+        Stock stock = stockService.getStockV2(stockId);
+
+        StockRedisResponse response = StockRedisResponse.from(stock);
+        
+        return ResponseEntity.ok()
+                .body(ApiResponse.success("재고 조회 성공 (Redis)", response));
+    }
+
+    @GetMapping("/v2/{stockId}/quantity")
+    public ResponseEntity<ApiResponse<Long>> getStockQuantityV2(@PathVariable String stockId) {
+        Long quantity = stockService.checkQuantityV2(stockId);
+
+        return ResponseEntity.ok()
+                .body(ApiResponse.success("재고 수량 조회 성공 (Redis)", quantity));
     }
 
     @PatchMapping("/{stockId}/increase")
