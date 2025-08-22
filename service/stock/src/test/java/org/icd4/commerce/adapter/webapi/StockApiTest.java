@@ -22,6 +22,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
+
+@org.springframework.context.annotation.Import(org.icd4.commerce.config.TestConfig.class)
 @Transactional
 class StockApiTest {
 
@@ -230,6 +232,6 @@ class StockApiTest {
                 .andDo(print())
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.success").value(false))
-                .andExpect(jsonPath("$.message").value("수량은 0보다 커야 합니다."));
+                .andExpect(jsonPath("$.message").value("재고는 0 이하의 값이 될 수 없습니다."));
     }
 } 

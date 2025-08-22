@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 public class StockUpdateRequest {
 
     @NotNull(message = "수량은 필수 입니다.")
-    @Positive(message = "수량은 0보다 커야 합니다.")
+    @jakarta.validation.constraints.Min(value = 0, message = "수량은 0 이상이어야 합니다.")
     private Long quantity;
 
 
