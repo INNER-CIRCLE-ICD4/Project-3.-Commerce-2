@@ -158,15 +158,11 @@ public class ProductServiceRestClient implements ProductServiceClient {
         log.debug("Reducing stock for product: {}", productId);
 
         try {
-            StockResponse response = getRestClient()
+            getRestClient()
                     .patch()
                     .uri("/api/stocks/v1/{productId}/decrease", productId.value())
                     .retrieve()
-                    .body(StockResponse.class);
-
-            if (response == null) {
-                throw new ProductNotFoundException(productId);
-            }
+                    .toBodilessEntity();
 
         } catch (HttpClientErrorException e) {
             if (e.getStatusCode() == HttpStatus.NOT_FOUND) {
