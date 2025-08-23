@@ -1,13 +1,15 @@
 package org.icd4.commerce.query.application.provided;
 
+import co.elastic.clients.elasticsearch.ElasticsearchClient;
+import co.elastic.clients.elasticsearch._types.FieldValue;
+import co.elastic.clients.elasticsearch._types.query_dsl.*;
+import co.elastic.clients.elasticsearch.core.SearchRequest;
+import co.elastic.clients.elasticsearch.core.SearchResponse;
 import lombok.RequiredArgsConstructor;
 import org.icd4.commerce.query.adaptor.web.dto.ProductSearchRequest;
 import org.icd4.commerce.query.application.required.ProductRepository;
 import org.icd4.commerce.query.adaptor.web.dto.SearchResultResponse;
 import org.icd4.commerce.shared.domain.Product;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.data.elasticsearch.core.query.StringQuery;
@@ -15,7 +17,6 @@ import org.springframework.data.elasticsearch.core.suggest.response.Suggest;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,29 +28,60 @@ public class SearchService {
 
     private final ProductRepository productRepository;
     private final ElasticsearchOperations elasticsearchOperations;
+    private final ElasticsearchClient esClient;
+    private final SearchService searchService = this;
 
-    public List<SearchResultResponse> search(ProductSearchRequest options, int page, int size) throws IOException {
+    public List<SearchResultResponse> search(ProductSearchRequest request, int page, int size) throws IOException {
 
-        List<Product> products;
+        BoolQuery.Builder boolQueryBuilder = new BoolQuery.Builder();
 
-        Pageable pageable = PageRequest.of(page, size, Sort.by(options.sortField(), options.sortOrder()));
-        boolean isSimpleSearch = (options.filters() == null || options.filters().isEmpty());
-
-        // 상황에 따라 메서드가 각자 다르게 동작하도록 분기 search() -> 동작 keyword()
-        if (options.keyword() != null && !options.keyword().isBlank() && options.categoryId() == null && isSimpleSearch) {
-            products = productRepository.findByNameOrBrandOrDescriptionMatches(options.keyword(),options.keyword(),
-                    options.keyword(), pageable);
-        } else if (options.categoryId() != null && !options.categoryId().isBlank() && options.keyword() == null && isSimpleSearch) {
-            products = productRepository.findByCategoryId(options.categoryId(), pageable);
-        } else {
-            products = productRepository.searchAdvanced(
-                    options.keyword(),
-                    options.categoryId(),
-                    BigDecimal.valueOf(options.minPrice()),
-                    BigDecimal.valueOf(options.maxPrice()),
-                    pageable);
+        // 1. 키워드 검색 (match 쿼리)
+        if (request.getKeyword() != null && !request.getKeyword().isEmpty()) {
+            boolQueryBuilder.must(m -> m.match(t -> t.field("product_name").query(request.getKeyword())));
         }
-        return products.stream()
+
+        // 2. 가격 필터 (range 쿼리)
+        if (request.getMinPrice() > 0 || request.getMaxPrice() > 0) {
+            boolQueryBuilder.filter(f -> f.range(
+                    r -> r.number(
+                            n -> n.field("base_price")
+                                    .gte((double) request.getMinPrice())
+                                    .lte((double) request.getMaxPrice()))
+            ));
+        }
+
+        // 3. 일반 필터 (brand_id)
+        if (request.getBrand() != null && !request.getBrand().isEmpty()) {
+            boolQueryBuilder.filter(f -> f.term(t -> t.field("brand").value(request.getBrand())));
+        }
+
+        // 4. 상품 옵션 필터 (nested 쿼리)
+        if (request.getOptions() != null && !request.getOptions().isEmpty()) {
+            BoolQuery.Builder nestedBoolQueryBuilder = new BoolQuery.Builder();
+
+            request.getOptions().forEach((key, value) -> {
+                List<String> values = (List<String>) value;
+
+                List<FieldValue> fieldValues = values.stream()
+                        .map(FieldValue::of)
+                        .collect(Collectors.toList());
+
+                nestedBoolQueryBuilder.must(m -> m.terms(t -> t
+                        .field("variants." + key)
+                        .terms(terms -> terms.value(fieldValues))
+                ));
+            });
+        }
+
+        SearchRequest esSearchRequest = new SearchRequest.Builder()
+                .index("product")
+                .query(boolQueryBuilder.build()._toQuery())
+                .from(page)
+                .build();
+
+        SearchResponse<Product> response = esClient.search(esSearchRequest, Product.class);
+
+        return response.hits().hits().stream()
                 .map(SearchResultResponse::of)
                 .collect(Collectors.toList());
     }

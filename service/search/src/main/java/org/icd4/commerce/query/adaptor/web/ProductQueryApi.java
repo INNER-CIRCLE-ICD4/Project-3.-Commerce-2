@@ -8,7 +8,10 @@ import org.icd4.commerce.shared.domain.Product;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 // 검색 API
 @RestController
@@ -23,12 +26,19 @@ public class ProductQueryApi {
         return productQueryService.findById(productId);
     }
 
-    // 얼마나 많은 옵션의 데이터가 들어올지 몰라서 Post로 변경
     @GetMapping("/search")
-    public List<SearchResultResponse> searchProducts(ProductSearchRequest options,
+    public List<SearchResultResponse> searchProducts(ProductSearchRequest searchRequest,
+                                                     @RequestParam Map<String, String> allParams,
                                                      @RequestParam(defaultValue = "0", required = false) int page,
                                                      @RequestParam(defaultValue = "10", required = false) int size) throws IOException {
-        return productQueryService.search(options, page, size);
+        searchRequest.setOptions(allParams.entrySet().stream()
+                .filter(e -> e.getKey().startsWith("options_"))
+                .collect(Collectors.toMap(
+                        e -> e.getKey().substring("options_".length()),
+                        e -> Arrays.stream(e.getValue().split(",")).toList()
+                )));
+
+        return productQueryService.search(searchRequest, page, size);
     }
 
     @GetMapping("/search_2")

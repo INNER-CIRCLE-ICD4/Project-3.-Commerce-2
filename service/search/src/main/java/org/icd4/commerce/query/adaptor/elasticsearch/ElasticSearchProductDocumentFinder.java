@@ -26,6 +26,7 @@ public class ElasticSearchProductDocumentFinder implements ElasticProductDocumen
 
     @Override
     public List<SearchResultResponse> searchWithAdvancedOptions(ProductSearchRequest criteria, int page, int size) throws IOException {
+        /*
         SearchRequest request = new ElasticQueryBuilder()
                 .index(INDEX_NAME)
                 .keyword(criteria.keyword())
@@ -40,6 +41,9 @@ public class ElasticSearchProductDocumentFinder implements ElasticProductDocumen
                 .map(Hit::source)
                 .map(SearchResultResponse::of)
                 .collect(Collectors.toList());
+
+         */
+        return List.of();
     }
 
     @Override
