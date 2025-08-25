@@ -5,7 +5,12 @@ import co.elastic.clients.elasticsearch._types.FieldValue;
 import co.elastic.clients.elasticsearch._types.query_dsl.*;
 import co.elastic.clients.elasticsearch.core.SearchRequest;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
+import co.elastic.clients.elasticsearch.core.search.CompletionSuggester;
+import co.elastic.clients.elasticsearch.core.search.Hit;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.icd4.commerce.query.adaptor.web.dto.ProductSearchRequest;
 import org.icd4.commerce.query.application.required.ProductRepository;
 import org.icd4.commerce.query.adaptor.web.dto.SearchResultResponse;
@@ -18,6 +23,8 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 // 사용자로부터 검색을 요청 받는 곳
@@ -26,7 +33,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class SearchService {
 
-    private final ProductRepository productRepository;
     private final ElasticsearchOperations elasticsearchOperations;
     private final ElasticsearchClient esClient;
     private final SearchService searchService = this;
@@ -37,7 +43,12 @@ public class SearchService {
 
         // 1. 키워드 검색 (match 쿼리)
         if (request.getKeyword() != null && !request.getKeyword().isEmpty()) {
-            boolQueryBuilder.must(m -> m.match(t -> t.field("product_name").query(request.getKeyword())));
+            boolQueryBuilder.must(m -> m
+                    .multiMatch(t -> t
+                            .fields("name", "categoryId", "description")
+                            .query(request.getKeyword())
+                    )
+            );
         }
 
         // 2. 가격 필터 (range 쿼리)
@@ -50,7 +61,7 @@ public class SearchService {
             ));
         }
 
-        // 3. 일반 필터 (brand_id)
+        // 3. 일반 필터 (brand)
         if (request.getBrand() != null && !request.getBrand().isEmpty()) {
             boolQueryBuilder.filter(f -> f.term(t -> t.field("brand").value(request.getBrand())));
         }
@@ -59,8 +70,7 @@ public class SearchService {
         if (request.getOptions() != null && !request.getOptions().isEmpty()) {
             BoolQuery.Builder nestedBoolQueryBuilder = new BoolQuery.Builder();
 
-            request.getOptions().forEach((key, value) -> {
-                List<String> values = (List<String>) value;
+            request.getOptions().forEach((key, values) -> {
 
                 List<FieldValue> fieldValues = values.stream()
                         .map(FieldValue::of)
@@ -71,21 +81,56 @@ public class SearchService {
                         .terms(terms -> terms.value(fieldValues))
                 ));
             });
+            boolQueryBuilder.must(m -> m
+                    .nested(n -> n
+                        .path("variants")
+                        .query(nestedBoolQueryBuilder.build())
+                    )
+            );
         }
 
-        SearchRequest esSearchRequest = new SearchRequest.Builder()
-                .index("product")
-                .query(boolQueryBuilder.build()._toQuery())
+        SearchRequest.Builder requestBuilder = new SearchRequest.Builder()
+                .index("product_index")
                 .from(page)
-                .build();
+                .size(size)
+                .query(boolQueryBuilder.build()._toQuery());
 
-        SearchResponse<Product> response = esClient.search(esSearchRequest, Product.class);
+        String sortField = request.getSortField();
+        String sortOrderString = request.getSortOrder();
+
+        if (sortField != null && !sortField.isEmpty()) {
+            if ("DESC".equalsIgnoreCase(request.getSortOrder())) {
+                requestBuilder.sort(s -> s.field(f -> f
+                        .field(sortField)
+                        .order(SortOrder.Desc)));
+            } else {
+                requestBuilder.sort(s -> s.field(f -> f
+                        .field(sortField)
+                        .order(SortOrder.Asc)));
+            }
+        }
+
+        SearchRequest esSearchRequest = requestBuilder.build();
+
+        log.info("Executing search request: " + esSearchRequest.toString());
+        SearchResponse<Map> response = esClient.search(esSearchRequest, Map.class);
 
         return response.hits().hits().stream()
-                .map(SearchResultResponse::of)
+                .map(Hit::source)
+                .filter(Objects::nonNull)
+                .map(this::convertToDto)
                 .collect(Collectors.toList());
     }
 
+    private SearchResultResponse convertToDto(Map sourceMap) {
+        try {
+            String jsonStr = objectMapper.writeValueAsString(sourceMap);
+            Product product = objectMapper.readValue(jsonStr, Product.class);
+            return SearchResultResponse.of(product);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
     public List<String> getAutocompleteSuggestions(String prefix) throws IOException {
         String jsonQuery = String.format("""
             {

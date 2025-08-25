@@ -1,6 +1,5 @@
 package org.icd4.commerce.query.adaptor.web.dto;
 
-import co.elastic.clients.elasticsearch.core.search.Hit;
 import org.icd4.commerce.shared.domain.Product;
 
 import java.math.BigDecimal;
@@ -13,8 +12,7 @@ public record SearchResultResponse(
         String brand,
         BigDecimal price
 ) {
-    public static SearchResultResponse of(Hit<Product> hit) {
-        Product product = hit.source();
+    public static SearchResultResponse of(Product product) {
         return new SearchResultResponse(product.getId(), product.getSellerId(), product.getName(), product.getBrand(), product.getBasePrice());
     }
 }

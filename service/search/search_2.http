@@ -1,0 +1,249 @@
+### 1. 기존 인덱스 삭제
+DELETE http://localhost:9200/product_index
+
+### 인덱스 생성
+PUT http://localhost:9200/product_index2
+Content-Type: application/json
+
+{
+  "settings": {
+    "index": {
+      "analysis": {
+        "analyzer": {
+          "korean_analyzer": {
+            "type": "custom",
+            "tokenizer": "nori_tokenizer"
+          }
+        }
+      }
+    }
+  },
+  "mappings": {
+    "properties": {
+      "id": {
+        "type": "keyword"
+      },
+      "sellerId": {
+        "type": "keyword"
+      },
+      "name": {
+        "type": "text",
+        "analyzer": "korean_analyzer"
+      },
+      "brand": {
+        "type": "text",
+        "analyzer": "korean_analyzer",
+        "fields": {
+          "keyword": {
+            "type": "keyword",
+            "ignore_above": 256
+          }
+        }
+      },
+      "description": {
+        "type": "text",
+        "analyzer": "korean_analyzer"
+      },
+      "basePrice": {
+        "type": "keyword"
+      },
+      "categoryId": {
+        "type": "keyword"
+      },
+      "status": {
+        "type": "keyword"
+      },
+      "createdAt": {
+        "type": "date",
+        "format": "strict_date_optional_time"
+      },
+      "updatedAt": {
+        "type": "date",
+        "format": "strict_date_optional_time"
+      },
+      "isDeleted": {
+        "type": "boolean"
+      },
+      "productAttributes": {
+        "type": "keyword"
+      },
+      "autoCompleteSuggestions": {
+        "type": "completion",
+        "analyzer": "korean_analyzer"
+      },
+      "variants": {
+        "type": "nested",
+        "properties": {
+          "sku": {
+            "type": "keyword"
+          },
+          "price": {
+            "type": "long"
+          },
+          "stock": {
+            "type": "integer"
+          },
+          "status": {
+            "type": "keyword"
+          },
+          "optionCombination": {
+            "type": "nested",
+            "properties": {
+              "name": {
+                "type": "keyword"
+              },
+              "value": {
+                "type": "keyword"
+              }
+            }
+          }
+        }
+      },
+      "rawOptions": {
+        "type": "object",
+        "enabled": false
+      }
+    }
+  }
+}
+
+
+### keyword 검색
+GET http://localhost:8081/api/v1/product/search?keyword=오버핏
+
+### id 검색
+GET http://localhost:8081/api/v1/product/modern01
+
+### 상품 도큐먼트 생성
+POST http://localhost:8081/api/v1/product
+Content-Type: application/json
+
+{
+  "productId": "modern01",
+  "sellerId": "SELLER_FASHION_002",
+  "name": "모던 오버핏",
+  "brand": "테스트 브랜드",
+  "description": "부드러운 코튼 소재의 오버핏 셔츠입니다. 다양한 색상으로 출시되었습니다.",
+  "categoryId": "CATEGORY_FASHION_MEN_001",
+  "createdAt": "2025-07-30T10:15:00.000Z",
+  "updatedAt": "2025-07-30T10:15:00.000Z",
+  "basePrice": 30000,
+  "autoCompleteSuggestions": ["모던 오버핏", "오버핏 셔츠", "테스트 브랜드"],
+  "variants": [
+    {
+      "sku": "SHIRT-MODERN-M-WHITE",
+      "price": 35000,
+      "stock": 50,
+      "status": "INACTIVE",
+      "optionCombination": [
+        { "name": "color", "value": "white" },
+        { "name": "size", "value": "M" }
+      ]
+    },
+    {
+      "sku": "SHIRT-MODERN-L-BLACK",
+      "price": 35000,
+      "stock": 50,
+      "status": "ACTIVE",
+      "optionCombination": [
+        { "name": "color", "value": "black" },
+        { "name": "size", "value": "L" }
+      ]
+    },
+    {
+      "sku": "SHIRT-MODERN-XL-NAVY",
+      "price": 35000,
+      "stock": 50,
+      "status": "ACTIVE",
+      "optionCombination": [
+        { "name": "color", "value": "navy" },
+        { "name": "size", "value": "XL" }
+      ]
+    }
+  ]
+}
+
+### 상품 도큐먼트 생성
+POST http://localhost:8081/api/v1/product
+Content-Type: application/json
+
+{
+  "productId": "salad02",
+  "sellerId": "SELLER_SALAD_002",
+  "name": "닭가슴살 샐러드2",
+  "brand": "테스트 브랜드2",
+  "description": "닭가슴살 샐러드입니다 단백질 ",
+  "categoryId": "CATEGORY_SALAD_001",
+  "createdAt": "2025-07-30T10:15:00.000Z",
+  "updatedAt": "2025-07-30T10:15:00.000Z",
+  "basePrice": 12000,
+  "autoCompleteSuggestions": ["샐러드", "단백질 샐러드", "닭가슴살 샐러드"],
+  "variants": [
+    {
+      "sku": "SALAD-S",
+      "price": 12000,
+      "stock": 50,
+      "status": "INACTIVE",
+      "optionCombination": [
+        { "name": "weight", "value": "120g" }
+      ]
+    },
+    {
+      "sku": "SALAD-M",
+      "price": 15000,
+      "stock": 50,
+      "status": "ACTIVE",
+      "optionCombination": [
+        { "name": "weight", "value": "150g" }
+      ]
+    },
+    {
+      "sku": "SALAD-L",
+      "price": 18000,
+      "stock": 50,
+      "status": "ACTIVE",
+      "optionCombination": [
+        { "name": "weight", "value": "180g" }
+      ]
+    }
+  ]
+}
+
+
+### 상품 가격 업데이트
+PATCH http://localhost:8081/api/v1/product/salad01/price?price=45000
+Content-Type: application/json
+
+### 특정 변형(Variant)의 재고 업데이트
+PATCH http://localhost:8081/api/v1/product/7a8c3d9b-2e6f-4c8d-8a2b-3c4e5f6d7a8e/stock?sku=SHIRT-MODERN-M-WHITE&stock=25
+Content-Type: application/json
+
+### 특정 변형(Variant)의 상태 업데이트
+PATCH http://localhost:8081/api/v1/product/7a8c3d9b-2e6f-4c8d-8a2b-3c4e5f6d7a8e/variant_status?sku=SHIRT-MODERN-M-WHITE&variantStatus=ACTIVE
+Content-Type: application/json
+
+
+### 상품 조회
+GET http://localhost:8081/api/v1/product/search?keyword=닭가슴살&options_status=INACTIVE
+
+### 상품 조회
+GET http://localhost:8081/api/v1/product/salad01
+
+### 검색
+GET http://localhost:8081/api/v1/product/search?keyword=닭가슴살
+
+### 검색 & 정렬 & 필터링
+GET http://localhost:8081/api/v1/product/search?keyword=닭가슴살&sortField=basePrice&sortOrder=desc&page=0&size=10
+
+### 자동완성
+GET http://localhost:8081/api/v1/product/autocomplete_2?prefix=샐러
+
+
+### 상품 인덱스 삭제
+DELETE http://localhost:8081/api/v1/product/7a8c3d9b-2e6f-4c8d-8a2b-3c4e5f6d7a8e
+
+
+
+
+
+https://www.coupang.com/np/categories/186764?listSize=60&filterType=&rating=0&isPriceRange=false&minPrice=&maxPrice=&component=&sorter=bestAsc&brand=33408&offerCondition=&filter=&fromComponent=N&channel=user&selectedPlpKeepFilter=
