@@ -15,7 +15,7 @@ class OrderItemTest {
     void calculateItemAmount_returnsCorrectTotal() {
         // given
         OrderItem item = new OrderItem(
-                new OrderItemId(1),
+                new OrderItemId("1"),
                 new OrderId("1"),
                 new ProductId("1"),
                 "테스트상품",
@@ -37,7 +37,7 @@ class OrderItemTest {
         //given: productName을 null로 처리
         //when&then: 주문 생성 시 예외 발생 확인
         assertThatThrownBy(() -> new OrderItem(
-                new OrderItemId(1),
+                new OrderItemId("1"),
                 new OrderId("1"),
                 new ProductId("1"),
                 null,
@@ -55,7 +55,7 @@ class OrderItemTest {
         //given: productName을 null로 처리
         //when&then: 주문 생성 시 예외 발생 확인
         assertThatThrownBy(() -> new OrderItem(
-                new OrderItemId(1),
+                new OrderItemId("1"),
                 new OrderId("1"),
                 new ProductId("1"),
                 " ",
@@ -73,7 +73,7 @@ class OrderItemTest {
         //given: unitPrice가 음수
         //when&then: 주문 생성 시 예외 발생 확인
         assertThatThrownBy(() -> new OrderItem(
-                new OrderItemId(1),
+                new OrderItemId("1"),
                 new OrderId("1"),
                 new ProductId("1"),
                 "테스트상품",
@@ -91,7 +91,7 @@ class OrderItemTest {
         //given: quantity가 0
         //when&then: 주문 생성 시 예외 발생 확인
         assertThatThrownBy(() -> new OrderItem(
-                new OrderItemId(1),
+                new OrderItemId("1"),
                 new OrderId("1"),
                 new ProductId("1"),
                 "테스트상품",

@@ -10,13 +10,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
 public class OrderItemJpaEntity {
 
-    @MapsId("orderId")
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "order_id")
-    private OrderJpaEntity order;
+    @Id
+    private String id;
 
-    @EmbeddedId
-    private OrderItemIdEmbeddable id;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "order_id",
+                foreignKey = @ForeignKey(name="fk_order_items_order_id"))
+    private OrderJpaEntity order;
 
     @Column(nullable = false)
     private String productId;
@@ -39,7 +39,7 @@ public class OrderItemJpaEntity {
 
     // 생성자
     public OrderItemJpaEntity(
-            OrderItemIdEmbeddable id,
+            String id,
             String productId,
             String productName,
             Long unitPrice,

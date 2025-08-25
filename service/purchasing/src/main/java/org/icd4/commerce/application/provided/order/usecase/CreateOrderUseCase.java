@@ -42,7 +42,7 @@ public class CreateOrderUseCase {
                 }
 
                 return new OrderItem(
-                    OrderItemId.of(i+1),
+                    OrderItemId.of("1"),
                     orderId,
                     productId,
                     product.name(),

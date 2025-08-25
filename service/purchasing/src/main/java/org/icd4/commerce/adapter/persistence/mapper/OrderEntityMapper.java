@@ -2,7 +2,6 @@ package org.icd4.commerce.adapter.persistence.mapper;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.icd4.commerce.adapter.persistence.entity.OrderItemIdEmbeddable;
 import org.icd4.commerce.adapter.persistence.entity.OrderItemJpaEntity;
 import org.icd4.commerce.adapter.persistence.entity.OrderJpaEntity;
 import org.icd4.commerce.domain.cart.ProductOptions;
@@ -73,10 +72,9 @@ public class OrderEntityMapper {
     //도메인 → JPA: OrderItem
     private OrderItemJpaEntity toItemEntity(OrderItem item, OrderJpaEntity order) {
         String optionsJson = serializeOptions(ProductOptions.of(item.getProductOptions()));
-        OrderItemIdEmbeddable key = new OrderItemIdEmbeddable(order.getId(), item.getOrderItemId().value());
 
         OrderItemJpaEntity entity = new OrderItemJpaEntity(
-                key,
+                item.getOrderItemId().value(),
                 item.getProductId().value(),
                 item.getProductName(),
                 item.getUnitPrice(),
@@ -94,8 +92,8 @@ public class OrderEntityMapper {
         ProductOptions options = deserializeOptions(entity.getProductOptions());
 
         return new OrderItem(
-                OrderItemId.of(key.getLineNo()),          // ← int 순번만 꺼내서
-                OrderId.from(key.getOrderId()),
+                OrderItemId.of(entity.getId()),
+                OrderId.from(entity.getOrder().getId()),
                 new ProductId(entity.getProductId()),
                 entity.getProductName(),
                 entity.getUnitPrice(),

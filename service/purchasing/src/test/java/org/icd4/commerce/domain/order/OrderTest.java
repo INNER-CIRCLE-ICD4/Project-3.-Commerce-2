@@ -23,7 +23,7 @@ class OrderTest {
                         orderId,
                 new CustomerId("test-customer"),
                 List.of(new OrderItem(
-                        new OrderItemId(1),
+                        new OrderItemId("1"),
                         orderId,
                         new ProductId("1"),
                         "테스트상품",
@@ -68,7 +68,7 @@ class OrderTest {
         OrderId orderId = OrderId.generate();
 
         OrderItem item1 = new OrderItem(
-                new OrderItemId(1),
+                new OrderItemId("1"),
                 orderId,
                 new ProductId("1"),
                 "테스트상품",
@@ -77,7 +77,7 @@ class OrderTest {
                 Map.of("색상", "빨강")
         );
         OrderItem item2 = new OrderItem(
-                new OrderItemId(1),
+                new OrderItemId("1"),
                 orderId,
                 new ProductId("1"),
                 "테스트상품",
