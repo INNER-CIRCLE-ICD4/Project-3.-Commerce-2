@@ -2,46 +2,30 @@ package org.icd4.commerce.query.application.provided;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch._types.FieldValue;
-import co.elastic.clients.elasticsearch._types.query_dsl.*;
+import co.elastic.clients.elasticsearch._types.SortOrder;
+import co.elastic.clients.elasticsearch._types.query_dsl.BoolQuery;
 import co.elastic.clients.elasticsearch.core.SearchRequest;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
-import co.elastic.clients.elasticsearch.core.search.CompletionSuggester;
+import co.elastic.clients.elasticsearch.core.search.CompletionSuggestOption;
 import co.elastic.clients.elasticsearch.core.search.Hit;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.icd4.commerce.query.adaptor.web.dto.ProductSearchRequest;
-import org.icd4.commerce.query.application.required.ProductRepository;
 import org.icd4.commerce.query.adaptor.web.dto.SearchResultResponse;
 import org.icd4.commerce.shared.domain.Product;
-import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
-import org.springframework.data.elasticsearch.core.SearchHits;
-import org.springframework.data.elasticsearch.core.query.StringQuery;
-import org.springframework.data.elasticsearch.core.suggest.response.Suggest;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-// 사용자로부터 검색을 요청 받는 곳
-// dto로 변환해서 반환해줌
 @Service
 @RequiredArgsConstructor
 public class SearchService {
-
-    private final ElasticsearchOperations elasticsearchOperations;
     private final ElasticsearchClient esClient;
-    private final SearchService searchService = this;
 
     public List<SearchResultResponse> search(ProductSearchRequest request, int page, int size) throws IOException {
-
         BoolQuery.Builder boolQueryBuilder = new BoolQuery.Builder();
-
-        // 1. 키워드 검색 (match 쿼리)
         if (request.getKeyword() != null && !request.getKeyword().isEmpty()) {
             boolQueryBuilder.must(m -> m
                     .multiMatch(t -> t
@@ -83,8 +67,8 @@ public class SearchService {
             });
             boolQueryBuilder.must(m -> m
                     .nested(n -> n
-                        .path("variants")
-                        .query(nestedBoolQueryBuilder.build())
+                            .path("variants")
+                            .query(nestedBoolQueryBuilder.build())
                     )
             );
         }
@@ -96,7 +80,6 @@ public class SearchService {
                 .query(boolQueryBuilder.build()._toQuery());
 
         String sortField = request.getSortField();
-        String sortOrderString = request.getSortOrder();
 
         if (sortField != null && !sortField.isEmpty()) {
             if ("DESC".equalsIgnoreCase(request.getSortOrder())) {
@@ -111,65 +94,36 @@ public class SearchService {
         }
 
         SearchRequest esSearchRequest = requestBuilder.build();
-
-        log.info("Executing search request: " + esSearchRequest.toString());
-        SearchResponse<Map> response = esClient.search(esSearchRequest, Map.class);
+        SearchResponse<Product> response = esClient.search(esSearchRequest, Product.class);
 
         return response.hits().hits().stream()
                 .map(Hit::source)
                 .filter(Objects::nonNull)
-                .map(this::convertToDto)
+                .map(SearchResultResponse::of)
                 .collect(Collectors.toList());
     }
 
-    private SearchResultResponse convertToDto(Map sourceMap) {
-        try {
-            String jsonStr = objectMapper.writeValueAsString(sourceMap);
-            Product product = objectMapper.readValue(jsonStr, Product.class);
-            return SearchResultResponse.of(product);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
-    }
     public List<String> getAutocompleteSuggestions(String prefix) throws IOException {
-        String jsonQuery = String.format("""
-            {
-              "suggest": {
-                "product-suggester": {
-                  "prefix": "%s",
-                  "completion": {
-                    "field": "autocompleteSuggestions",
-                    "size": 5
-                  }
-                }
-              }
-            }
-        """, prefix); // 다섯개의 추천결과
+        SearchRequest request = SearchRequest.of(s -> s
+                .index("product_index")
+                .suggest(suggest -> suggest
+                        .suggesters("product-suggester", suggester -> suggester
+                                .prefix(prefix)
+                                .completion(completion -> completion
+                                        .field("autoCompleteSuggestions")
+                                        .size(5)
+                                )
+                        )
+                )
+        );
 
-        SearchHits<Product> searchHits = elasticsearchOperations.search(new StringQuery(jsonQuery), Product.class);
+        SearchResponse<Product> response = esClient.search(request, Product.class);
 
-        return searchHits.getSuggest()
-                .getSuggestion("product-suggester")
-                .getEntries()
+        return response.suggest()
+                .get("product-suggester")
                 .stream()
-                .flatMap(entry -> entry.getOptions().stream())
-                .map(Suggest.Suggestion.Entry.Option::getText)
+                .flatMap(suggestion -> suggestion.completion().options().stream())
+                .map(CompletionSuggestOption::text)
                 .collect(Collectors.toList());
     }
-
-
-    /*
-    public List<SearchResultDto> search(String keyword) {
-        return productSearchRepository.findAllByNameAndBrandAndDescriptionAndCategoryIdMatches(keyword).stream()
-                .map(product -> SearchResultDto.of(
-                        product.getId(),
-                        product.getSellerId(),
-                        product.getName(),
-                        product.getBrand(),
-                        product.getBasePrice()
-                ))
-                .collect(Collectors.toList());
-    }
-    */
-
 }

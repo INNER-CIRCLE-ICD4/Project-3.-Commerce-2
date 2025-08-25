@@ -2,7 +2,7 @@
 DELETE http://localhost:9200/product_index
 
 ### 인덱스 생성
-PUT http://localhost:9200/product_index2
+PUT http://localhost:9200/product_index
 Content-Type: application/json
 
 {
@@ -107,7 +107,6 @@ Content-Type: application/json
   }
 }
 
-
 ### keyword 검색
 GET http://localhost:8081/api/v1/product/search?keyword=오버핏
 
@@ -168,15 +167,15 @@ POST http://localhost:8081/api/v1/product
 Content-Type: application/json
 
 {
-  "productId": "salad02",
+  "productId": "salad03",
   "sellerId": "SELLER_SALAD_002",
-  "name": "닭가슴살 샐러드2",
-  "brand": "테스트 브랜드2",
+  "name": "닭가슴살 샐러드3",
+  "brand": "테스트 브랜드3",
   "description": "닭가슴살 샐러드입니다 단백질 ",
   "categoryId": "CATEGORY_SALAD_001",
   "createdAt": "2025-07-30T10:15:00.000Z",
   "updatedAt": "2025-07-30T10:15:00.000Z",
-  "basePrice": 12000,
+  "basePrice": 13000,
   "autoCompleteSuggestions": ["샐러드", "단백질 샐러드", "닭가슴살 샐러드"],
   "variants": [
     {
@@ -227,16 +226,21 @@ Content-Type: application/json
 GET http://localhost:8081/api/v1/product/search?keyword=닭가슴살&options_status=INACTIVE
 
 ### 상품 조회
-GET http://localhost:8081/api/v1/product/salad01
+GET http://localhost:8081/api/v1/product/salad02
 
 ### 검색
 GET http://localhost:8081/api/v1/product/search?keyword=닭가슴살
 
 ### 검색 & 정렬 & 필터링
-GET http://localhost:8081/api/v1/product/search?keyword=닭가슴살&sortField=basePrice&sortOrder=desc&page=0&size=10
+GET http://localhost:8081/api/v1/product/search?keyword=닭가슴살&sortField=basePrice&sortOrder=asc&page=0&size=10
 
-### 자동완성
-GET http://localhost:8081/api/v1/product/autocomplete_2?prefix=샐러
+### 자동완성 V1
+GET http://localhost:8081/api/v1/product/autocomplete?prefix=
+
+### 자동완성 V2
+GET http://localhost:8081/api/v1/product/autocomplete_2?prefix=샐러드
+
+
 
 
 ### 상품 인덱스 삭제
