@@ -1,4 +1,4 @@
-package org.icd4.commerce.adapter.external;
+package org.icd4.commerce.adapter.external.exception;
 
 import org.icd4.commerce.domain.common.ProductId;
 

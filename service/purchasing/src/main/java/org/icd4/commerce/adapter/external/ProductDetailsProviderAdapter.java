@@ -2,6 +2,7 @@ package org.icd4.commerce.adapter.external;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.icd4.commerce.adapter.external.exception.ProductNotFoundException;
 import org.icd4.commerce.application.provided.common.ProductDetailsProvider;
 import org.icd4.commerce.domain.common.ProductId;
 import org.icd4.commerce.domain.common.ProductPriceProvider;

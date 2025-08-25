@@ -2,7 +2,7 @@ package org.icd4.commerce.application.provided.cart;
 
 import org.icd4.commerce.application.provided.cart.command.CreateCartCommand;
 import org.icd4.commerce.application.provided.cart.usecase.CreateCartUseCase;
-import org.icd4.commerce.application.required.CartRepositoryPort;
+import org.icd4.commerce.application.required.cart.CartRepositoryPort;
 import org.icd4.commerce.domain.cart.Cart;
 import org.icd4.commerce.domain.cart.CartId;
 import org.icd4.commerce.domain.cart.CustomerId;

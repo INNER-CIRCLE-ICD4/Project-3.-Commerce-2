@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.icd4.commerce.application.provided.cart.exception.CartNotFoundException;
 import org.icd4.commerce.application.provided.cart.command.ClearCartCommand;
-import org.icd4.commerce.application.required.CartRepositoryPort;
+import org.icd4.commerce.application.required.cart.CartRepositoryPort;
 import org.icd4.commerce.domain.cart.Cart;
 import org.icd4.commerce.domain.cart.exception.CartAlreadyConvertedException;
 import org.springframework.stereotype.Service;

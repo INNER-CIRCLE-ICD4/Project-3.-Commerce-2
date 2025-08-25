@@ -1,6 +1,10 @@
 package org.icd4.commerce.adapter.external;
 
 
+import org.icd4.commerce.adapter.external.exception.NotEnoughStockException;
+import org.icd4.commerce.adapter.external.exception.ProductNotFoundException;
+import org.icd4.commerce.adapter.external.exception.ProductServiceException;
+import org.icd4.commerce.adapter.external.exception.StockNotFoundException;
 import org.icd4.commerce.domain.common.ProductId;
 
 import java.math.BigDecimal;
@@ -36,7 +40,17 @@ public interface ProductServiceClient {
      * @throws ProductServiceException 서비스 통신 오류
      */
     int getAvailableStock(ProductId productId);
-    
+
+    /**
+     * 상품의 재고를 차감합니다.
+     *
+     * @param productId 상품 ID
+     * @throws StockNotFoundException 재고 없음
+     * @throws NotEnoughStockException 재고 수량 부족
+     * @throws ProductServiceException 서비스 통신 오류
+     */
+    void reduceStock(ProductId productId, int quantity);
+
     /**
      * 상품 정보 DTO.
      */

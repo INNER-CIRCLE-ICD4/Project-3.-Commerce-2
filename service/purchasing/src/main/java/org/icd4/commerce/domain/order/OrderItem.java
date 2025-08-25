@@ -16,9 +16,9 @@ public class OrderItem {
     private final OrderId orderId;
     private final ProductId productId;
     private final String productName;
-    private final long unitPrice;
-    private final long quantity;
-    private final long itemAmount; // = unitPrice * quantity
+    private final Long unitPrice;
+    private final int quantity;
+    private final Long itemAmount; // = unitPrice * quantity
     private final Map<String, String> productOptions; // 옵션 타입 ID → 옵션 값 ID
 
     /**
@@ -29,8 +29,8 @@ public class OrderItem {
             OrderId orderId,
             ProductId productId,
             String productName,
-            long unitPrice,
-            long quantity,
+            Long unitPrice,
+            int quantity,
             Map<String, String> productOptions
     ) {
         this.orderItemId = Objects.requireNonNull(orderItemId, "orderItemId is required");

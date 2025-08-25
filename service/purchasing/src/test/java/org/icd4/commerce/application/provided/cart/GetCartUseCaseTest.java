@@ -2,7 +2,7 @@ package org.icd4.commerce.application.provided.cart;
 
 import org.icd4.commerce.application.provided.cart.exception.CartNotFoundException;
 import org.icd4.commerce.application.provided.cart.usecase.GetCartUseCase;
-import org.icd4.commerce.application.required.CartRepositoryPort;
+import org.icd4.commerce.application.required.cart.CartRepositoryPort;
 import org.icd4.commerce.domain.cart.*;
 import org.icd4.commerce.domain.common.ProductId;
 import org.junit.jupiter.api.BeforeEach;

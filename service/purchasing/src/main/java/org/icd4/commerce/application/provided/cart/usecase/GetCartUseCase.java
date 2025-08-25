@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.icd4.commerce.adapter.external.ProductPriceProviderAdapter;
 import org.icd4.commerce.application.provided.cart.CartResult;
 import org.icd4.commerce.application.provided.cart.exception.CartNotFoundException;
-import org.icd4.commerce.application.required.CartRepositoryPort;
+import org.icd4.commerce.application.required.cart.CartRepositoryPort;
 import org.icd4.commerce.domain.cart.Cart;
 import org.icd4.commerce.domain.cart.CartId;
 import org.springframework.stereotype.Service;

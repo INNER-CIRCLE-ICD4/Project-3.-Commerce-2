@@ -52,12 +52,13 @@ public class Order {
      * 주문 생성 팩토리 메서드
      */
     public static Order create(
+            OrderId orderId,
             CustomerId customerId,
             List<OrderItem> orderItems,
             String orderMessage,
             String orderChannel
     ) {
-        return new Order(OrderId.generate(), customerId, orderItems, orderMessage, orderChannel);
+        return new Order(orderId, customerId, orderItems, orderMessage, orderChannel);
     }
 
     //DB -> Entity 변환용

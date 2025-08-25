@@ -5,7 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.icd4.commerce.application.provided.cart.exception.CartNotFoundException;
 import org.icd4.commerce.application.provided.cart.exception.InsufficientStockException;
 import org.icd4.commerce.application.provided.cart.command.AddItemToCartCommand;
-import org.icd4.commerce.application.required.CartRepositoryPort;
+import org.icd4.commerce.application.required.cart.CartRepositoryPort;
+import org.icd4.commerce.application.required.common.InventoryChecker;
 import org.icd4.commerce.domain.cart.Cart;
 import org.icd4.commerce.domain.cart.exception.CartAlreadyConvertedException;
 import org.icd4.commerce.domain.cart.exception.CartItemLimitExceededException;
@@ -25,7 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class AddItemToCartUseCase {
     
     private final CartRepositoryPort cartRepository;
-    private final org.icd4.commerce.domain.cart.InventoryChecker inventoryChecker;
+    private final InventoryChecker inventoryChecker;
     
     /**
      * 장바구니에 상품을 추가합니다.

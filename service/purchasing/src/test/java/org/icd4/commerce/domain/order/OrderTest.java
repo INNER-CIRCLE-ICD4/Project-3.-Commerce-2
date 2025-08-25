@@ -17,15 +17,18 @@ import static org.assertj.core.api.Assertions.*;
 class OrderTest {
     //주문 객체 생성용 헬퍼 메서드
     private Order createOrder(OrderStatus status, LocalDateTime completedAt) {
+        OrderId orderId = OrderId.generate();
+
         Order order = Order.create(
+                        orderId,
                 new CustomerId("test-customer"),
                 List.of(new OrderItem(
-                        new OrderItemId(UUID.randomUUID()),
-                        new OrderId(UUID.randomUUID()),
+                        new OrderItemId("1"),
+                        orderId,
                         new ProductId("1"),
                         "테스트상품",
                         10_000L, // unitPrice
-                        3L,      // quantity
+                        3,      // quantity
                         Map.of("색상", "빨강")
                         )
                 ),
@@ -35,12 +38,12 @@ class OrderTest {
 
         //주문상태 설정(실제 코드에서는 setter 대신 리플렉션 사용 권장 안 함)
         if (status != OrderStatus.PENDING) {
-            if (status == OrderStatus.PAID) order.confirmPayment(new PaymentId(UUID.randomUUID()));
+            if (status == OrderStatus.PAID) order.confirmPayment(new PaymentId("1"));
             else if (status == OrderStatus.COMPLETED) {
-                order.confirmPayment(new PaymentId(UUID.randomUUID()));
+                order.confirmPayment(new PaymentId("1"));
                 order.confirmPurchase();
             } else if (status == OrderStatus.REFUND_IN_PROGRESS) {
-                order.confirmPayment(new PaymentId(UUID.randomUUID()));
+                order.confirmPayment(new PaymentId("1"));
                 order.confirmPurchase();
                 order.requestRefund();
             }
@@ -62,26 +65,29 @@ class OrderTest {
     @Test
     @DisplayName("주문 생성 시 총 금액이 정상적으로 계산된다")
     void createOrder_calculatesTotalAmount() {
+        OrderId orderId = OrderId.generate();
+
         OrderItem item1 = new OrderItem(
-                new OrderItemId(UUID.randomUUID()),
-                new OrderId(UUID.randomUUID()),
+                new OrderItemId("1"),
+                orderId,
                 new ProductId("1"),
                 "테스트상품",
                 10_000L,
-                3L,
+                3,
                 Map.of("색상", "빨강")
         );
         OrderItem item2 = new OrderItem(
-                new OrderItemId(UUID.randomUUID()),
-                new OrderId(UUID.randomUUID()),
+                new OrderItemId("1"),
+                orderId,
                 new ProductId("1"),
                 "테스트상품",
                 10_000L,
-                3L,
+                3,
                 Map.of("색상", "빨강")
         );
 
         Order order = Order.create(
+                orderId,
                 new CustomerId("c1"),
                 List.of(item1, item2),
                 "빠른 배송",
@@ -98,7 +104,7 @@ class OrderTest {
     void confirmPayment_updatesStatus() {
         Order order = createOrder(OrderStatus.PENDING, null);
 
-        order.confirmPayment(new PaymentId(UUID.randomUUID()));
+        order.confirmPayment(new PaymentId("1"));
 
         assertThat(order.getOrderStatus()).isEqualTo(OrderStatus.PAID);
     }
@@ -148,7 +154,10 @@ class OrderTest {
     @Test
     @DisplayName("주문 항목이 비어있으면 생성 시 예외가 발생한다")
     void createOrder_throwsException_whenOrderItemsEmpty() {
+        OrderId orderId = OrderId.generate();
+
         assertThatThrownBy(() -> Order.create(
+                orderId,
                 new CustomerId("c1"),
                 Collections.emptyList(),
                 "메모",
