@@ -1,4 +1,4 @@
-package org.icd4.commerce.adapter.external;
+package org.icd4.commerce.adapter.external.exception;
 
 /**
  * 상품 서비스 통신 중 발생하는 예외.

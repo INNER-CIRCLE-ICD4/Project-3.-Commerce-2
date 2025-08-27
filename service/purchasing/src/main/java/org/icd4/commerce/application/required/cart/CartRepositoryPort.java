@@ -21,7 +21,6 @@ import java.util.Optional;
  * @author Jooeun
  * @since 1.0
  */
-@Repository
 public interface CartRepositoryPort {
     
     /**

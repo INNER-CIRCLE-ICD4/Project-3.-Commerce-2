@@ -30,44 +30,45 @@ class ConfirmPaymentUseCaseTest {
     @InjectMocks
     private ConfirmPaymentUseCase confirmPaymentUseCase;
 
-    private UUID orderId;
-    private UUID paymentId;
+    private PaymentId paymentId;
 
     @BeforeEach
     void setUp() {
-        orderId = UUID.randomUUID();
-        paymentId = UUID.randomUUID();
+        paymentId = new PaymentId("12345");
     }
 
     @Test
     @DisplayName("결제 완료 처리 성공")
     void confirmPayment_success() {
+        OrderId orderId = OrderId.generate();
         // given
         Order mockOrder = mock(Order.class);
-        when(orderRepository.findById(new OrderId(orderId)))
+        when(orderRepository.findById(orderId))
                 .thenReturn(Optional.of(mockOrder));
 
         ConfirmPaymentCommand command = new ConfirmPaymentCommand(orderId, paymentId);
 
         // when
-        confirmPaymentUseCase.execute(command);
+        confirmPaymentUseCase.confirmPayment(command);
 
         // then
-        verify(mockOrder).confirmPayment(new PaymentId(paymentId));
+        verify(mockOrder).confirmPayment(paymentId);
         verify(orderRepository).save(mockOrder);
     }
 
     @Test
     @DisplayName("주문이 존재하지 않으면 예외 발생")
     void confirmPayment_orderNotFound_throwsException() {
+        OrderId orderId = OrderId.generate();
+
         // given
-        when(orderRepository.findById(new OrderId(orderId)))
+        when(orderRepository.findById(orderId))
                 .thenReturn(Optional.empty());
 
         ConfirmPaymentCommand command = new ConfirmPaymentCommand(orderId, paymentId);
 
         // when & then
-        assertThatThrownBy(() -> confirmPaymentUseCase.execute(command))
+        assertThatThrownBy(() -> confirmPaymentUseCase.confirmPayment(command))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("해당 주문이 존재하지 않습니다");
     }
