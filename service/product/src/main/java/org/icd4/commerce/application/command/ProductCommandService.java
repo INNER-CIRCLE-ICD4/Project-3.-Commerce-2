@@ -1,6 +1,7 @@
 package org.icd4.commerce.application.command;
 
 import lombok.RequiredArgsConstructor;
+import org.icd4.commerce.adapter.stock.StockClient;
 import org.icd4.commerce.adapter.webapi.dto.ProductResponse;
 import org.icd4.commerce.adapter.webapi.dto.ProductVariantResponse;
 import org.icd4.commerce.adapter.webapi.dto.event.ProductCreatedEventPayload;
@@ -19,20 +20,19 @@ public class ProductCommandService {
     private final ProductRegisterService productRegisterService;
     private final ProductModifierService productModifierService;
 
-    private final ApplicationEventPublisher eventPublisher;
+    private final StockClient stockClient;
 
     public ProductResponse create(ProductCreateRequest request) {
         Product product = productRegisterService.create(request);
-
-        eventPublisher.publishEvent(
-                ProductCreatedEventPayload.from(product)
-        );
+        // TODO 재고 벌크 등록 필요
+        product.getAllVariants().forEach(variant -> {
+            stockClient.updateStock(variant.getSku(), variant.getStockQuantity());
+        });
         return ProductResponse.fromDomain(product);
     }
 
     public ProductResponse changeProductInfo(String productId, String sellerId, ProductInfoUpdateRequest request) {
         Product product = productRegisterService.updateInfo(productId, sellerId, request);
-        // 세부에 대한 변경은 이벤트 발행 x?
         return ProductResponse.fromDomain(product);
     }
 
