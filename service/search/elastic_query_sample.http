@@ -501,6 +501,9 @@ Content-Type: application/json
   },
   "variants": []
 }
+###
+GET http://localhost:9200/product_index/_doc/salad02
+
 
 ### 4. 단순 검색
 GET http://localhost:9200/product_index/_search
@@ -568,9 +571,7 @@ Content-Type: application/json
     "product-suggest": {
       "completion": {
         "field": "autocompleteSuggestions",
-        "fuzzy": {
-          "fuzziness": "AUTO"
-        }
+        "size": 5
       }
     }
   }

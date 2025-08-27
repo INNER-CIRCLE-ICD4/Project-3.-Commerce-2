@@ -31,12 +31,13 @@ public class ElasticSearchProductDocumentFinder implements ElasticProductDocumen
 
     @Override
     public List<SearchResultResponse> searchWithAdvancedOptions(ProductSearchRequest criteria, int page, int size) throws IOException {
+
         SearchRequest request = new ElasticQueryBuilder()
                 .index(INDEX_NAME)
-                .keyword(criteria.keyword())
-                .category(criteria.categoryId())
-                .filters(criteria.filters())
-                .sort(criteria.sortField(), criteria.sortOrder())
+                .keyword(criteria.getKeyword())
+                .category(criteria.getCategoryId())
+                .filters(criteria.getOptions())
+                .sort(criteria.getSortField(), criteria.getSortOrder())
                 .page(page, size)
                 .build();
 
@@ -45,8 +46,10 @@ public class ElasticSearchProductDocumentFinder implements ElasticProductDocumen
         SearchResponse<Product> response = esClient.search(request, Product.class);
         return response.hits().hits().stream()
                 .map(Hit::source)
+                .filter(Objects::nonNull)
                 .map(SearchResultResponse::of)
                 .collect(Collectors.toList());
+
     }
 
     @Override
