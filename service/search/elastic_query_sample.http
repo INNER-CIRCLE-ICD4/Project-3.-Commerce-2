@@ -68,8 +68,9 @@ Content-Type: application/json
       "productAttributes": {
         "type": "keyword"
       },
-      "autocompleteSuggestions": {
-        "type": "completion"
+      "autoCompleteSuggestions": {
+        "type": "completion",
+        "analyzer": "korean_analyzer"
       },
       "variants": {
         "type": "nested",
@@ -113,7 +114,7 @@ POST http://localhost:9200/product_index/_doc
 Content-Type: application/json
 
 {
-  "productId": "7a8c3d9b-2e6f-4c8d-8a2b-3c4e5f6d7a8e",
+  "id": "7a8c3d9b-2e6f-4c8d-8a2b-3c4e5f6d7a8f",
   "sellerId": "SELLER_FASHION_002",
   "name": "모던 오버핏 셔츠",
   "brand": "패션블루",
@@ -121,7 +122,11 @@ Content-Type: application/json
   "categoryId": "CATEGORY_FASHION_MEN_001",
   "createdAt": "2025-07-30T10:15:00.000Z",
   "updatedAt": "2025-07-30T10:15:00.000Z",
-  "basePrice": 35000,
+  "basePrice": 30000,
+  "autoCompleteSuggestions": [
+    "여름 상의",
+    "리넨 셔츠"
+  ],
   "productAttributes": [
     "color:white",
     "color:black",
@@ -132,8 +137,11 @@ Content-Type: application/json
     "material:cotton"
   ],
   "autocompleteSuggestions": {
-    "input": ["모던 셔츠", "패션블루 셔츠", "오버핏 셔츠"],
-    "weight": 10
+    "input": [
+      "모던 셔츠",
+      "패션블루 셔츠",
+      "오버핏 셔츠"
+    ]
   },
   "variants": [
     {
@@ -142,8 +150,14 @@ Content-Type: application/json
       "stock": 50,
       "status": "ACTIVE",
       "optionCombination": [
-        { "name": "color", "value": "white" },
-        { "name": "size", "value": "M" }
+        {
+          "name": "color",
+          "value": "white"
+        },
+        {
+          "name": "size",
+          "value": "M"
+        }
       ]
     },
     {
@@ -152,8 +166,14 @@ Content-Type: application/json
       "stock": 50,
       "status": "ACTIVE",
       "optionCombination": [
-        { "name": "color", "value": "black" },
-        { "name": "size", "value": "L" }
+        {
+          "name": "color",
+          "value": "black"
+        },
+        {
+          "name": "size",
+          "value": "L"
+        }
       ]
     },
     {
@@ -162,8 +182,14 @@ Content-Type: application/json
       "stock": 50,
       "status": "ACTIVE",
       "optionCombination": [
-        { "name": "color", "value": "navy" },
-        { "name": "size", "value": "XL" }
+        {
+          "name": "color",
+          "value": "navy"
+        },
+        {
+          "name": "size",
+          "value": "XL"
+        }
       ]
     }
   ]
@@ -194,7 +220,11 @@ Content-Type: application/json
     "material:linen"
   ],
   "autocompleteSuggestions": {
-    "input": ["빈티지 셔츠", "체크 셔츠", "오버핏 셔츠"],
+    "input": [
+      "빈티지 셔츠",
+      "체크 셔츠",
+      "오버핏 셔츠"
+    ],
     "weight": 8
   },
   "variants": [
@@ -204,8 +234,14 @@ Content-Type: application/json
       "stock": 40,
       "status": "ACTIVE",
       "optionCombination": [
-        { "name": "color", "value": "red" },
-        { "name": "size", "value": "M" }
+        {
+          "name": "color",
+          "value": "red"
+        },
+        {
+          "name": "size",
+          "value": "M"
+        }
       ]
     },
     {
@@ -214,8 +250,14 @@ Content-Type: application/json
       "stock": 40,
       "status": "ACTIVE",
       "optionCombination": [
-        { "name": "color", "value": "navy" },
-        { "name": "size", "value": "L" }
+        {
+          "name": "color",
+          "value": "navy"
+        },
+        {
+          "name": "size",
+          "value": "L"
+        }
       ]
     }
   ]
@@ -245,7 +287,11 @@ Content-Type: application/json
     "material:wool"
   ],
   "autocompleteSuggestions": {
-    "input": ["모던 코트", "오버핏 코트", "패션블루 코트"],
+    "input": [
+      "모던 코트",
+      "오버핏 코트",
+      "패션블루 코트"
+    ],
     "weight": 12
   },
   "variants": [
@@ -255,8 +301,14 @@ Content-Type: application/json
       "stock": 30,
       "status": "ACTIVE",
       "optionCombination": [
-        { "name": "color", "value": "beige" },
-        { "name": "size", "value": "M" }
+        {
+          "name": "color",
+          "value": "beige"
+        },
+        {
+          "name": "size",
+          "value": "M"
+        }
       ]
     },
     {
@@ -265,8 +317,14 @@ Content-Type: application/json
       "stock": 30,
       "status": "ACTIVE",
       "optionCombination": [
-        { "name": "color", "value": "black" },
-        { "name": "size", "value": "L" }
+        {
+          "name": "color",
+          "value": "black"
+        },
+        {
+          "name": "size",
+          "value": "L"
+        }
       ]
     }
   ]
@@ -296,7 +354,11 @@ Content-Type: application/json
     "material:cotton"
   ],
   "autocompleteSuggestions": {
-    "input": ["슬림핏 셔츠", "베이직웨어 셔츠", "모던 셔츠"],
+    "input": [
+      "슬림핏 셔츠",
+      "베이직웨어 셔츠",
+      "모던 셔츠"
+    ],
     "weight": 9
   },
   "variants": [
@@ -306,8 +368,14 @@ Content-Type: application/json
       "stock": 60,
       "status": "ACTIVE",
       "optionCombination": [
-        { "name": "color", "value": "white" },
-        { "name": "size", "value": "95" }
+        {
+          "name": "color",
+          "value": "white"
+        },
+        {
+          "name": "size",
+          "value": "95"
+        }
       ]
     },
     {
@@ -316,8 +384,14 @@ Content-Type: application/json
       "stock": 60,
       "status": "ACTIVE",
       "optionCombination": [
-        { "name": "color", "value": "grey" },
-        { "name": "size", "value": "100" }
+        {
+          "name": "color",
+          "value": "grey"
+        },
+        {
+          "name": "size",
+          "value": "100"
+        }
       ]
     }
   ]
@@ -427,6 +501,9 @@ Content-Type: application/json
   },
   "variants": []
 }
+###
+GET http://localhost:9200/product_index/_doc/salad02
+
 
 ### 4. 단순 검색
 GET http://localhost:9200/product_index/_search
@@ -439,19 +516,35 @@ Content-Type: application/json
         {
           "multi_match": {
             "query": "모던 오버핏 셔츠",
-            "fields": ["name^3", "brand^2", "description"],
+            "fields": [
+              "name^3",
+              "brand^2",
+              "description"
+            ],
             "type": "best_fields"
           }
         }
       ],
       "filter": [
-        { "term": { "status": "ACTIVE" } },
-        { "term": { "isDeleted": false } }
+        {
+          "term": {
+            "status": "ACTIVE"
+          }
+        },
+        {
+          "term": {
+            "isDeleted": false
+          }
+        }
       ]
     }
   },
   "sort": [
-    { "_score": { "order": "desc" } }
+    {
+      "_score": {
+        "order": "desc"
+      }
+    }
   ]
 }
 
@@ -470,6 +563,7 @@ Accept: application/json
 
 ### 5.1 검색어 자동 완성
 GET http://localhost:9200/product_index/_search
+Content-Type: application/json
 
 {
   "suggest": {
@@ -477,9 +571,7 @@ GET http://localhost:9200/product_index/_search
     "product-suggest": {
       "completion": {
         "field": "autocompleteSuggestions",
-        "fuzzy": {
-          "fuzziness": "AUTO"
-        }
+        "size": 5
       }
     }
   }
@@ -491,22 +583,44 @@ Accept: application/json
 
 ### 6. 쿼리를 포함한 필터(쿼리 미포함시 must 제거)
 GET http://localhost:9200/product_index/_search
+Content-Type: application/json
 
 {
   "query": {
     "bool": {
       "must": [
-        { "match": { "name": "셔츠" } }
+        {
+          "match": {
+            "name": "셔츠"
+          }
+        }
       ],
       "filter": [
-        { "term": { "status": "ACTIVE" } },
-        { "term": { "productAttributes": "color:white" } },
-        { "term": { "productAttributes": "size:M" } },
+        {
+          "term": {
+            "status": "ACTIVE"
+          }
+        },
+        {
+          "term": {
+            "productAttributes": "color:white"
+          }
+        },
+        {
+          "term": {
+            "productAttributes": "size:M"
+          }
+        },
         {
           "nested": {
             "path": "variants",
             "query": {
-              "term": { "variants.stock": { "value": 0, "boost": 0 } }
+              "term": {
+                "variants.stock": {
+                  "value": 0,
+                  "boost": 0
+                }
+              }
             },
             "inner_hits": {}
           }
@@ -518,12 +632,17 @@ GET http://localhost:9200/product_index/_search
 
 ### 7. 정렬
 GET http://localhost:9200/product_index/_search
+Content-Type: application/json
 
 {
   "query": {
     "bool": {
       "must": [
-        { "match": { "name": "셔츠" } }
+        {
+          "match": {
+            "name": "셔츠"
+          }
+        }
       ]
     }
   },
@@ -539,4 +658,21 @@ GET http://localhost:9200/product_index/_search
   ]
 }
 
+### 8. 전체 업데이트
+PUT http://localhost:9200/product_index/_doc/{{productId}}
+Content-Type: application/json
+
+{
+  "name": "name"
+}
+
+### 9. 부분 업데이트
+POST http://localhost:9200/product_index/_update/{{productId}}
+Content-Type: application/json
+
+{
+  "doc": {
+    "name": "updated name"
+  }
+}
 
