@@ -8,10 +8,11 @@ import org.springframework.data.elasticsearch.core.suggest.Completion;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Data
 @Builder
-@NoArgsConstructor(access=AccessLevel.PROTECTED)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Document(indexName = "product_index")
 @Setting(settingPath = "elasticsearch/product_index.json")
@@ -56,16 +57,13 @@ public class Product {
     private Boolean isDeleted;
 
     @Field(type = FieldType.Keyword)
-    private List<String> productAttributes;
+    private Set<String> productAttributes;
 
     @CompletionField
-    private Completion autocompleteSuggestions;
+    private Completion autoCompleteSuggestions;
 
     @Field(type = FieldType.Nested)
     private List<ProductVariant> variants;
-
-    @Field(type = FieldType.Object, enabled = false)
-    private Map<String, Object> rawOptions;
 
     @Data
     @Builder

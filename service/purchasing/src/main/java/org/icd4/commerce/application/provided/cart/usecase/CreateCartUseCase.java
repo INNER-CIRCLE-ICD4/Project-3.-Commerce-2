@@ -3,7 +3,7 @@ package org.icd4.commerce.application.provided.cart.usecase;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.icd4.commerce.application.provided.cart.command.CreateCartCommand;
-import org.icd4.commerce.application.required.CartRepositoryPort;
+import org.icd4.commerce.application.required.cart.CartRepositoryPort;
 import org.icd4.commerce.domain.cart.Cart;
 import org.icd4.commerce.domain.cart.CartId;
 import org.icd4.commerce.domain.cart.TimeProvider;

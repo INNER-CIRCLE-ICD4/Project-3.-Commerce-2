@@ -1,68 +1,129 @@
 package org.icd4.commerce.query.application.provided;
 
+import co.elastic.clients.elasticsearch.ElasticsearchClient;
+import co.elastic.clients.elasticsearch._types.FieldValue;
+import co.elastic.clients.elasticsearch._types.SortOrder;
+import co.elastic.clients.elasticsearch._types.query_dsl.BoolQuery;
+import co.elastic.clients.elasticsearch.core.SearchRequest;
+import co.elastic.clients.elasticsearch.core.SearchResponse;
+import co.elastic.clients.elasticsearch.core.search.CompletionSuggestOption;
+import co.elastic.clients.elasticsearch.core.search.Hit;
 import lombok.RequiredArgsConstructor;
-import org.icd4.commerce.query.application.dto.SearchResultDto;
-import org.icd4.commerce.query.application.required.ProductSearcher;
+import org.icd4.commerce.query.adaptor.web.dto.ProductSearchRequest;
+import org.icd4.commerce.query.adaptor.web.dto.SearchResultResponse;
 import org.icd4.commerce.shared.domain.Product;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
-// 사용자로부터 검색을 요청 받는 곳
-// dto로 변환해서 반환해줌
 @Service
 @RequiredArgsConstructor
 public class SearchService {
-    private final ProductSearcher productSearcher;
+    private final ElasticsearchClient esClient;
 
-    public List<SearchResultDto> search(String keyword, String categoryId, Map<String, Object> filters, String sortField, String sortOrder) throws IOException {
-        List<Product> products;
-
-        // filters, sortField, sortOrder가 없는 경우를 단순 검색으로 간주
-        boolean isSimpleSearch = (filters == null || filters.isEmpty()) && sortField == null && sortOrder == null;
-
-        if (keyword != null && !keyword.isBlank() && categoryId == null && isSimpleSearch) {
-            // 1. 키워드만 있는 경우
-            products = productSearcher.searchByKeyword(keyword);
-        } else if (categoryId != null && !categoryId.isBlank() && keyword == null && isSimpleSearch) {
-            // 2. 카테고리만 있는 경우
-            products = productSearcher.searchByCategory(categoryId);
-        } else {
-            // 3. 그 외 모든 복잡한 케이스 (키워드+필터, 키워드+카테고리, 정렬 등)
-            products = productSearcher.searchWithAdvancedOptions(keyword, filters, sortField, sortOrder);
+    public List<SearchResultResponse> search(ProductSearchRequest request, int page, int size) throws IOException {
+        BoolQuery.Builder boolQueryBuilder = new BoolQuery.Builder();
+        if (request.getKeyword() != null && !request.getKeyword().isEmpty()) {
+            boolQueryBuilder.must(m -> m
+                    .multiMatch(t -> t
+                            .fields("name", "categoryId", "description")
+                            .query(request.getKeyword())
+                    )
+            );
         }
 
-        return products.stream()
-                .map(product -> SearchResultDto.of(
-                        product.getId(),
-                        product.getSellerId(),
-                        product.getName(),
-                        product.getBrand(),
-                        product.getBasePrice()
-                ))
+        // 2. 가격 필터 (range 쿼리)
+        if (request.getMinPrice() > 0 || request.getMaxPrice() > 0) {
+            boolQueryBuilder.filter(f -> f.range(
+                    r -> r.number(
+                            n -> n.field("base_price")
+                                    .gte((double) request.getMinPrice())
+                                    .lte((double) request.getMaxPrice()))
+            ));
+        }
+
+        // 3. 일반 필터 (brand)
+        if (request.getBrand() != null && !request.getBrand().isEmpty()) {
+            boolQueryBuilder.filter(f -> f.term(t -> t.field("brand").value(request.getBrand())));
+        }
+
+        // 4. 상품 옵션 필터 (nested 쿼리)
+        if (request.getOptions() != null && !request.getOptions().isEmpty()) {
+            BoolQuery.Builder nestedBoolQueryBuilder = new BoolQuery.Builder();
+
+            request.getOptions().forEach((key, values) -> {
+
+                List<FieldValue> fieldValues = values.stream()
+                        .map(FieldValue::of)
+                        .collect(Collectors.toList());
+
+                nestedBoolQueryBuilder.must(m -> m.terms(t -> t
+                        .field("variants." + key)
+                        .terms(terms -> terms.value(fieldValues))
+                ));
+            });
+            boolQueryBuilder.must(m -> m
+                    .nested(n -> n
+                            .path("variants")
+                            .query(nestedBoolQueryBuilder.build())
+                    )
+            );
+        }
+
+        SearchRequest.Builder requestBuilder = new SearchRequest.Builder()
+                .index("product_index")
+                .from(page)
+                .size(size)
+                .query(boolQueryBuilder.build()._toQuery());
+
+        String sortField = request.getSortField();
+
+        if (sortField != null && !sortField.isEmpty()) {
+            if ("DESC".equalsIgnoreCase(request.getSortOrder())) {
+                requestBuilder.sort(s -> s.field(f -> f
+                        .field(sortField)
+                        .order(SortOrder.Desc)));
+            } else {
+                requestBuilder.sort(s -> s.field(f -> f
+                        .field(sortField)
+                        .order(SortOrder.Asc)));
+            }
+        }
+
+        SearchRequest esSearchRequest = requestBuilder.build();
+        SearchResponse<Product> response = esClient.search(esSearchRequest, Product.class);
+
+        return response.hits().hits().stream()
+                .map(Hit::source)
+                .filter(Objects::nonNull)
+                .map(SearchResultResponse::of)
                 .collect(Collectors.toList());
     }
 
     public List<String> getAutocompleteSuggestions(String prefix) throws IOException {
-        return productSearcher.getAutocompleteSuggestions(prefix);
-    }
+        SearchRequest request = SearchRequest.of(s -> s
+                .index("product_index")
+                .suggest(suggest -> suggest
+                        .suggesters("product-suggester", suggester -> suggester
+                                .prefix(prefix)
+                                .completion(completion -> completion
+                                        .field("autoCompleteSuggestions")
+                                        .size(5)
+                                )
+                        )
+                )
+        );
 
+        SearchResponse<Product> response = esClient.search(request, Product.class);
 
-    /*
-    public List<SearchResultDto> search(String keyword) {
-        return productSearchRepository.findAllByNameAndBrandAndDescriptionAndCategoryIdMatches(keyword).stream()
-                .map(product -> SearchResultDto.of(
-                        product.getId(),
-                        product.getSellerId(),
-                        product.getName(),
-                        product.getBrand(),
-                        product.getBasePrice()
-                ))
+        return response.suggest()
+                .get("product-suggester")
+                .stream()
+                .flatMap(suggestion -> suggestion.completion().options().stream())
+                .map(CompletionSuggestOption::text)
                 .collect(Collectors.toList());
     }
-    */
-
 }

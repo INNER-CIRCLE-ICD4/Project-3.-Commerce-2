@@ -1,5 +1,8 @@
 package org.icd4.commerce.application.provided.order.command;
 
+import org.icd4.commerce.domain.order.OrderId;
+import org.icd4.commerce.domain.order.PaymentId;
+
 import java.util.UUID;
 
 /**
@@ -8,7 +11,7 @@ import java.util.UUID;
  * @param orderId 주문 ID
  * @param paymentId 결제 ID
  */
-public record ConfirmPaymentCommand(UUID orderId, UUID paymentId) {
+public record ConfirmPaymentCommand(OrderId orderId, PaymentId paymentId) {
 
     public ConfirmPaymentCommand {
         if (orderId == null) {
