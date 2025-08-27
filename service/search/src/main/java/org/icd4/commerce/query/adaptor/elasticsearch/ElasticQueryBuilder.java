@@ -1,18 +1,21 @@
 package org.icd4.commerce.query.adaptor.elasticsearch;
 
 import co.elastic.clients.elasticsearch._types.FieldSort;
+import co.elastic.clients.elasticsearch._types.FieldValue;
 import co.elastic.clients.elasticsearch._types.SortOptions;
 import co.elastic.clients.elasticsearch._types.SortOrder;
 import co.elastic.clients.elasticsearch._types.query_dsl.BoolQuery;
 import co.elastic.clients.elasticsearch._types.query_dsl.QueryBuilders;
+import co.elastic.clients.elasticsearch._types.query_dsl.TermsQueryField;
 import co.elastic.clients.elasticsearch.core.SearchRequest;
+import org.icd4.commerce.shared.utils.FilterParser;
 
 import java.util.List;
-import java.util.Map;
 
 public class ElasticQueryBuilder {
     private final BoolQuery.Builder boolQuery = QueryBuilders.bool();
     private final SearchRequest.Builder searchBuilder = new SearchRequest.Builder();
+    private final FilterParser filterParser = new FilterParser();
 
     public ElasticQueryBuilder index(String indexName) {
         searchBuilder.index(indexName);
@@ -39,14 +42,15 @@ public class ElasticQueryBuilder {
         return this;
     }
 
-    public ElasticQueryBuilder filters(Map<String, List<String>> filters) {
-        if (filters != null && !filters.isEmpty()) {
-            filters.forEach((key, value) -> {
-                boolQuery.filter(QueryBuilders.term()
-                        .field(key)
-                        .value(String.valueOf(value))
-                        .build()._toQuery());
-            });
+    public ElasticQueryBuilder filters(String filters) {
+        List<String> filterCandidates = filterParser.parseToFlattenedFilters(filters);
+
+        if (!filterCandidates.isEmpty()) {
+            boolQuery.filter(QueryBuilders.terms()
+                    .field("productAttributes")
+                    .terms(TermsQueryField.of(t -> t.value(
+                            filterCandidates.stream().map(FieldValue::of).toList())))
+                    .build()._toQuery());
         }
         return this;
     }
