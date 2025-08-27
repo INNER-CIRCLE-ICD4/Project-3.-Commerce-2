@@ -3,6 +3,7 @@ package org.icd4.commerce.adapter.webapi;
 import lombok.extern.slf4j.Slf4j;
 import org.icd4.commerce.adapter.webapi.dto.ApiResponse;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -13,6 +14,18 @@ import java.util.NoSuchElementException;
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    /**
+     * JSON 파싱 예외 처리 (HttpMessageNotReadableException)
+     * - 잘못된 JSON 형식, 타입 불일치 등
+     */
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ApiResponse<Void>> handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
+        log.warn("JSON 파싱 실패: {}", e.getMessage());
+        
+        return ResponseEntity.badRequest()
+                .body(ApiResponse.error("잘못된 요청 형식입니다. JSON 형식을 확인해주세요."));
+    }
 
     /**
      * Bean Validation 예외 처리 (@Valid 검증 실패)

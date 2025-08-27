@@ -4,8 +4,17 @@
 @baseUrl = http://localhost:8080
 @contentType = application/json
 
-### 1. 재고 등록 - 성공 케이스
+### 1. 재고 등록 - 성공 케이스 (JPA)
 POST {{baseUrl}}/api/stocks
+Content-Type: {{contentType}}
+
+{
+  "productId": "PRODUCT-001",
+  "quantity": 100
+}
+
+### 1-1. 재고 등록 - 성공 케이스 (Redis)
+POST {{baseUrl}}/api/stocks/v2
 Content-Type: {{contentType}}
 
 {
@@ -308,3 +317,144 @@ Content-Type: {{contentType}}
 # 사용 권장사항:
 # - 높은 동시성이 필요한 경우: V1 API 사용
 # - 복잡한 비즈니스 로직이 필요한 경우: 기존 API 사용
+
+###############################################
+### V2 API 테스트 (Redis 기반)
+###############################################
+
+### V2-1. 재고 등록 V2 - 성공 (Redis)
+POST {{baseUrl}}/api/stocks/v2
+Content-Type: {{contentType}}
+
+{
+  "productId": "PRODUCT-REDIS-001",
+  "quantity": 200
+}
+
+### V2-2. 재고 등록 V2 - 다른 상품
+POST {{baseUrl}}/api/stocks/v2
+Content-Type: {{contentType}}
+
+{
+  "productId": "PRODUCT-REDIS-002",
+  "quantity": 150
+}
+
+### V2-3. 재고 조회 V2 - Redis에서 조회
+# 위에서 등록한 재고 ID를 복사해서 사용하세요
+GET {{baseUrl}}/api/stocks/v2/87954ae6-a8bf-4e41-8eee-2c7a7ab91f8e
+
+### V2-4. 재고 수량 조회 V2 - Redis에서 조회
+# 위에서 등록한 재고 ID를 복사해서 사용하세요
+GET {{baseUrl}}/api/stocks/v2/{stockId}/quantity
+
+### V2-5. 재고 증가 V2 - 성공 (Redis)
+# 위에서 등록한 재고 ID를 복사해서 사용하세요
+PATCH {{baseUrl}}/api/stocks/v2/87954ae6-a8bf-4e41-8eee-2c7a7ab91f8e/increase
+Content-Type: {{contentType}}
+
+{
+  "quantity": 50
+}
+
+### V2-6. 재고 증가 V2 - 존재하지 않는 재고 ID
+PATCH {{baseUrl}}/api/stocks/v2/non-existent-stock-id/increase
+Content-Type: {{contentType}}
+
+{
+  "quantity": 50
+}
+
+### V2-7. 재고 증가 V2 - 음수 수량
+PATCH {{baseUrl}}/api/stocks/v2/{stockId}/increase
+Content-Type: {{contentType}}
+
+{
+  "quantity": -10
+}
+
+### V2-8. 재고 증가 V2 - 0 수량
+PATCH {{baseUrl}}/api/stocks/v2/{stockId}/increase
+Content-Type: {{contentType}}
+
+{
+  "quantity": 0
+}
+
+### V2-9. 재고 감소 V2 - 성공 (Redis)
+PATCH {{baseUrl}}/api/stocks/v2/{stockId}/decrease
+Content-Type: {{contentType}}
+
+{
+  "quantity": 30
+}
+
+### V2-10. 재고 감소 V2 - 존재하지 않는 재고 ID
+PATCH {{baseUrl}}/api/stocks/v2/non-existent-stock-id/decrease
+Content-Type: {{contentType}}
+
+{
+  "quantity": 30
+}
+
+### V2-11. 재고 감소 V2 - 재고 수량 부족
+PATCH {{baseUrl}}/api/stocks/v2/{stockId}/decrease
+Content-Type: {{contentType}}
+
+{
+  "quantity": 1000
+}
+
+### V2-12. 재고 감소 V2 - 음수 수량
+PATCH {{baseUrl}}/api/stocks/v2/{stockId}/decrease
+Content-Type: {{contentType}}
+
+{
+  "quantity": -10
+}
+
+### V2-13. 재고 감소 V2 - 0 수량
+PATCH {{baseUrl}}/api/stocks/v2/{stockId}/decrease
+Content-Type: {{contentType}}
+
+{
+  "quantity": 0
+}
+
+###############################################
+### V2 API 사용법 (Redis 기반)
+###############################################
+
+# V2 API 특징:
+# 1. Redis 기반: 인메모리 고성능 캐시
+# 2. 원자적 연산: Redis의 원자적 연산으로 동시성 보장
+# 3. 빠른 응답: 인메모리 접근으로 빠른 응답 시간
+# 4. URL 패턴: /v2, /v2/{stockId}, /v2/{stockId}/quantity, /v2/{stockId}/increase, /v2/{stockId}/decrease
+
+# V2 API vs V1 API vs 기존 API 차이점:
+# - 기존 API: 도메인 로직을 통한 검증 후 업데이트 (JPA)
+# - V1 API: 데이터베이스 레벨에서 직접 업데이트 (JPA, 동시성 안전)
+# - V2 API: Redis 인메모리에서 원자적 연산 (최고 성능)
+
+# 사용 권장사항:
+# - 최고 성능이 필요한 경우: V2 API 사용 (Redis)
+# - 높은 동시성이 필요한 경우: V1 API 사용 (JPA)
+# - 복잡한 비즈니스 로직이 필요한 경우: 기존 API 사용 (JPA)
+
+# V2 API 플로우:
+# 1. 재고 등록: POST /api/stocks/v2
+# 2. 재고 조회: GET /api/stocks/v2/{stockId}
+# 3. 수량 조회: GET /api/stocks/v2/{stockId}/quantity
+# 4. 재고 증가: PATCH /api/stocks/v2/{stockId}/increase
+# 5. 재고 감소: PATCH /api/stocks/v2/{stockId}/decrease
+
+# V2 API 장점:
+# - 인메모리 Redis로 최고 성능
+# - 원자적 연산으로 동시성 보장
+# - 빠른 응답 시간
+# - 높은 처리량 (throughput)
+
+# V2 API 주의사항:
+# - Redis는 휘발성 메모리이므로 재시작 시 데이터 손실 가능
+# - 영구 저장이 필요한 경우 V1 API 병행 사용 권장
+# - productId는 Redis에서 조회 시 "N/A"로 표시됨 (성능 최적화)

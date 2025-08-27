@@ -52,8 +52,8 @@ class StockUpdateRequestTest {
     }
 
     @Test
-    @DisplayName("수량이 0인 경우 validation 실패")
-    void validateFailWhenQuantityIsZero() {
+    @DisplayName("수량이 0인 경우 validation 성공")
+    void validateSuccessWhenQuantityIsZero() {
         // Given
         StockUpdateRequest request = new StockUpdateRequest(0L);
 
@@ -61,10 +61,8 @@ class StockUpdateRequestTest {
         Set<ConstraintViolation<StockUpdateRequest>> violations = validator.validate(request);
 
         // Then
-        assertThat(violations).hasSize(1);
-        ConstraintViolation<StockUpdateRequest> violation = violations.iterator().next();
-        assertThat(violation.getPropertyPath().toString()).isEqualTo("quantity");
-        assertThat(violation.getMessage()).isEqualTo("수량은 0보다 커야 합니다.");
+        assertThat(violations).isEmpty();
+        assertThat(request.getQuantity()).isEqualTo(0L);
     }
 
     @Test
@@ -80,7 +78,7 @@ class StockUpdateRequestTest {
         assertThat(violations).hasSize(1);
         ConstraintViolation<StockUpdateRequest> violation = violations.iterator().next();
         assertThat(violation.getPropertyPath().toString()).isEqualTo("quantity");
-        assertThat(violation.getMessage()).isEqualTo("수량은 0보다 커야 합니다.");
+        assertThat(violation.getMessage()).isEqualTo("수량은 0 이상이어야 합니다.");
     }
 
     @Test

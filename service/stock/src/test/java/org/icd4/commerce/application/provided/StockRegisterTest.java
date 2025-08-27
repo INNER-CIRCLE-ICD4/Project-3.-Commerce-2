@@ -15,6 +15,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.*;
 
 @SpringBootTest
+@org.springframework.context.annotation.Import(org.icd4.commerce.config.TestConfig.class)
 @Transactional
 class StockRegisterTest {
 
