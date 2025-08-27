@@ -8,6 +8,7 @@ import org.springframework.data.elasticsearch.core.suggest.Completion;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Data
 @Builder
@@ -56,7 +57,7 @@ public class Product {
     private Boolean isDeleted;
 
     @Field(type = FieldType.Keyword)
-    private List<String> productAttributes;
+    private Set<String> productAttributes;
 
     @CompletionField
     private Completion autoCompleteSuggestions;
