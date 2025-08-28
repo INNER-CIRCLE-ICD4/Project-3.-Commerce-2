@@ -272,10 +272,10 @@ GET http://localhost:8081/api/v1/product/search?keyword=샐러드
 GET http://localhost:8081/api/v1/product/search?keyword=오버핏&filters=status:ACTIVE;attr_size:S
 
 ### 검색 (키워드 + 필터 + 필터옵션)
-GET http://localhost:8081/api/v1/product/search?keyword=오버핏&filters=status:ACTIVE;attr_size:S
+GET http://localhost:8081/api/v1/product/search?keyword=오버핏&filters=status:ACTIVE;attr_size:M
 
 ### 검색 & 정렬 & 필터링
-GET http://localhost:8081/api/v1/product/search?keyword=닭가슴살&sortField=basePrice&sortOrder=asc&page=0&size=10
+GET http://localhost:8081/api/v1/product/search?keyword=닭가슴살&sortField=basePrice&sortOrder=desc&page=0&size=10
 
 
 

@@ -92,21 +92,7 @@ public class ElasticQueryBuilder2 {
     private void buildVariantsQuery(Map<String, List<String>> var) {
         // satus=activate,inactivate stock=3
         var.forEach((key,values) -> {
-            Query termsQuery;
-            if(values.size() == 1) {
-                termsQuery = TermQuery.of(t -> t
-                        .field("variants." + key)
-                        .value(values.get(0))
-                )._toQuery();
-            } else {
-                termsQuery = TermsQuery.of(t -> t
-                        .field("variants." + key)
-                        .terms(TermsQueryField.of(
-                                tq -> tq.value(var.get(key).stream()
-                                        .map(FieldValue::of).collect(Collectors.toList()))
-                        ))
-                )._toQuery();
-            }
+            Query termsQuery = createTermOrTermsQuery("variants." + key, values);;
             mustQueries.add(NestedQuery.of(n -> n
                     .path("variants")
                     .query(termsQuery)
@@ -123,26 +109,31 @@ public class ElasticQueryBuilder2 {
                     .value(key)
             )._toQuery();
 
-            Query valueQuery;
-            if(values.size() == 1) {
-                valueQuery = TermQuery.of(t -> t
-                        .field("variants.optionCombination.value")
-                        .value(values.get(0))
-                )._toQuery();
-            } else {
-                valueQuery = TermsQuery.of(t -> t
-                        .field("variants.optionCombination.value")
-                        .terms(TermsQueryField.of(
-                                tq -> tq.value(opt.get(key).stream()
-                                        .map(FieldValue::of).collect(Collectors.toList()))
-                        ))
-                )._toQuery();
-            }
+            Query valueQuery = createTermOrTermsQuery("variants.optionCombination.value", values);
+
             mustQueries.add(NestedQuery.of(n -> n
                     .path("variants.optionCombination")
                     .query(q -> q.bool(b -> b.must(nameQuery, valueQuery)))
             )._toQuery());
         });
+    }
+
+    private Query createTermOrTermsQuery(String fieldName, List<String> values) {
+        if(values.size() == 1) {
+            return TermQuery.of(t -> t
+                    .field(fieldName)
+                    .value(values.get(0))
+            )._toQuery();
+        } else {
+            return TermsQuery.of(t -> t
+                    .field(fieldName)
+                    .terms(TermsQueryField.of(
+                            tq -> tq.value(values.stream()
+                                    .map(FieldValue::of)
+                                    .collect(Collectors.toList()))
+                    ))
+            )._toQuery();
+        }
     }
 
     public ElasticQueryBuilder2 sort(String sortField, String sortOrder) {
