@@ -11,7 +11,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.icd4.commerce.adapter.webapi.common.ErrorResponse;
-import org.icd4.commerce.adapter.webapi.dto.*;
 import org.icd4.commerce.adapter.webapi.dto.cart.request.AddItemRequest;
 import org.icd4.commerce.adapter.webapi.dto.cart.request.CreateCartRequest;
 import org.icd4.commerce.adapter.webapi.dto.cart.request.MergeCartsRequest;

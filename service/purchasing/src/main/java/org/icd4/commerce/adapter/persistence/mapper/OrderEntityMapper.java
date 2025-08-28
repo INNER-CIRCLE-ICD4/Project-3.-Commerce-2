@@ -6,6 +6,7 @@ import org.icd4.commerce.adapter.persistence.entity.OrderItemJpaEntity;
 import org.icd4.commerce.adapter.persistence.entity.OrderJpaEntity;
 import org.icd4.commerce.domain.cart.ProductOptions;
 import org.icd4.commerce.domain.common.ProductId;
+import org.icd4.commerce.domain.common.StockKeepingUnit;
 import org.icd4.commerce.domain.order.*;
 import org.springframework.stereotype.Component;
 
@@ -76,6 +77,7 @@ public class OrderEntityMapper {
         OrderItemJpaEntity entity = new OrderItemJpaEntity(
                 item.getOrderItemId().value(),
                 item.getProductId().value(),
+                item.getSku().value(),
                 item.getProductName(),
                 item.getUnitPrice(),
                 item.getQuantity(),
@@ -94,7 +96,8 @@ public class OrderEntityMapper {
         return new OrderItem(
                 OrderItemId.of(entity.getId()),
                 OrderId.from(entity.getOrder().getId()),
-                new ProductId(entity.getProductId()),
+                ProductId.of(entity.getProductId()),
+                StockKeepingUnit.of(entity.getSku()),
                 entity.getProductName(),
                 entity.getUnitPrice(),
                 entity.getQuantity(),

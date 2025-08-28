@@ -68,6 +68,7 @@ public class AddItemToCartUseCase {
         // 도메인 로직 실행
         cart.addItem(
             command.productId(),
+            command.sku(),
             command.quantity(),
             command.options()
         );

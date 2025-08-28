@@ -19,12 +19,16 @@ public record CreateOrderCommand(
 
     public record OrderItemCommand(
             String productId,
+            String sku,
             Long unitPrice,
             int quantity
     ) {
         public OrderItemCommand {
             if (productId == null) {
                 throw new IllegalArgumentException("productId는 필수입니다.");
+            }
+            if (sku == null) {
+                throw new IllegalArgumentException("sku는 필수입니다.");
             }
             if (quantity < 1) {
                 throw new IllegalArgumentException("quantity는 1 이상이어야 합니다.");

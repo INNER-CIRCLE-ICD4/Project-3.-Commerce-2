@@ -43,7 +43,7 @@ public class OrderJpaEntity {
     private LocalDateTime completedAt;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    private List<OrderItemJpaEntity> orderItems;
+    private List<OrderItemJpaEntity> orderItems = new ArrayList<>();
 
     /**
      * 모든 필드를 설정하는 생성자
