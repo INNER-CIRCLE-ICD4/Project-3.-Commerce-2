@@ -34,10 +34,10 @@ public class ElasticSearchProductDocumentFinder implements ElasticProductDocumen
 
         SearchRequest request = new ElasticQueryBuilder()
                 .index(INDEX_NAME)
-                .keyword(criteria.getKeyword())
-                .category(criteria.getCategoryId())
-                .filters(criteria.getOptions())
-                .sort(criteria.getSortField(), criteria.getSortOrder())
+                .keyword(criteria.keyword())
+                .category(criteria.categoryId())
+                .filters(criteria.filters())
+                .sort(criteria.sortField(), criteria.sortOrder())
                 .page(page, size)
                 .build();
 
