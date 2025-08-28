@@ -2,10 +2,10 @@ package org.icd4.commerce.application.provided.cart.usecase;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.icd4.commerce.adapter.external.ProductPriceProviderAdapter;
+import org.icd4.commerce.domain.cart.ProductPriceProvider;
 import org.icd4.commerce.application.provided.cart.CartResult;
 import org.icd4.commerce.application.provided.cart.exception.CartNotFoundException;
-import org.icd4.commerce.application.required.CartRepositoryPort;
+import org.icd4.commerce.application.required.cart.CartRepositoryPort;
 import org.icd4.commerce.domain.cart.Cart;
 import org.icd4.commerce.domain.cart.CartId;
 import org.springframework.stereotype.Service;
@@ -25,7 +25,7 @@ import java.math.BigDecimal;
 public class GetCartUseCase {
     
     private final CartRepositoryPort cartRepository;
-    private final ProductPriceProviderAdapter productPriceProvider;
+    private final ProductPriceProvider productPriceProvider;
     
     /**
      * 장바구니를 조회합니다.

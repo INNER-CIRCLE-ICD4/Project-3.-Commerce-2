@@ -31,5 +31,5 @@ public interface ProductPriceProvider {
      * @throws NullPointerException productId가 null인 경우
      * @throws IllegalArgumentException 존재하지 않는 상품인 경우
      */
-    BigDecimal getPrice(ProductId productId);
+    BigDecimal getPrice(ProductId productId, StockKeepingUnit sku);
 }

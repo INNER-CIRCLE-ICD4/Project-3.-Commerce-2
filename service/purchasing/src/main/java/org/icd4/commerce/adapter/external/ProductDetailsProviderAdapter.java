@@ -2,9 +2,12 @@ package org.icd4.commerce.adapter.external;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.icd4.commerce.adapter.external.exception.ProductNotFoundException;
 import org.icd4.commerce.application.provided.common.ProductDetailsProvider;
+import org.icd4.commerce.application.required.common.ProductServiceClient;
 import org.icd4.commerce.domain.common.ProductId;
 import org.icd4.commerce.domain.common.ProductPriceProvider;
+import org.icd4.commerce.domain.common.StockKeepingUnit;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
@@ -26,7 +29,7 @@ public class ProductDetailsProviderAdapter implements ProductPriceProvider, Prod
     private final ProductServiceClient productServiceClient;
     
     @Override
-    public BigDecimal getPrice(ProductId productId) {
+    public BigDecimal getPrice(ProductId productId, StockKeepingUnit sku) {
         if (productId == null) {
             throw new NullPointerException("ProductId cannot be null");
         }
@@ -35,7 +38,7 @@ public class ProductDetailsProviderAdapter implements ProductPriceProvider, Prod
             log.debug("Getting price for product: {}", productId);
             
             ProductServiceClient.ProductInfo product = 
-                productServiceClient.getProduct(productId);
+                productServiceClient.getProduct(productId, sku);
             
             if (!product.isActive()) {
                 throw new IllegalArgumentException(
@@ -56,9 +59,8 @@ public class ProductDetailsProviderAdapter implements ProductPriceProvider, Prod
     }
 
     @Override
-    public ProductDetails getProductInfo(ProductId productId) {
-        ProductServiceClient.ProductInfo product = productServiceClient.getProduct(productId);
-
+    public ProductDetails getProductInfo(ProductId productId, StockKeepingUnit sku) {
+        ProductServiceClient.ProductInfo product = productServiceClient.getProduct(productId, sku);
         if (!product.isActive()) {
             throw new IllegalArgumentException("비활성 상품입니다: " + productId.value());
         }
@@ -66,7 +68,7 @@ public class ProductDetailsProviderAdapter implements ProductPriceProvider, Prod
         return new ProductDetails(
                 product.name(),
                 product.price(),
-                true
+                product.isActive()
         );
     }
 }

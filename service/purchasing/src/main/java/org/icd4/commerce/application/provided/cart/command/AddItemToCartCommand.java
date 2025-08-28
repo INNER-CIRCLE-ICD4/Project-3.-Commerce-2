@@ -3,6 +3,7 @@ package org.icd4.commerce.application.provided.cart.command;
 import org.icd4.commerce.domain.cart.CartId;
 import org.icd4.commerce.domain.cart.ProductOptions;
 import org.icd4.commerce.domain.common.ProductId;
+import org.icd4.commerce.domain.common.StockKeepingUnit;
 
 /**
  * 장바구니에 상품 추가 커맨드.
@@ -15,6 +16,7 @@ import org.icd4.commerce.domain.common.ProductId;
 public record AddItemToCartCommand(
     CartId cartId,
     ProductId productId,
+    StockKeepingUnit sku,
     int quantity,
     ProductOptions options
 ) {
@@ -25,7 +27,9 @@ public record AddItemToCartCommand(
         if (productId == null) {
             throw new IllegalArgumentException("ProductId cannot be null");
         }
-        // TODO: 해당 제품의 재고보다 많은 양을 넣을 수 없음.
+        if (sku == null) {
+            throw new IllegalArgumentException("sku cannot be null");
+        }
         if (quantity < 1 || quantity > 99) {
             throw new IllegalArgumentException("Quantity must be between 1 and 99");
         }

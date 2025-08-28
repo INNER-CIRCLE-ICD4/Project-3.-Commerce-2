@@ -60,7 +60,7 @@ class ApiResponseTest {
         String message = "재고 조회 성공";
         StockResponse stockData = StockResponse.builder()
                 .stockId("test-stock-id")
-                .productId("PRODUCT-001")
+                .sku("PRODUCT-001")
                 .quantity(100L)
                 .build();
 
@@ -71,7 +71,7 @@ class ApiResponseTest {
         assertThat(response.isSuccess()).isTrue();
         assertThat(response.getMessage()).isEqualTo(message);
         assertThat(response.getData()).isEqualTo(stockData);
-        assertThat(response.getData().getProductId()).isEqualTo("PRODUCT-001");
+        assertThat(response.getData().getSku()).isEqualTo("PRODUCT-001");
         assertThat(response.getData().getQuantity()).isEqualTo(100L);
     }
 

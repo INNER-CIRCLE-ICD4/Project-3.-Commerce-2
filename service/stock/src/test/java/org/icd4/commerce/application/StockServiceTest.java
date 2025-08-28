@@ -11,14 +11,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.temporal.ChronoUnit;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.assertj.core.data.Offset.offset;
-import static org.assertj.core.data.Percentage.withPercentage;
-import static java.time.temporal.ChronoUnit.MILLIS;
 
 @SpringBootTest
 @Transactional
@@ -47,30 +43,30 @@ class StockServiceTest {
 
         // 1. 재고 등록
         Stock registeredStock = stockService.register(productId, initialQuantity);
-        assertThat(registeredStock.getProductId()).isEqualTo(productId);
+        assertThat(registeredStock.getSku()).isEqualTo(productId);
         assertThat(registeredStock.getQuantity()).isEqualTo(initialQuantity);
 
         // 2. 재고 조회
-        Stock foundStock = stockService.getStock(registeredStock.getId());
-        assertThat(foundStock.getId()).isEqualTo(registeredStock.getId());
+        Stock foundStock = stockService.getStock(registeredStock.getSku());
+        assertThat(foundStock.getSku()).isEqualTo(registeredStock.getSku());
         assertThat(foundStock.getQuantity()).isEqualTo(initialQuantity);
 
         // 3. 재고 수량만 조회
-        Long quantity = stockService.checkQuantity(registeredStock.getId());
+        Long quantity = stockService.checkQuantity(registeredStock.getSku());
         assertThat(quantity).isEqualTo(initialQuantity);
 
         // 4. 재고 증가
         Long increaseAmount = 50L;
-        stockService.increaseQuantity(registeredStock.getId(), increaseAmount);
+        stockService.increaseQuantity(registeredStock.getSku(), increaseAmount);
         
-        Long increasedQuantity = stockService.checkQuantity(registeredStock.getId());
+        Long increasedQuantity = stockService.checkQuantity(registeredStock.getSku());
         assertThat(increasedQuantity).isEqualTo(150L); // 100 + 50
 
         // 5. 재고 감소
         Long decreaseAmount = 30L;
-        stockService.decreaseQuantity(registeredStock.getId(), decreaseAmount);
+        stockService.decreaseQuantity(registeredStock.getSku(), decreaseAmount);
         
-        Long finalQuantity = stockService.checkQuantity(registeredStock.getId());
+        Long finalQuantity = stockService.checkQuantity(registeredStock.getSku());
         assertThat(finalQuantity).isEqualTo(120L); // 150 - 30
     }
 
@@ -83,14 +79,14 @@ class StockServiceTest {
         Stock stock3 = stockService.register("concurrent-product-3", 300L);
 
         // When - 각각 다른 연산 수행
-        stockService.increaseQuantity(stock1.getId(), 50L);
-        stockService.decreaseQuantity(stock2.getId(), 50L);
-        stockService.increaseQuantity(stock3.getId(), 100L);
+        stockService.increaseQuantity(stock1.getSku(), 50L);
+        stockService.decreaseQuantity(stock2.getSku(), 50L);
+        stockService.increaseQuantity(stock3.getSku(), 100L);
 
         // Then
-        assertThat(stockService.checkQuantity(stock1.getId())).isEqualTo(150L); // 100 + 50
-        assertThat(stockService.checkQuantity(stock2.getId())).isEqualTo(150L); // 200 - 50
-        assertThat(stockService.checkQuantity(stock3.getId())).isEqualTo(400L); // 300 + 100
+        assertThat(stockService.checkQuantity(stock1.getSku())).isEqualTo(150L); // 100 + 50
+        assertThat(stockService.checkQuantity(stock2.getSku())).isEqualTo(150L); // 200 - 50
+        assertThat(stockService.checkQuantity(stock3.getSku())).isEqualTo(400L); // 300 + 100
     }
 
     @Test
@@ -98,7 +94,7 @@ class StockServiceTest {
     void transactionTest() {
         // Given
         Stock stock = stockService.register("transaction-test-product", 100L);
-        String stockId = stock.getId();
+        String stockId = stock.getSku();
 
         // When - 같은 트랜잭션에서 여러 작업
         stockService.increaseQuantity(stockId, 30L);
@@ -109,7 +105,7 @@ class StockServiceTest {
         assertThat(finalQuantity).isEqualTo(110L); // 100 + 30 - 20
 
         // DB에서 직접 확인
-        Optional<Stock> dbStock = stockRepository.findById(stockId);
+        Optional<Stock> dbStock = stockRepository.findBySku(stockId);
         assertThat(dbStock).isPresent();
         assertThat(dbStock.get().getQuantity()).isEqualTo(110L);
     }
@@ -148,7 +144,7 @@ class StockServiceTest {
         Stock stock = stockService.register("business-test-product", 50L);
 
         // When & Then - 재고 부족 시 도메인에서 예외 발생
-        String stockId = stock.getId();
+        String stockId = stock.getSku();
         
         // 정상 감소는 성공
         stockService.decreaseQuantity(stockId, 30L);
@@ -171,12 +167,12 @@ class StockServiceTest {
         Stock stock = stockService.register("status-test-product", 100L);
         
         // 초기 상태는 AVAILABLE
-        Stock foundStock = stockService.getStock(stock.getId());
+        Stock foundStock = stockService.getStock(stock.getSku());
         assertThat(foundStock.getStockStatus()).isEqualTo(StockStatus.AVAILABLE);
         
         // 재고를 0으로 만들어도 상태는 자동으로 변경되지 않음 (도메인 로직에 따라)
-        stockService.decreaseQuantity(stock.getId(), 100L);
-        Stock zeroStock = stockService.getStock(stock.getId());
+        stockService.decreaseQuantity(stock.getSku(), 100L);
+        Stock zeroStock = stockService.getStock(stock.getSku());
         assertThat(zeroStock.getQuantity()).isEqualTo(0L);
         assertThat(zeroStock.getStockStatus()).isEqualTo(StockStatus.AVAILABLE); // 상태는 그대로
     }
@@ -192,13 +188,13 @@ class StockServiceTest {
 
         // When - 모든 재고에 대해 연산 수행
         for (int i = 0; i < 10; i++) {
-            stockService.increaseQuantity(stocks[i].getId(), 5L);
+            stockService.increaseQuantity(stocks[i].getSku(), 5L);
         }
 
         // Then - 모든 재고 상태 확인
         for (int i = 0; i < 10; i++) {
             Long expectedQuantity = (long) (i + 1) * 10 + 5L;
-            assertThat(stockService.checkQuantity(stocks[i].getId())).isEqualTo(expectedQuantity);
+            assertThat(stockService.checkQuantity(stocks[i].getSku())).isEqualTo(expectedQuantity);
         }
     }
 
@@ -207,18 +203,18 @@ class StockServiceTest {
     void boundaryValueTest() {
         // 최소 수량 (1)
         Stock minStock = stockService.register("min-test-product", 1L);
-        assertThat(stockService.checkQuantity(minStock.getId())).isEqualTo(1L);
+        assertThat(stockService.checkQuantity(minStock.getSku())).isEqualTo(1L);
 
         // 큰 수량
         Long largeQuantity = 1_000_000L;
         Stock maxStock = stockService.register("max-test-product", largeQuantity);
-        assertThat(stockService.checkQuantity(maxStock.getId())).isEqualTo(largeQuantity);
+        assertThat(stockService.checkQuantity(maxStock.getSku())).isEqualTo(largeQuantity);
 
         // 최소 단위 증가/감소
-        stockService.increaseQuantity(minStock.getId(), 1L);
-        assertThat(stockService.checkQuantity(minStock.getId())).isEqualTo(2L);
+        stockService.increaseQuantity(minStock.getSku(), 1L);
+        assertThat(stockService.checkQuantity(minStock.getSku())).isEqualTo(2L);
 
-        stockService.decreaseQuantity(minStock.getId(), 1L);
-        assertThat(stockService.checkQuantity(minStock.getId())).isEqualTo(1L);
+        stockService.decreaseQuantity(minStock.getSku(), 1L);
+        assertThat(stockService.checkQuantity(minStock.getSku())).isEqualTo(1L);
     }
 }

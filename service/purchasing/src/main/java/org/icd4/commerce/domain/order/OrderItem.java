@@ -2,6 +2,7 @@ package org.icd4.commerce.domain.order;
 
 import lombok.Getter;
 import org.icd4.commerce.domain.common.ProductId;
+import org.icd4.commerce.domain.common.StockKeepingUnit;
 
 import java.util.Map;
 import java.util.Objects;
@@ -15,10 +16,11 @@ public class OrderItem {
     private final OrderItemId orderItemId;
     private final OrderId orderId;
     private final ProductId productId;
+    private final StockKeepingUnit sku;
     private final String productName;
-    private final long unitPrice;
-    private final long quantity;
-    private final long itemAmount; // = unitPrice * quantity
+    private final Long unitPrice;
+    private final int quantity;
+    private final Long itemAmount; // = unitPrice * quantity
     private final Map<String, String> productOptions; // 옵션 타입 ID → 옵션 값 ID
 
     /**
@@ -28,14 +30,16 @@ public class OrderItem {
             OrderItemId orderItemId,
             OrderId orderId,
             ProductId productId,
+            StockKeepingUnit sku,
             String productName,
-            long unitPrice,
-            long quantity,
+            Long unitPrice,
+            int quantity,
             Map<String, String> productOptions
     ) {
         this.orderItemId = Objects.requireNonNull(orderItemId, "orderItemId is required");
         this.orderId = Objects.requireNonNull(orderId, "orderId is required");
         this.productId = Objects.requireNonNull(productId, "productId is required");
+        this.sku = Objects.requireNonNull(sku, "sku is required");
         this.productOptions = Objects.requireNonNull(productOptions, "productOptions is required");
 
         if (productName == null || productName.isBlank()) {

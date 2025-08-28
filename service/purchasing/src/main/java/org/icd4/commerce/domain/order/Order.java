@@ -52,12 +52,13 @@ public class Order {
      * 주문 생성 팩토리 메서드
      */
     public static Order create(
+            OrderId orderId,
             CustomerId customerId,
             List<OrderItem> orderItems,
             String orderMessage,
             String orderChannel
     ) {
-        return new Order(OrderId.generate(), customerId, orderItems, orderMessage, orderChannel);
+        return new Order(orderId, customerId, orderItems, orderMessage, orderChannel);
     }
 
     //DB -> Entity 변환용
@@ -120,7 +121,7 @@ public class Order {
      * 주문 취소 처리 (PAYMENT_FAILED / PAID / ...  → CANCELED)
      */
     public void cancel() {
-        if (!(this.orderStatus == OrderStatus.PENDING || this.orderStatus == OrderStatus.REFUND_IN_PROGRESS)) {
+        if (this.orderStatus == OrderStatus.PENDING || this.orderStatus == OrderStatus.REFUND_IN_PROGRESS) {
             throw new IllegalStateException("결제 요청 또는 환불 요청 중에는 주문을 취소할 수 없습니다.");
         }
         this.orderStatus = OrderStatus.CANCELED;

@@ -1,8 +1,8 @@
 package org.icd4.commerce.adapter.webapi.exception;
 
 import lombok.extern.slf4j.Slf4j;
-import org.icd4.commerce.adapter.external.ProductNotFoundException;
-import org.icd4.commerce.adapter.external.ProductServiceException;
+import org.icd4.commerce.adapter.external.exception.ProductNotFoundException;
+import org.icd4.commerce.adapter.external.exception.ProductServiceException;
 import org.icd4.commerce.adapter.webapi.common.ApiResponse;
 import org.icd4.commerce.adapter.webapi.common.ErrorCode;
 import org.icd4.commerce.adapter.webapi.common.ErrorResponse;

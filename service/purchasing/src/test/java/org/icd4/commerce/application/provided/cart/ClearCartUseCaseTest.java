@@ -1,12 +1,12 @@
 package org.icd4.commerce.application.provided.cart;
 
+import org.icd4.commerce.application.provided.cart.command.ClearCartCommand;
+import org.icd4.commerce.application.provided.cart.exception.CartNotFoundException;
+import org.icd4.commerce.application.provided.cart.usecase.ClearCartUseCase;
 import org.icd4.commerce.application.required.cart.CartRepositoryPort;
-import org.icd4.commerce.domain.cart.Cart;
-import org.icd4.commerce.domain.cart.CartId;
-import org.icd4.commerce.domain.cart.CustomerId;
+import org.icd4.commerce.domain.cart.*;
 import org.icd4.commerce.domain.common.ProductId;
-import org.icd4.commerce.domain.cart.ProductOptions;
-import org.icd4.commerce.domain.cart.TimeProvider;
+import org.icd4.commerce.domain.common.StockKeepingUnit;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,7 +19,8 @@ import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -59,12 +60,15 @@ class ClearCartUseCaseTest {
         // 장바구니에 아이템 추가
         cart.addItem(
             ProductId.of("PROD-001"),
+            StockKeepingUnit.of("SKU-001"),
             2,
             ProductOptions.of(Map.of("size", "L"))
         );
         cart.addItem(
             ProductId.of("PROD-002"),
-            1,
+                StockKeepingUnit.of("SKU-002"),
+
+                1,
             ProductOptions.empty()
         );
         
@@ -125,6 +129,7 @@ class ClearCartUseCaseTest {
         // 장바구니에 아이템 추가 후 전환
         cart.addItem(
             ProductId.of("PROD-001"),
+            StockKeepingUnit.of("SKU-001"),
             1,
             ProductOptions.empty()
         );

@@ -1,0 +1,678 @@
+### 1. 기존 인덱스 삭제
+DELETE http://localhost:9200/product_index
+
+
+### 2. 인덱스 생성 (korean_analyzer + strict_date_optional_time)
+PUT http://localhost:9200/product_index
+Content-Type: application/json
+
+{
+  "settings": {
+    "index": {
+      "analysis": {
+        "analyzer": {
+          "korean_analyzer": {
+            "type": "custom",
+            "tokenizer": "nori_tokenizer"
+          }
+        }
+      }
+    }
+  },
+  "mappings": {
+    "properties": {
+      "id": {
+        "type": "keyword"
+      },
+      "sellerId": {
+        "type": "keyword"
+      },
+      "name": {
+        "type": "text",
+        "analyzer": "korean_analyzer"
+      },
+      "brand": {
+        "type": "text",
+        "analyzer": "korean_analyzer",
+        "fields": {
+          "keyword": {
+            "type": "keyword",
+            "ignore_above": 256
+          }
+        }
+      },
+      "description": {
+        "type": "text",
+        "analyzer": "korean_analyzer"
+      },
+      "basePrice": {
+        "type": "keyword"
+      },
+      "categoryId": {
+        "type": "keyword"
+      },
+      "status": {
+        "type": "keyword"
+      },
+      "createdAt": {
+        "type": "date",
+        "format": "strict_date_optional_time"
+      },
+      "updatedAt": {
+        "type": "date",
+        "format": "strict_date_optional_time"
+      },
+      "isDeleted": {
+        "type": "boolean"
+      },
+      "productAttributes": {
+        "type": "keyword"
+      },
+      "autoCompleteSuggestions": {
+        "type": "completion",
+        "analyzer": "korean_analyzer"
+      },
+      "variants": {
+        "type": "nested",
+        "properties": {
+          "sku": {
+            "type": "keyword"
+          },
+          "price": {
+            "type": "long"
+          },
+          "stock": {
+            "type": "integer"
+          },
+          "status": {
+            "type": "keyword"
+          },
+          "optionCombination": {
+            "type": "nested",
+            "properties": {
+              "name": {
+                "type": "keyword"
+              },
+              "value": {
+                "type": "keyword"
+              }
+            }
+          }
+        }
+      },
+      "rawOptions": {
+        "type": "object",
+        "enabled": false
+      }
+    }
+  }
+}
+
+### 의류
+### 3.1.1 첫 번째 문서 추가 (셔츠)
+POST http://localhost:9200/product_index/_doc
+Content-Type: application/json
+
+{
+  "id": "7a8c3d9b-2e6f-4c8d-8a2b-3c4e5f6d7a8f",
+  "sellerId": "SELLER_FASHION_002",
+  "name": "모던 오버핏 셔츠",
+  "brand": "패션블루",
+  "description": "부드러운 코튼 소재의 오버핏 셔츠입니다. 다양한 색상으로 출시되었습니다.",
+  "categoryId": "CATEGORY_FASHION_MEN_001",
+  "createdAt": "2025-07-30T10:15:00.000Z",
+  "updatedAt": "2025-07-30T10:15:00.000Z",
+  "basePrice": 30000,
+  "autoCompleteSuggestions": [
+    "여름 상의",
+    "리넨 셔츠"
+  ],
+  "productAttributes": [
+    "color:white",
+    "color:black",
+    "color:navy",
+    "size:M",
+    "size:L",
+    "size:XL",
+    "material:cotton"
+  ],
+  "autocompleteSuggestions": {
+    "input": [
+      "모던 셔츠",
+      "패션블루 셔츠",
+      "오버핏 셔츠"
+    ]
+  },
+  "variants": [
+    {
+      "sku": "SHIRT-MODERN-M-WHITE",
+      "price": 35000,
+      "stock": 50,
+      "status": "ACTIVE",
+      "optionCombination": [
+        {
+          "name": "color",
+          "value": "white"
+        },
+        {
+          "name": "size",
+          "value": "M"
+        }
+      ]
+    },
+    {
+      "sku": "SHIRT-MODERN-L-BLACK",
+      "price": 35000,
+      "stock": 50,
+      "status": "ACTIVE",
+      "optionCombination": [
+        {
+          "name": "color",
+          "value": "black"
+        },
+        {
+          "name": "size",
+          "value": "L"
+        }
+      ]
+    },
+    {
+      "sku": "SHIRT-MODERN-XL-NAVY",
+      "price": 35000,
+      "stock": 50,
+      "status": "ACTIVE",
+      "optionCombination": [
+        {
+          "name": "color",
+          "value": "navy"
+        },
+        {
+          "name": "size",
+          "value": "XL"
+        }
+      ]
+    }
+  ]
+}
+
+### 3.1.2 '모던' 키워드와 관련 없는 오버핏 셔츠
+### '모던' 키워드 없이 '오버핏 셔츠'로 검색했을 때 이 상품이 상위에 노출
+POST http://localhost:9200/product_index/_doc
+Content-Type: application/json
+
+{
+  "id": "d8e34f9c-512c-4b11-b47c-7d929b9f913d",
+  "sellerId": "SELLER_FASHION_002",
+  "name": "빈티지 체크 오버핏 셔츠",
+  "brand": "패션블루",
+  "description": "클래식한 체크 패턴의 오버핏 셔츠입니다. 캐주얼한 코디에 적합합니다.",
+  "categoryId": "CATEGORY_FASHION_MEN_001",
+  "createdAt": "2025-07-30T11:00:00.000Z",
+  "updatedAt": "2025-07-30T11:00:00.000Z",
+  "basePrice": 42000,
+  "productAttributes": [
+    "color:red",
+    "color:navy",
+    "pattern:check",
+    "size:M",
+    "size:L",
+    "size:XL",
+    "material:linen"
+  ],
+  "autocompleteSuggestions": {
+    "input": [
+      "빈티지 셔츠",
+      "체크 셔츠",
+      "오버핏 셔츠"
+    ],
+    "weight": 8
+  },
+  "variants": [
+    {
+      "sku": "SHIRT-VINTAGE-M-RED",
+      "price": 42000,
+      "stock": 40,
+      "status": "ACTIVE",
+      "optionCombination": [
+        {
+          "name": "color",
+          "value": "red"
+        },
+        {
+          "name": "size",
+          "value": "M"
+        }
+      ]
+    },
+    {
+      "sku": "SHIRT-VINTAGE-L-NAVY",
+      "price": 42000,
+      "stock": 40,
+      "status": "ACTIVE",
+      "optionCombination": [
+        {
+          "name": "color",
+          "value": "navy"
+        },
+        {
+          "name": "size",
+          "value": "L"
+        }
+      ]
+    }
+  ]
+}
+
+### 3.1.3  '모던 오버핏'은 맞지만 '셔츠'는 아닌 상품
+### 모던 오버핏 코트를 검색했을 때 이 상품이 상위 모던 오버핏 셔츠를 검색했을 때는 후순위
+POST http://localhost:9200/product_index/_doc
+Content-Type: application/json
+
+{
+  "id": "a9e34c9c-512c-4b11-b47c-7d929b9f913d",
+  "sellerId": "SELLER_FASHION_002",
+  "name": "모던 오버핏 코트",
+  "brand": "패션블루",
+  "description": "세련된 디자인의 오버핏 코트로, 가볍고 따뜻한 소재로 제작되었습니다.",
+  "categoryId": "CATEGORY_FASHION_MEN_002",
+  "createdAt": "2025-07-30T12:00:00.000Z",
+  "updatedAt": "2025-07-30T12:00:00.000Z",
+  "basePrice": 125000,
+  "productAttributes": [
+    "color:beige",
+    "color:black",
+    "size:M",
+    "size:L",
+    "size:XL",
+    "material:wool"
+  ],
+  "autocompleteSuggestions": {
+    "input": [
+      "모던 코트",
+      "오버핏 코트",
+      "패션블루 코트"
+    ],
+    "weight": 12
+  },
+  "variants": [
+    {
+      "sku": "COAT-MODERN-M-BEIGE",
+      "price": 125000,
+      "stock": 30,
+      "status": "ACTIVE",
+      "optionCombination": [
+        {
+          "name": "color",
+          "value": "beige"
+        },
+        {
+          "name": "size",
+          "value": "M"
+        }
+      ]
+    },
+    {
+      "sku": "COAT-MODERN-L-BLACK",
+      "price": 125000,
+      "stock": 30,
+      "status": "ACTIVE",
+      "optionCombination": [
+        {
+          "name": "color",
+          "value": "black"
+        },
+        {
+          "name": "size",
+          "value": "L"
+        }
+      ]
+    }
+  ]
+}
+
+### 3.1.4 오버핏이 아닌 모던 셔츠
+### 모던 오버핏 셔츠 검색 시 유사도는 떨어지지만 모던, 셔츠만으로 충분히 노출 되는 지 확인
+POST http://localhost:9200/product_index/_doc
+Content-Type: application/json
+
+{
+  "id": "b3e34f9c-512c-4b11-b47c-7d929b9f913d",
+  "sellerId": "SELLER_FASHION_001",
+  "name": "모던 슬림핏 셔츠",
+  "brand": "베이직웨어",
+  "description": "깔끔하고 몸에 잘 맞는 실루엣의 모던 슬림핏 셔츠입니다.",
+  "categoryId": "CATEGORY_FASHION_MEN_001",
+  "createdAt": "2025-07-30T13:00:00.000Z",
+  "updatedAt": "2025-07-30T13:00:00.000Z",
+  "basePrice": 30000,
+  "productAttributes": [
+    "color:white",
+    "color:grey",
+    "size:95",
+    "size:100",
+    "size:105",
+    "material:cotton"
+  ],
+  "autocompleteSuggestions": {
+    "input": [
+      "슬림핏 셔츠",
+      "베이직웨어 셔츠",
+      "모던 셔츠"
+    ],
+    "weight": 9
+  },
+  "variants": [
+    {
+      "sku": "SHIRT-SLIM-95-WHITE",
+      "price": 30000,
+      "stock": 60,
+      "status": "ACTIVE",
+      "optionCombination": [
+        {
+          "name": "color",
+          "value": "white"
+        },
+        {
+          "name": "size",
+          "value": "95"
+        }
+      ]
+    },
+    {
+      "sku": "SHIRT-SLIM-100-GREY",
+      "price": 30000,
+      "stock": 60,
+      "status": "ACTIVE",
+      "optionCombination": [
+        {
+          "name": "color",
+          "value": "grey"
+        },
+        {
+          "name": "size",
+          "value": "100"
+        }
+      ]
+    }
+  ]
+}
+
+### 식품
+### 3.2.1 첫 번째 음식 상품 문서 추가 (단백질 닭가슴살 샐러드)
+POST http://localhost:9200/product_index/_doc
+Content-Type: application/json
+
+{
+  "productId": "salad-chicken-001",
+  "sellerId": "SELLER_HEALTH_001",
+  "name": "단백질 닭가슴살 샐러드",
+  "brand": "",
+  "description": "신선한 채소와 고품질 닭가슴살로 만든 영양 만점 샐러드. 다이어트 식단에 최적입니다.",
+  "categoryId": "CATEGORY_FOOD_SALAD",
+  "createdAt": "2025-07-30T10:00:00.000Z",
+  "updatedAt": "2025-07-30T10:00:00.000Z",
+  "basePrice": 12000,
+  "productAttributes": [
+    "dressing:발사믹 드레싱",
+    "weight:200-300"
+  ],
+  "autocompleteSuggestions": {
+    "input": [
+      "닭가슴살 샐러드",
+      "단백질 샐러드",
+      "다이어트 도시락"
+    ],
+    "weight": 15
+  },
+  "variants": []
+}
+
+### 3.2.2 두 번째 음식 상품 문서 추가 (비건 렌틸콩 샐러드)
+POST http://localhost:9200/product_index/_doc
+Content-Type: application/json
+
+{
+  "productId": "salad-vegan-002",
+  "sellerId": "SELLER_HEALTH_002",
+  "name": "비건 렌틸콩 샐러드",
+  "brand": "",
+  "description": "채식주의자를 위한 렌틸콩과 신선한 야채 샐러드. 건강하고 가벼운 한 끼.",
+  "categoryId": "CATEGORY_FOOD_SALAD",
+  "createdAt": "2025-07-30T10:05:00.000Z",
+  "updatedAt": "2025-07-30T10:05:00.000Z",
+  "basePrice": 10000,
+  "autocompleteSuggestions": {
+    "input": [
+      "렌틸콩 샐러드",
+      "비건 샐러드",
+      "채식 도시락"
+    ],
+    "weight": 12
+  },
+  "variants": []
+}
+
+### 3.2.3 세 번째 음식 상품 문서 추가 (고단백 통밀 스테이크 도시락)
+POST http://localhost:9200/product_index/_doc
+Content-Type: application/json
+
+{
+  "productId": "lunchbox-steak-003",
+  "sellerId": "SELLER_HEALTH_001",
+  "name": "고단백 통밀 스테이크 도시락",
+  "brand": "",
+  "description": "통밀밥과 부채살 스테이크, 구운 채소로 구성된 균형 잡힌 도시락. 든든한 식사 대용.",
+  "categoryId": "CATEGORY_FOOD_LUNCHBOX",
+  "createdAt": "2025-07-30T10:10:00.000Z",
+  "updatedAt": "2025-07-30T10:10:00.000Z",
+  "basePrice": 18000,
+  "autocompleteSuggestions": {
+    "input": [
+      "스테이크 도시락",
+      "단백질 도시락",
+      "통밀 도시락"
+    ],
+    "weight": 18
+  },
+  "variants": []
+}
+
+### 3.2.4 네 번째 음식 상품 문서 추가 (훈제 구운 계란)
+POST http://localhost:9200/product_index/_doc
+Content-Type: application/json
+
+{
+  "productId": "snack-egg-004",
+  "sellerId": "SELLER_FARM_001",
+  "name": "훈제 구운 계란 (6개입)",
+  "brand": "농장직송",
+  "description": "간편하게 즐기는 고단백 간식. 훈제향 가득한 구운 계란입니다.",
+  "categoryId": "CATEGORY_FOOD_SNACK",
+  "createdAt": "2025-07-30T10:15:00.000Z",
+  "updatedAt": "2025-07-30T10:15:00.000Z",
+  "basePrice": 5000,
+  "autocompleteSuggestions": {
+    "input": [
+      "구운 계란",
+      "삶은 계란",
+      "훈제 계란"
+    ],
+    "weight": 20
+  },
+  "variants": []
+}
+###
+GET http://localhost:9200/product_index/_doc/salad02
+
+
+### 4. 단순 검색
+GET http://localhost:9200/product_index/_search
+Content-Type: application/json
+
+{
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "multi_match": {
+            "query": "모던 오버핏 셔츠",
+            "fields": [
+              "name^3",
+              "brand^2",
+              "description"
+            ],
+            "type": "best_fields"
+          }
+        }
+      ],
+      "filter": [
+        {
+          "term": {
+            "status": "ACTIVE"
+          }
+        },
+        {
+          "term": {
+            "isDeleted": false
+          }
+        }
+      ]
+    }
+  },
+  "sort": [
+    {
+      "_score": {
+        "order": "desc"
+      }
+    }
+  ]
+}
+
+### 4.1. 모든 음식 상품 검색
+GET http://localhost:9200/api/products/search?keyword=샐러드
+Accept: application/json
+
+### 4.2. 단백질 도시락 검색
+GET http://localhost:9200/api/products/search?keyword=단백질 도시락
+Accept: application/json
+
+
+### 4.3. 구운 계란 검색 (동의어 "계란" 사용)
+GET http://localhost:9200/api/products/search?keyword=계란
+Accept: application/json
+
+### 5.1 검색어 자동 완성
+GET http://localhost:9200/product_index/_search
+Content-Type: application/json
+
+{
+  "suggest": {
+    "text": "모던",
+    "product-suggest": {
+      "completion": {
+        "field": "autocompleteSuggestions",
+        "size": 5
+      }
+    }
+  }
+}
+
+### 5.2 자동 완성 제안 요청 (예: "샐러")
+GET http://localhost:9200/api/products/autocomplete?prefix=샐러
+Accept: application/json
+
+### 6. 쿼리를 포함한 필터(쿼리 미포함시 must 제거)
+GET http://localhost:9200/product_index/_search
+Content-Type: application/json
+
+{
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "match": {
+            "name": "셔츠"
+          }
+        }
+      ],
+      "filter": [
+        {
+          "term": {
+            "status": "ACTIVE"
+          }
+        },
+        {
+          "term": {
+            "productAttributes": "color:white"
+          }
+        },
+        {
+          "term": {
+            "productAttributes": "size:M"
+          }
+        },
+        {
+          "nested": {
+            "path": "variants",
+            "query": {
+              "term": {
+                "variants.stock": {
+                  "value": 0,
+                  "boost": 0
+                }
+              }
+            },
+            "inner_hits": {}
+          }
+        }
+      ]
+    }
+  }
+}
+
+### 7. 정렬
+GET http://localhost:9200/product_index/_search
+Content-Type: application/json
+
+{
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "match": {
+            "name": "셔츠"
+          }
+        }
+      ]
+    }
+  },
+  "sort": [
+    {
+      "variants.price": {
+        "order": "asc",
+        "nested": {
+          "path": "variants"
+        }
+      }
+    }
+  ]
+}
+
+### 8. 전체 업데이트
+PUT http://localhost:9200/product_index/_doc/{{productId}}
+Content-Type: application/json
+
+{
+  "name": "name"
+}
+
+### 9. 부분 업데이트
+POST http://localhost:9200/product_index/_update/{{productId}}
+Content-Type: application/json
+
+{
+  "doc": {
+    "name": "updated name"
+  }
+}
+

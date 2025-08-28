@@ -1,6 +1,7 @@
 package org.icd4.commerce.domain.order;
 
 import org.icd4.commerce.domain.common.ProductId;
+import org.icd4.commerce.domain.common.StockKeepingUnit;
 import org.junit.jupiter.api.*;
 import java.util.Map;
 import java.util.UUID;
@@ -15,12 +16,13 @@ class OrderItemTest {
     void calculateItemAmount_returnsCorrectTotal() {
         // given
         OrderItem item = new OrderItem(
-                new OrderItemId(UUID.randomUUID()),
-                new OrderId(UUID.randomUUID()),
+                new OrderItemId("1"),
+                new OrderId("1"),
                 new ProductId("1"),
+                new StockKeepingUnit("1"),
                 "테스트상품",
                 10_000L, // unitPrice
-                3L,      // quantity
+                3,      // quantity
                 Map.of("색상", "빨강")
         );
 
@@ -37,9 +39,10 @@ class OrderItemTest {
         //given: productName을 null로 처리
         //when&then: 주문 생성 시 예외 발생 확인
         assertThatThrownBy(() -> new OrderItem(
-                new OrderItemId(UUID.randomUUID()),
-                new OrderId(UUID.randomUUID()),
+                new OrderItemId("1"),
+                new OrderId("1"),
                 new ProductId("1"),
+                new StockKeepingUnit("1"),
                 null,
                 10000L,
                 1,
@@ -55,9 +58,10 @@ class OrderItemTest {
         //given: productName을 null로 처리
         //when&then: 주문 생성 시 예외 발생 확인
         assertThatThrownBy(() -> new OrderItem(
-                new OrderItemId(UUID.randomUUID()),
-                new OrderId(UUID.randomUUID()),
+                new OrderItemId("1"),
+                new OrderId("1"),
                 new ProductId("1"),
+                new StockKeepingUnit("1"),
                 " ",
                 10000L,
                 1,
@@ -73,9 +77,10 @@ class OrderItemTest {
         //given: unitPrice가 음수
         //when&then: 주문 생성 시 예외 발생 확인
         assertThatThrownBy(() -> new OrderItem(
-                new OrderItemId(UUID.randomUUID()),
-                new OrderId(UUID.randomUUID()),
+                new OrderItemId("1"),
+                new OrderId("1"),
                 new ProductId("1"),
+                new StockKeepingUnit("1"),
                 "테스트상품",
                 -10000L,
                 1,
@@ -91,9 +96,10 @@ class OrderItemTest {
         //given: quantity가 0
         //when&then: 주문 생성 시 예외 발생 확인
         assertThatThrownBy(() -> new OrderItem(
-                new OrderItemId(UUID.randomUUID()),
-                new OrderId(UUID.randomUUID()),
+                new OrderItemId("1"),
+                new OrderId("1"),
                 new ProductId("1"),
+                new StockKeepingUnit("1"),
                 "테스트상품",
                 10000L,
                 0,

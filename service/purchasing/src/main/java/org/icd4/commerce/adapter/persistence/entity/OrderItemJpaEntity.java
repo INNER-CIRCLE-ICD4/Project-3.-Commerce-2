@@ -4,52 +4,56 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.UUID;
-
 @Entity
 @Table(name="order_items")
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
 public class OrderItemJpaEntity {
 
     @Id
-    private UUID id;
-
-    @Column(name = "product_id", nullable = false)
-    private String productId;
-
-    @Column(name = "product_name", nullable = false)
-    private String productName;
-
-    @Column(name = "unit_price", nullable = false)
-    private long unitPrice;
-
-    @Column(nullable = false)
-    private long quantity;
-
-    @Column(name = "item_amount",nullable = false)
-    private long itemAmount;
-
-    @Lob
-    @Column(name = "product_options")
-    private String productOptions;
+    private String id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "order_id")
+    @JoinColumn(name = "order_id",
+                foreignKey = @ForeignKey(name="fk_order_items_order_id"))
     private OrderJpaEntity order;
+
+    @Column(nullable = false)
+    private String productId;
+
+    @Column(nullable = false)
+    private String sku;
+
+    @Column(nullable = false)
+    private String productName;
+
+    @Column(nullable = false)
+    private Long unitPrice;
+
+    @Column(nullable = false)
+    private int quantity;
+
+    @Column(nullable = false)
+    private Long itemAmount;
+
+    @Lob
+    private String productOptions;
+
 
     // 생성자
     public OrderItemJpaEntity(
-            UUID id,
+            String id,
             String productId,
+            String sku,
             String productName,
-            long unitPrice,
-            long quantity,
-            long itemAmount,
+            Long unitPrice,
+            int quantity,
+            Long itemAmount,
             String productOptions
     ) {
         this.id = id;
         this.productId = productId;
+        this.sku = sku;
         this.productName = productName;
         this.unitPrice = unitPrice;
         this.quantity = quantity;

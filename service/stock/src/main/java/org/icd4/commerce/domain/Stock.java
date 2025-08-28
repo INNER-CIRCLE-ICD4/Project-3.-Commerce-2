@@ -8,7 +8,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import org.springframework.cglib.core.Local;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -23,7 +22,7 @@ public class Stock {
     @Id
     private String id;
 
-    private String productId;
+    private String sku;
 
     private Long quantity;
 
@@ -34,14 +33,14 @@ public class Stock {
 
     private LocalDateTime updatedAt;
 
-    public static Stock register(String productId, Long quantity) {
+    public static Stock register(String sku, Long quantity) {
         if (quantity <= 0) {
             throw new IllegalArgumentException("재고의 값은 0 이하가 될 수 없습니다.");
         }
 
         Stock stock = new Stock();
         stock.id = UUID.randomUUID().toString();
-        stock.productId = requireNonNull(productId, "상품 ID를 입력해주세요.");
+        stock.sku = requireNonNull(sku, "상품 ID를 입력해주세요.");
         stock.quantity = requireNonNull(quantity, "재고를 입력해주세요.");
         stock.stockStatus = StockStatus.AVAILABLE;
         stock.createdAt = LocalDateTime.now();
@@ -78,8 +77,6 @@ public class Stock {
         this.quantity = 0L;
         this.stockStatus = StockStatus.OUT_OF_STOCK;
     }
-
-
 
 
 }
