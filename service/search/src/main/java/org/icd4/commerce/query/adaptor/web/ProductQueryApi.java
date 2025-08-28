@@ -8,10 +8,7 @@ import org.icd4.commerce.shared.domain.Product;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 // 검색 API
 @RestController

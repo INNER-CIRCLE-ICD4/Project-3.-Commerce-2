@@ -3,8 +3,7 @@ package org.icd4.commerce.query.application.provided;
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch.core.SearchRequest;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
-import co.elastic.clients.elasticsearch.core.search.CompletionSuggestOption;
-import co.elastic.clients.elasticsearch.core.search.Hit;
+import co.elastic.clients.elasticsearch.core.search.*;
 import lombok.RequiredArgsConstructor;
 import org.icd4.commerce.query.adaptor.elasticsearch.ElasticQueryBuilder2;
 import org.icd4.commerce.query.adaptor.web.dto.ProductSearchRequest;
@@ -42,26 +41,25 @@ public class SearchService {
     }
 
     public List<String> getAutocompleteSuggestions(String prefix) throws IOException {
-        SearchRequest request = SearchRequest.of(s -> s
+
+        SearchRequest searchRequest = SearchRequest.of(sr -> sr
                 .index("product_index")
-                .suggest(suggest -> suggest
-                        .suggesters("product-suggester", suggester -> suggester
+                .suggest(s -> s
+                        .suggesters("product-suggester", ps -> ps
                                 .prefix(prefix)
-                                .completion(completion -> completion
+                                .completion(c -> c
                                         .field("autoCompleteSuggestions")
-                                        .size(5)
-                                )
-                        )
-                )
+                                        .size(5))))
         );
 
-        SearchResponse<Product> response = esClient.search(request, Product.class);
+        SearchResponse<Void> response = esClient.search(searchRequest, Void.class);
 
         return response.suggest()
                 .get("product-suggester")
                 .stream()
                 .flatMap(suggestion -> suggestion.completion().options().stream())
                 .map(CompletionSuggestOption::text)
+                .distinct()
                 .collect(Collectors.toList());
     }
 }

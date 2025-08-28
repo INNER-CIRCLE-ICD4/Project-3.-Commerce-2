@@ -280,7 +280,7 @@ GET http://localhost:8081/api/v1/product/search?keyword=닭가슴살&sortField=b
 
 
 ### 자동완성 V1
-GET http://localhost:8081/api/v1/product/autocomplete?prefix=
+GET http://localhost:8081/api/v1/product/autocomplete?prefix=단
 
 ### 자동완성 V2
 GET http://localhost:8081/api/v1/product/autocomplete_2?prefix=샐러드
