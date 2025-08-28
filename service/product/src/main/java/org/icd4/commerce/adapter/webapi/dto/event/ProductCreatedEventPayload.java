@@ -15,7 +15,7 @@ public record ProductCreatedEventPayload(
     public static ProductCreatedEventPayload from(
             Product product) {
         return new ProductCreatedEventPayload(
-                product.getSku(),
+                product.getId(),
                 product.getSellerId(),
                 product.getName(),
                 product.getBrand(),

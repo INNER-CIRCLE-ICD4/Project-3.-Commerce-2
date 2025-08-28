@@ -22,7 +22,7 @@ public record ProductResponse(
 ) {
     public static ProductResponse fromDomain(Product product) {
         return new ProductResponse(
-                product.getSku(),
+                product.getId(),
                 product.getSellerId(),
                 product.getName(),
                 product.getBrand(),
