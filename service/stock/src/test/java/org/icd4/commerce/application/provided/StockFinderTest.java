@@ -30,7 +30,7 @@ class StockFinderTest {
         Stock savedStock = stockRepository.save(Stock.register("test-product-123", 150L));
 
         // When
-        Long quantity = stockFinder.checkQuantity(savedStock.getId());
+        Long quantity = stockFinder.checkQuantity(savedStock.getSku());
 
         // Then
         assertThat(quantity).isEqualTo(150L);
@@ -52,17 +52,17 @@ class StockFinderTest {
     @DisplayName("재고 전체 정보 조회 - 성공")
     void getStock_Success() {
         // Given
-        String productId = "test-product-456";
+        String sku = "test-product-456";
         Long quantity = 200L;
-        Stock savedStock = stockRepository.save(Stock.register(productId, quantity));
+        Stock savedStock = stockRepository.save(Stock.register(sku, quantity));
 
         // When
-        Stock foundStock = stockFinder.getStock(savedStock.getId());
+        Stock foundStock = stockFinder.getStock(savedStock.getSku());
 
         // Then
         assertThat(foundStock).isNotNull();
-        assertThat(foundStock.getId()).isEqualTo(savedStock.getId());
-        assertThat(foundStock.getSku()).isEqualTo(productId);
+        assertThat(foundStock.getSku()).isEqualTo(savedStock.getSku());
+        assertThat(foundStock.getSku()).isEqualTo(sku);
         assertThat(foundStock.getQuantity()).isEqualTo(quantity);
         assertThat(foundStock.getStockStatus()).isEqualTo(StockStatus.AVAILABLE);
         assertThat(foundStock.getCreatedAt()).isEqualTo(savedStock.getCreatedAt());
@@ -90,7 +90,7 @@ class StockFinderTest {
         Stock savedStock = stockRepository.save(stock);
 
         // When
-        Long quantity = stockFinder.checkQuantity(savedStock.getId());
+        Long quantity = stockFinder.checkQuantity(savedStock.getSku());
 
         // Then
         assertThat(quantity).isEqualTo(0L);
@@ -105,7 +105,7 @@ class StockFinderTest {
         Stock savedStock = stockRepository.save(stock);
 
         // When
-        Stock foundStock = stockFinder.getStock(savedStock.getId());
+        Stock foundStock = stockFinder.getStock(savedStock.getSku());
 
         // Then
         assertThat(foundStock.getQuantity()).isEqualTo(0L);
@@ -120,7 +120,7 @@ class StockFinderTest {
         Stock savedStock = stockRepository.save(Stock.register("test-product-large", largeQuantity));
 
         // When
-        Long quantity = stockFinder.checkQuantity(savedStock.getId());
+        Long quantity = stockFinder.checkQuantity(savedStock.getSku());
 
         // Then
         assertThat(quantity).isEqualTo(largeQuantity);
@@ -135,9 +135,9 @@ class StockFinderTest {
         Stock stock3 = stockRepository.save(Stock.register("product-3", 300L));
 
         // When
-        Long quantity1 = stockFinder.checkQuantity(stock1.getId());
-        Long quantity2 = stockFinder.checkQuantity(stock2.getId());
-        Long quantity3 = stockFinder.checkQuantity(stock3.getId());
+        Long quantity1 = stockFinder.checkQuantity(stock1.getSku());
+        Long quantity2 = stockFinder.checkQuantity(stock2.getSku());
+        Long quantity3 = stockFinder.checkQuantity(stock3.getSku());
 
         // Then
         assertThat(quantity1).isEqualTo(100L);
@@ -156,7 +156,7 @@ class StockFinderTest {
         stockRepository.save(stock);
 
         // When
-        Long quantity = stockFinder.checkQuantity(stock.getId());
+        Long quantity = stockFinder.checkQuantity(stock.getSku());
 
         // Then
         assertThat(quantity).isEqualTo(150L); // 100 + 50
@@ -170,7 +170,7 @@ class StockFinderTest {
         Stock savedStock = stockRepository.save(Stock.register(specialProductId, 75L));
 
         // When
-        Stock foundStock = stockFinder.getStock(savedStock.getId());
+        Stock foundStock = stockFinder.getStock(savedStock.getSku());
 
         // Then
         assertThat(foundStock.getSku()).isEqualTo(specialProductId);
@@ -184,7 +184,7 @@ class StockFinderTest {
         Stock savedStock = stockRepository.save(Stock.register("test-product-uuid", 250L));
 
         // When
-        Long quantity = stockFinder.checkQuantity(savedStock.getId());
+        Long quantity = stockFinder.checkQuantity(savedStock.getSku());
 
         // Then
         assertThat(quantity).isEqualTo(250L);

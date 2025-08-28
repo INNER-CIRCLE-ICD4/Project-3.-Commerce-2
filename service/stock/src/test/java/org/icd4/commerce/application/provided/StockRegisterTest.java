@@ -43,7 +43,7 @@ class StockRegisterTest {
         assertThat(registeredStock.getUpdatedAt()).isNotNull();
 
         // DB에 실제로 저장되었는지 확인
-        Optional<Stock> savedStock = stockRepository.findBySku(registeredStock.getId());
+        Optional<Stock> savedStock = stockRepository.findBySku(registeredStock.getSku());
         assertThat(savedStock).isPresent();
         assertThat(savedStock.get().getSku()).isEqualTo(productId);
         assertThat(savedStock.get().getQuantity()).isEqualTo(quantity);
@@ -83,10 +83,10 @@ class StockRegisterTest {
         Long increaseAmount = 30L;
 
         // When
-        stockRegister.increaseQuantity(stock.getId(), increaseAmount);
+        stockRegister.increaseQuantity(stock.getSku(), increaseAmount);
 
         // Then
-        Optional<Stock> updatedStock = stockRepository.findBySku(stock.getId());
+        Optional<Stock> updatedStock = stockRepository.findBySku(stock.getSku());
         assertThat(updatedStock).isPresent();
         assertThat(updatedStock.get().getQuantity()).isEqualTo(80L); // 50 + 30
     }
@@ -100,12 +100,12 @@ class StockRegisterTest {
 
         // When & Then
         // 도메인 규칙에 의해 0 이하의 값으로 증가 시 예외 발생
-        assertThatThrownBy(() -> stockRegister.increaseQuantity(stock.getId(), invalidAmount))
+        assertThatThrownBy(() -> stockRegister.increaseQuantity(stock.getSku(), invalidAmount))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("재고는 0 이하의 값이 될 수 없습니다");
         
         // 예외로 인해 재고 수량은 변하지 않아야 함
-        Optional<Stock> unchangedStock = stockRepository.findBySku(stock.getId());
+        Optional<Stock> unchangedStock = stockRepository.findBySku(stock.getSku());
         assertThat(unchangedStock).isPresent();
         assertThat(unchangedStock.get().getQuantity()).isEqualTo(50L); // 변경되지 않음
     }
@@ -118,10 +118,10 @@ class StockRegisterTest {
         Long decreaseAmount = 30L;
 
         // When
-        stockRegister.decreaseQuantity(stock.getId(), decreaseAmount);
+        stockRegister.decreaseQuantity(stock.getSku(), decreaseAmount);
 
         // Then
-        Optional<Stock> updatedStock = stockRepository.findBySku(stock.getId());
+        Optional<Stock> updatedStock = stockRepository.findBySku(stock.getSku());
         assertThat(updatedStock).isPresent();
         assertThat(updatedStock.get().getQuantity()).isEqualTo(70L); // 100 - 30
     }
@@ -135,12 +135,12 @@ class StockRegisterTest {
 
         // When & Then
         // 도메인 규칙에 의해 재고 부족 시 예외 발생
-        assertThatThrownBy(() -> stockRegister.decreaseQuantity(stock.getId(), excessiveAmount))
+        assertThatThrownBy(() -> stockRegister.decreaseQuantity(stock.getSku(), excessiveAmount))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("현재 재고보다 많습니다");
         
         // 예외로 인해 재고는 변하지 않아야 함
-        Optional<Stock> unchangedStock = stockRepository.findBySku(stock.getId());
+        Optional<Stock> unchangedStock = stockRepository.findBySku(stock.getSku());
         assertThat(unchangedStock).isPresent();
         assertThat(unchangedStock.get().getQuantity()).isEqualTo(30L); // 변경되지 않음
     }
@@ -177,16 +177,16 @@ class StockRegisterTest {
     @DisplayName("대량 수량으로 재고 등록")
     void register_WithLargeQuantity() {
         // Given
-        String productId = "test-product-large";
+        String sku = "test-product-large";
         Long largeQuantity = 1_000_000L;
 
         // When
-        Stock registeredStock = stockRegister.register(productId, largeQuantity);
+        Stock registeredStock = stockRegister.register(sku, largeQuantity);
 
         // Then
         assertThat(registeredStock.getQuantity()).isEqualTo(largeQuantity);
         
-        Optional<Stock> savedStock = stockRepository.findBySku(registeredStock.getId());
+        Optional<Stock> savedStock = stockRepository.findBySku(registeredStock.getSku());
         assertThat(savedStock).isPresent();
         assertThat(savedStock.get().getQuantity()).isEqualTo(largeQuantity);
     }

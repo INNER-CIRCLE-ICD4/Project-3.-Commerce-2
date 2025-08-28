@@ -15,7 +15,7 @@ class StockTest {
 
         Stock stock = Stock.register(productId, quantity);
 
-        assertNotNull(stock.getId());
+        assertNotNull(stock.getSku());
         assertEquals(productId, stock.getSku());
         assertEquals(quantity, stock.getQuantity());
         assertEquals(stock.getStockStatus(), StockStatus.AVAILABLE);

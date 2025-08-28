@@ -26,10 +26,10 @@ public class StockService implements StockRegister, StockFinder {
     }
 
     @Override
-    public Long increaseQuantity(String stockId, Long quantity) {
-        return stockRepository.findBySku(stockId)
+    public Long increaseQuantity(String sku, Long quantity) {
+        return stockRepository.findBySku(sku)
                 .map(entity -> increaseQuantityAndSave(quantity, entity))
-                .orElseThrow(() -> new IllegalArgumentException("Stock not found: " + stockId));
+                .orElseThrow(() -> new IllegalArgumentException("Stock not found: " + sku));
     }
 
 
