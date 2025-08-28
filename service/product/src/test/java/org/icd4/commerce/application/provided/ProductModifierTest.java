@@ -54,10 +54,10 @@ class ProductModifierTest {
 
     @Test
     void changeCategory() {
-        productModifier.changeCategory(TEST_PRODUCT.getId(), SELLER_ID, "0002");
+        productModifier.changeCategory(TEST_PRODUCT.getSku(), SELLER_ID, "0002");
         entityManager.flush();
 
-        var product = entityManager.find(Product.class, TEST_PRODUCT.getId());
+        var product = entityManager.find(Product.class, TEST_PRODUCT.getSku());
 
         assertThat(product.getCategoryId()).isEqualTo("0002");
     }
@@ -72,10 +72,10 @@ class ProductModifierTest {
                 .isInstanceOf(IllegalArgumentException.class);
 
         // 기존 데이터 그대로
-        assertThatThrownBy(() -> productModifier.changeCategory(TEST_PRODUCT.getId(), SELLER_ID, "0001"))
+        assertThatThrownBy(() -> productModifier.changeCategory(TEST_PRODUCT.getSku(), SELLER_ID, "0001"))
                 .isInstanceOf(IllegalArgumentException.class);
         // 카테고리 null
-        assertThatThrownBy(() -> productModifier.changeCategory(TEST_PRODUCT.getId(), SELLER_ID, null))
+        assertThatThrownBy(() -> productModifier.changeCategory(TEST_PRODUCT.getSku(), SELLER_ID, null))
                 .isInstanceOf(IllegalArgumentException.class);
         // 카테고리 빈 문자열
         assertThatThrownBy(() -> productModifier.changeCategory(TEST_PRODUCT.getId(), SELLER_ID, ""))
