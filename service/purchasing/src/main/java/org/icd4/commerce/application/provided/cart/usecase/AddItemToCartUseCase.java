@@ -46,7 +46,7 @@ public class AddItemToCartUseCase {
             .orElseThrow(() -> new CartNotFoundException(command.cartId()));
         
         // 재고 확인
-        int availableStock = inventoryChecker.getAvailableStock(command.productId());
+        int availableStock = inventoryChecker.getAvailableStock(command.sku()).availableStock();
         
         // 현재 장바구니에 있는 수량 확인
         int currentQuantityInCart = cart.getItems().stream()

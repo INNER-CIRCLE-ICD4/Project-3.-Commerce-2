@@ -3,8 +3,10 @@ package org.icd4.commerce.application.provided.order.usecase;
 import lombok.RequiredArgsConstructor;
 import org.icd4.commerce.application.provided.cart.exception.InsufficientStockException;
 import org.icd4.commerce.application.provided.common.ProductDetailsProvider;
+import org.icd4.commerce.application.provided.common.ProductDetailsProvider.ProductDetails;
 import org.icd4.commerce.application.provided.order.command.CreateOrderCommand;
 import org.icd4.commerce.application.required.common.InventoryChecker;
+import org.icd4.commerce.application.required.common.InventoryChecker.AvailableStock;
 import org.icd4.commerce.application.required.order.OrderRepositoryPort;
 import org.icd4.commerce.domain.common.ProductId;
 import org.icd4.commerce.domain.common.StockKeepingUnit;
@@ -33,12 +35,11 @@ public class CreateOrderUseCase {
                     ProductId productId = ProductId.of(item.productId());
                     StockKeepingUnit sku = StockKeepingUnit.of(item.sku());
 
-                    ProductDetailsProvider.ProductDetails product = productDetailsProvider.getProductInfo(productId, sku);
+                    ProductDetails product = productDetailsProvider.getProductInfo(productId, sku);
 
-
-                    int available = inventoryChecker.getAvailableStock(productId);
-                    if (available < item.quantity()) {
-                        throw new InsufficientStockException(productId, available, (int) item.quantity());
+                    AvailableStock availableStock = inventoryChecker.getAvailableStock(sku);
+                    if (!availableStock.isAvailable(item.quantity())) {
+                        throw new InsufficientStockException(productId, availableStock.availableStock(), item.quantity());
                     }
 
                     return new OrderItem(
@@ -72,12 +73,13 @@ public class CreateOrderUseCase {
                     ProductId productId = ProductId.of(item.productId());
                     StockKeepingUnit sku = StockKeepingUnit.of(item.sku());
 
-                    ProductDetailsProvider.ProductDetails product = productDetailsProvider.getProductInfo(productId, sku);
+                    ProductDetails product = productDetailsProvider.getProductInfo(productId, sku);
 
-                    int available = inventoryChecker.getAvailableStock(productId);
-                    if (available < item.quantity()) {
-                        throw new InsufficientStockException(productId, available, (int) item.quantity());
+                    AvailableStock availableStock = inventoryChecker.getAvailableStock(sku);
+                    if (!availableStock.isAvailable(item.quantity())) {
+                        throw new InsufficientStockException(productId, availableStock.availableStock(), item.quantity());
                     }
+
                     return new OrderItem(
                             OrderItemId.generate(),
                             orderId,

@@ -49,3 +49,13 @@ Content-Type: application/json
 {
   "paymentId": ""
 }
+
+### 결제 취소
+PATCH {{baseUrl}}/api/v1/orders/{{orderId}}/failPayment
+Content-Type: application/json
+
+{
+  "paymentId": ""
+}
+
+
