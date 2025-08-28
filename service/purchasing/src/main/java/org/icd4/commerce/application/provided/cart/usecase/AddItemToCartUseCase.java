@@ -45,34 +45,30 @@ public class AddItemToCartUseCase {
         Cart cart = cartRepository.findById(command.cartId())
             .orElseThrow(() -> new CartNotFoundException(command.cartId()));
         
-        // 재고 확인
-        int availableStock = inventoryChecker.getAvailableStock(command.sku()).availableStock();
-        
-        // 현재 장바구니에 있는 수량 확인
+        // 재고 확인을 위해 현재 장바구니 내 동일 상품/옵션의 수량을 계산합니다.
         int currentQuantityInCart = cart.getItems().stream()
-            .filter(item -> item.getProductId().equals(command.productId()) 
+            .filter(item -> item.getProductId().equals(command.productId())
                 && item.getOptions().equals(command.options()))
             .mapToInt(item -> item.getQuantity())
             .sum();
-        
+
         int totalRequestedQuantity = currentQuantityInCart + command.quantity();
-        
+        int availableStock = inventoryChecker.getAvailableStock(command.sku()).availableStock();
         if (totalRequestedQuantity > availableStock) {
             throw new InsufficientStockException(
-                command.productId(), 
-                availableStock, 
+                command.productId(),
+                availableStock,
                 totalRequestedQuantity
             );
         }
         
-        // 도메인 로직 실행
+        // 도메인 로직 실행 - 수량 증가 또는 신규 추가
         cart.addItem(
             command.productId(),
             command.sku(),
             command.quantity(),
             command.options()
         );
-        
         cartRepository.save(cart);
         
         log.info("Item added to cart successfully. CartId: {}, ProductId: {}, " +

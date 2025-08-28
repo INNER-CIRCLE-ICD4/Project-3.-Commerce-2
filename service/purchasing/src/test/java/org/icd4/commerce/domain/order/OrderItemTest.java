@@ -1,6 +1,7 @@
 package org.icd4.commerce.domain.order;
 
 import org.icd4.commerce.domain.common.ProductId;
+import org.icd4.commerce.domain.common.StockKeepingUnit;
 import org.junit.jupiter.api.*;
 import java.util.Map;
 import java.util.UUID;
@@ -18,6 +19,7 @@ class OrderItemTest {
                 new OrderItemId("1"),
                 new OrderId("1"),
                 new ProductId("1"),
+                new StockKeepingUnit("1"),
                 "테스트상품",
                 10_000L, // unitPrice
                 3,      // quantity
@@ -40,6 +42,7 @@ class OrderItemTest {
                 new OrderItemId("1"),
                 new OrderId("1"),
                 new ProductId("1"),
+                new StockKeepingUnit("1"),
                 null,
                 10000L,
                 1,
@@ -58,6 +61,7 @@ class OrderItemTest {
                 new OrderItemId("1"),
                 new OrderId("1"),
                 new ProductId("1"),
+                new StockKeepingUnit("1"),
                 " ",
                 10000L,
                 1,
@@ -76,6 +80,7 @@ class OrderItemTest {
                 new OrderItemId("1"),
                 new OrderId("1"),
                 new ProductId("1"),
+                new StockKeepingUnit("1"),
                 "테스트상품",
                 -10000L,
                 1,
@@ -94,6 +99,7 @@ class OrderItemTest {
                 new OrderItemId("1"),
                 new OrderId("1"),
                 new ProductId("1"),
+                new StockKeepingUnit("1"),
                 "테스트상품",
                 10000L,
                 0,

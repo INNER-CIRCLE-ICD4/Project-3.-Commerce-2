@@ -1,6 +1,6 @@
 package org.icd4.commerce.domain.cart;
 
-import org.icd4.commerce.adapter.external.ProductPriceProviderAdapter;
+import org.icd4.commerce.domain.cart.ProductPriceProvider;
 import org.icd4.commerce.domain.cart.exception.CartAlreadyConvertedException;
 import org.icd4.commerce.domain.cart.exception.CartItemLimitExceededException;
 import org.icd4.commerce.domain.cart.exception.InvalidCartStateException;
@@ -162,7 +162,7 @@ public class Cart {
      * @return 총 금액
      * @throws NullPointerException priceProvider가 null인 경우
      */
-    public BigDecimal calculateTotal(ProductPriceProviderAdapter priceProvider) {
+    public BigDecimal calculateTotal(ProductPriceProvider priceProvider) {
         requireNonNull(priceProvider, "PriceProvider cannot be null");
 
         return items.stream()
