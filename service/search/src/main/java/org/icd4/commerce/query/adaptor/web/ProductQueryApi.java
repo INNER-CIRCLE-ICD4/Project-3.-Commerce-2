@@ -28,16 +28,8 @@ public class ProductQueryApi {
 
     @GetMapping("/search")
     public List<SearchResultResponse> searchProducts(ProductSearchRequest searchRequest,
-                                                     @RequestParam Map<String, String> allParams,
                                                      @RequestParam(defaultValue = "0", required = false) int page,
                                                      @RequestParam(defaultValue = "10", required = false) int size) throws IOException {
-        searchRequest.setOptions(allParams.entrySet().stream()
-                .filter(e -> e.getKey().startsWith("options_"))
-                .collect(Collectors.toMap(
-                        e -> e.getKey().substring("options_".length()),
-                        e -> Arrays.stream(e.getValue().split(",")).toList()
-                )));
-
         return productQueryService.search(searchRequest, page, size);
     }
 

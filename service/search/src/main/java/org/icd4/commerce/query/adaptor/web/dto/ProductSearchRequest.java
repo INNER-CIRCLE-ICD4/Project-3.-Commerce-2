@@ -7,10 +7,10 @@ import java.util.Map;
 public record ProductSearchRequest(
         String keyword,
         String categoryId,
+        String brand,
         Integer minPrice,
         Integer maxPrice,
         String filters,
-        Map<String, List<String>> options,
         String sortField,
         String sortOrder
 ) {

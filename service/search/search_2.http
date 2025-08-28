@@ -107,19 +107,13 @@ Content-Type: application/json
   }
 }
 
-### keyword 검색
-GET http://localhost:8081/api/v1/product/search?keyword=오버핏
-
-### id 검색
-GET http://localhost:8081/api/v1/product/modern01
-
-### 상품 도큐먼트 생성
+### 상품 도큐먼트 생성 (모던 오버핏 셔츠)
 POST http://localhost:8081/api/v1/product
 Content-Type: application/json
 
 {
   "productId": "modern01",
-  "sellerId": "SELLER_FASHION_002",
+  "sellerId": "SELLER_FASHION_001",
   "name": "모던 오버핏",
   "brand": "테스트 브랜드",
   "description": "부드러운 코튼 소재의 오버핏 셔츠입니다. 다양한 색상으로 출시되었습니다.",
@@ -162,15 +156,61 @@ Content-Type: application/json
   ]
 }
 
-### 상품 도큐먼트 생성
+### 상품 도큐먼트 생성 (닭가슴살 샐러드1)
 POST http://localhost:8081/api/v1/product
 Content-Type: application/json
 
 {
-  "productId": "salad03",
+  "productId": "salad01",
+  "sellerId": "SELLER_SALAD_001",
+  "name": "닭가슴살 샐러드1",
+  "brand": "테스트 브랜드1",
+  "description": "닭가슴살 샐러드입니다 단백질 ",
+  "categoryId": "CATEGORY_SALAD_001",
+  "createdAt": "2025-07-30T10:15:00.000Z",
+  "updatedAt": "2025-07-30T10:15:00.000Z",
+  "basePrice": 13000,
+  "autoCompleteSuggestions": ["샐러드", "단백질 샐러드", "닭가슴살 샐러드"],
+  "variants": [
+    {
+      "sku": "SALAD-S",
+      "price": 12000,
+      "stock": 50,
+      "status": "INACTIVE",
+      "optionCombination": [
+        { "name": "weight", "value": "120g" }
+      ]
+    },
+    {
+      "sku": "SALAD-M",
+      "price": 15000,
+      "stock": 50,
+      "status": "ACTIVE",
+      "optionCombination": [
+        { "name": "weight", "value": "150g" }
+      ]
+    },
+    {
+      "sku": "SALAD-L",
+      "price": 18000,
+      "stock": 50,
+      "status": "ACTIVE",
+      "optionCombination": [
+        { "name": "weight", "value": "180g" }
+      ]
+    }
+  ]
+}
+
+### 상품 도큐먼트 생성 (닭가슴살 샐러드2)
+POST http://localhost:8081/api/v1/product
+Content-Type: application/json
+
+{
+  "productId": "salad02",
   "sellerId": "SELLER_SALAD_002",
-  "name": "닭가슴살 샐러드3",
-  "brand": "테스트 브랜드3",
+  "name": "닭가슴살 샐러드2",
+  "brand": "테스트 브랜드2",
   "description": "닭가슴살 샐러드입니다 단백질 ",
   "categoryId": "CATEGORY_SALAD_001",
   "createdAt": "2025-07-30T10:15:00.000Z",
@@ -209,30 +249,35 @@ Content-Type: application/json
 }
 
 
-### 상품 가격 업데이트
-PATCH http://localhost:8081/api/v1/product/salad01/price?price=45000
+### 상품 가격 업데이트 (닭가슴살 샐러드 가격 변경)
+PATCH http://localhost:8081/api/v1/product/salad01/price?price=25000
 Content-Type: application/json
 
 ### 특정 변형(Variant)의 재고 업데이트
-PATCH http://localhost:8081/api/v1/product/7a8c3d9b-2e6f-4c8d-8a2b-3c4e5f6d7a8e/stock?sku=SHIRT-MODERN-M-WHITE&stock=25
+PATCH http://localhost:8081/api/v1/product/modern01/stock?sku=SHIRT-MODERN-M-WHITE&stock=25
 Content-Type: application/json
 
 ### 특정 변형(Variant)의 상태 업데이트
-PATCH http://localhost:8081/api/v1/product/7a8c3d9b-2e6f-4c8d-8a2b-3c4e5f6d7a8e/variant_status?sku=SHIRT-MODERN-M-WHITE&variantStatus=ACTIVE
+PATCH http://localhost:8081/api/v1/product/modern01/variant_status?sku=SHIRT-MODERN-M-WHITE&variantStatus=ACTIVE
 Content-Type: application/json
 
 
-### 상품 조회
-GET http://localhost:8081/api/v1/product/search?keyword=닭가슴살&options_status=INACTIVE
+### 상품 상세 조회
+GET http://localhost:8081/api/v1/product/salad01
 
-### 상품 조회
-GET http://localhost:8081/api/v1/product/salad02
+### 검색 (키워드)
+GET http://localhost:8081/api/v1/product/search?keyword=샐러드
 
-### 검색
-GET http://localhost:8081/api/v1/product/search?keyword=닭가슴살
+### 검색 (키워드 + 필터 + 필터옵션)
+GET http://localhost:8081/api/v1/product/search?keyword=오버핏&filters=status:ACTIVE;attr_size:S
+
+### 검색 (키워드 + 필터 + 필터옵션)
+GET http://localhost:8081/api/v1/product/search?keyword=오버핏&filters=status:ACTIVE;attr_size:S
 
 ### 검색 & 정렬 & 필터링
 GET http://localhost:8081/api/v1/product/search?keyword=닭가슴살&sortField=basePrice&sortOrder=asc&page=0&size=10
+
+
 
 ### 자동완성 V1
 GET http://localhost:8081/api/v1/product/autocomplete?prefix=
@@ -248,6 +293,4 @@ DELETE http://localhost:8081/api/v1/product/7a8c3d9b-2e6f-4c8d-8a2b-3c4e5f6d7a8e
 
 
 
-
-
-https://www.coupang.com/np/categories/186764?listSize=60&filterType=&rating=0&isPriceRange=false&minPrice=&maxPrice=&component=&sorter=bestAsc&brand=33408&offerCondition=&filter=&fromComponent=N&channel=user&selectedPlpKeepFilter=
+https://www.coupang.com/np/search?listSize=36&filterType=&rating=0&isPriceRange=false&minPrice=6000&maxPrice=12000&component=194176&sorter=scoreDesc&brand=11526&offerCondition=&filter=1%23attr_12700%2421631%2C25407%7C225536%23attr_7637%2424643%40DEFAULT&fromComponent=N&channel=user&selectedPlpKeepFilter=&q=%EC%83%90%EB%9F%AC%EB%93%9C

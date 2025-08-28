@@ -1,22 +1,19 @@
 package org.icd4.commerce.query.application.provided;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
-import co.elastic.clients.elasticsearch._types.FieldValue;
-import co.elastic.clients.elasticsearch._types.SortOrder;
-import co.elastic.clients.elasticsearch._types.query_dsl.BoolQuery;
 import co.elastic.clients.elasticsearch.core.SearchRequest;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
 import co.elastic.clients.elasticsearch.core.search.CompletionSuggestOption;
 import co.elastic.clients.elasticsearch.core.search.Hit;
 import lombok.RequiredArgsConstructor;
+import org.icd4.commerce.query.adaptor.elasticsearch.ElasticQueryBuilder2;
 import org.icd4.commerce.query.adaptor.web.dto.ProductSearchRequest;
 import org.icd4.commerce.query.adaptor.web.dto.SearchResultResponse;
 import org.icd4.commerce.shared.domain.Product;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -25,78 +22,19 @@ public class SearchService {
     private final ElasticsearchClient esClient;
 
     public List<SearchResultResponse> search(ProductSearchRequest request, int page, int size) throws IOException {
-        BoolQuery.Builder boolQueryBuilder = new BoolQuery.Builder();
-        if (request.getKeyword() != null && !request.getKeyword().isEmpty()) {
-            boolQueryBuilder.must(m -> m
-                    .multiMatch(t -> t
-                            .fields("name", "categoryId", "description")
-                            .query(request.getKeyword())
-                    )
-            );
-        }
 
-        // 2. 가격 필터 (range 쿼리)
-        if (request.getMinPrice() > 0 || request.getMaxPrice() > 0) {
-            boolQueryBuilder.filter(f -> f.range(
-                    r -> r.number(
-                            n -> n.field("base_price")
-                                    .gte((double) request.getMinPrice())
-                                    .lte((double) request.getMaxPrice()))
-            ));
-        }
+        SearchRequest searchRequest = new ElasticQueryBuilder2("product_index")
+                .keyword(request.keyword())
+                .categoryId(request.categoryId())
+                .brand(request.brand())
+                .price(request.minPrice(), request.maxPrice())
+                .filter(request.filters())
+                .sort(request.sortField(),  request.sortOrder())
+                .buildSearchRequest(page, size);
 
-        // 3. 일반 필터 (brand)
-        if (request.getBrand() != null && !request.getBrand().isEmpty()) {
-            boolQueryBuilder.filter(f -> f.term(t -> t.field("brand").value(request.getBrand())));
-        }
+        SearchResponse<Product> searchResponse = esClient.search(searchRequest, Product.class);
 
-        // 4. 상품 옵션 필터 (nested 쿼리)
-        if (request.getOptions() != null && !request.getOptions().isEmpty()) {
-            BoolQuery.Builder nestedBoolQueryBuilder = new BoolQuery.Builder();
-
-            request.getOptions().forEach((key, values) -> {
-
-                List<FieldValue> fieldValues = values.stream()
-                        .map(FieldValue::of)
-                        .collect(Collectors.toList());
-
-                nestedBoolQueryBuilder.must(m -> m.terms(t -> t
-                        .field("variants." + key)
-                        .terms(terms -> terms.value(fieldValues))
-                ));
-            });
-            boolQueryBuilder.must(m -> m
-                    .nested(n -> n
-                            .path("variants")
-                            .query(nestedBoolQueryBuilder.build())
-                    )
-            );
-        }
-
-        SearchRequest.Builder requestBuilder = new SearchRequest.Builder()
-                .index("product_index")
-                .from(page)
-                .size(size)
-                .query(boolQueryBuilder.build()._toQuery());
-
-        String sortField = request.getSortField();
-
-        if (sortField != null && !sortField.isEmpty()) {
-            if ("DESC".equalsIgnoreCase(request.getSortOrder())) {
-                requestBuilder.sort(s -> s.field(f -> f
-                        .field(sortField)
-                        .order(SortOrder.Desc)));
-            } else {
-                requestBuilder.sort(s -> s.field(f -> f
-                        .field(sortField)
-                        .order(SortOrder.Asc)));
-            }
-        }
-
-        SearchRequest esSearchRequest = requestBuilder.build();
-        SearchResponse<Product> response = esClient.search(esSearchRequest, Product.class);
-
-        return response.hits().hits().stream()
+        return searchResponse.hits().hits().stream()
                 .map(Hit::source)
                 .filter(Objects::nonNull)
                 .map(SearchResultResponse::of)
