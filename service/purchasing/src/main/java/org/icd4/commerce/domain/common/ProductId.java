@@ -18,4 +18,9 @@ public record ProductId(String value) {
         ProductId productId = (ProductId) o;
         return Objects.equals(value, productId.value);
     }
+
+    @Override
+    public String toString() {
+        return value;
+    }
 }

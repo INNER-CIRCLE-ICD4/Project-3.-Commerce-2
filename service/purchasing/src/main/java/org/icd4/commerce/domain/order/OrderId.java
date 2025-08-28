@@ -23,4 +23,9 @@ public record OrderId(String value) {
     public static OrderId from(String id) {
         return new OrderId(id);
     }
+
+    @Override
+    public String toString() {
+        return value;
+    }
 }

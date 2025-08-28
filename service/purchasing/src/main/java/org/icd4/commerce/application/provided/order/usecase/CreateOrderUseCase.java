@@ -63,4 +63,40 @@ public class CreateOrderUseCase {
 
         return orderRepository.save(order);
     }
+
+    public Order createOrder2(CreateOrderCommand command) {
+        OrderId orderId = OrderId.generate();
+        //주문 항목 생성
+        List<OrderItem> orderItems = command.items().stream()
+                .map(item -> {
+                    ProductId productId = ProductId.of(item.productId());
+                    StockKeepingUnit sku = StockKeepingUnit.of(item.sku());
+
+                    ProductDetailsProvider.ProductDetails product = productDetailsProvider.getProductInfo(productId, sku);
+
+                    int available = inventoryChecker.getAvailableStock(productId);
+                    if (available < item.quantity()) {
+                        throw new InsufficientStockException(productId, available, (int) item.quantity());
+                    }
+                    return new OrderItem(
+                            OrderItemId.generate(),
+                            orderId,
+                            productId,
+                            sku,
+                            product.name(),
+                            product.price().longValue(),
+                            item.quantity(),
+                            Map.of());
+                }).toList();
+
+        Order order = Order.create(
+                orderId,
+                CustomerId.of(command.customerId()),
+                orderItems,
+                command.orderMessage(),
+                command.orderChannel()
+        );
+
+        return orderRepository.save(order);
+    }
 }

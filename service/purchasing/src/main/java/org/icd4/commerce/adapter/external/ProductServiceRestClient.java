@@ -51,8 +51,6 @@ public class ProductServiceRestClient implements ProductServiceClient {
                 throw new ProductNotFoundException(productId);
             }
 
-            System.out.println(response);
-
             return new ProductInfo(
                     response.productId,
                     response.sku,

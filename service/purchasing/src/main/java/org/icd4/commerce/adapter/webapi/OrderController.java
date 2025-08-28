@@ -28,12 +28,12 @@ public class OrderController implements OrderApi {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public OrderResponse createOrder(@RequestBody CreateOrderRequest request) {
-        Order order = createOrderUseCase.createOrder(request.toCommand());
+        Order order = createOrderUseCase.createOrder2(request.toCommand());
         return OrderResponse.from(order);
     }
 
     // 주문 취소
-    @PostMapping("/{orderId}/cancel")
+    @PatchMapping("/{orderId}/cancel")
     public ResponseEntity<Void> cancelOrder(@PathVariable String orderId, @RequestBody CancelOrderRequest request) {
         cancelOrderUseCase.cancelOrder(request.toCommand(orderId));
         return ResponseEntity.ok().build();

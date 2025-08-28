@@ -1,7 +1,6 @@
 package org.icd4.commerce.domain.order;
 
 import org.icd4.commerce.common.idgenerator.ULIDUtils;
-import org.icd4.commerce.domain.cart.CartItemId;
 
 /**
  * 주문 상품의 고유 식별자를 나타내는 값 객체입니다.
@@ -21,6 +20,11 @@ public record OrderItemId(String value) {
 
     public static OrderItemId of(String value) {
         return new OrderItemId(value);
+    }
+
+    @Override
+    public String toString() {
+        return value;
     }
 
 }

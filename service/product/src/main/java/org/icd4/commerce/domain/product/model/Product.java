@@ -31,6 +31,8 @@ public class Product {
 
     @Embedded
     private ProductMoney basePrice;
+
+    @Enumerated(EnumType.STRING)
     private ProductStatus status;
     private Boolean isDeleted;
     private LocalDateTime deletedAt;

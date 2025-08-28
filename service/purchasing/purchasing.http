@@ -27,3 +27,16 @@ Content-Type: application/json
   "orderMessage": "배송 전 연락 부탁드립니다.",
   "orderChannel": "WEB"
 }
+
+> {%
+    // 응답에서 orderId 추출
+    client.global.set("orderId", response.body.orderId);
+%}
+
+### 주문 취소
+PATCH {{baseUrl}}/api/v1/orders/{{orderId}}/cancel
+Content-Type: application/json
+
+{
+  "status": "CANCELED"
+}
