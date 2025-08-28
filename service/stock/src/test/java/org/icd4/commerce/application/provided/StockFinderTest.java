@@ -62,7 +62,7 @@ class StockFinderTest {
         // Then
         assertThat(foundStock).isNotNull();
         assertThat(foundStock.getId()).isEqualTo(savedStock.getId());
-        assertThat(foundStock.getProductId()).isEqualTo(productId);
+        assertThat(foundStock.getSku()).isEqualTo(productId);
         assertThat(foundStock.getQuantity()).isEqualTo(quantity);
         assertThat(foundStock.getStockStatus()).isEqualTo(StockStatus.AVAILABLE);
         assertThat(foundStock.getCreatedAt()).isEqualTo(savedStock.getCreatedAt());
@@ -173,7 +173,7 @@ class StockFinderTest {
         Stock foundStock = stockFinder.getStock(savedStock.getId());
 
         // Then
-        assertThat(foundStock.getProductId()).isEqualTo(specialProductId);
+        assertThat(foundStock.getSku()).isEqualTo(specialProductId);
         assertThat(foundStock.getQuantity()).isEqualTo(75L);
     }
 

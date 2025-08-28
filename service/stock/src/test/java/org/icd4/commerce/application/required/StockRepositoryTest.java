@@ -37,7 +37,7 @@ class StockRepositoryTest {
         // Then
         assertThat(savedStock).isNotNull();
         assertThat(savedStock.getId()).isNotNull();
-        assertThat(savedStock.getProductId()).isEqualTo(productId);
+        assertThat(savedStock.getSku()).isEqualTo(productId);
         assertThat(savedStock.getQuantity()).isEqualTo(quantity);
         assertThat(savedStock.getStockStatus()).isEqualTo(StockStatus.AVAILABLE);
         assertThat(savedStock.getCreatedAt()).isNotNull();
@@ -63,7 +63,7 @@ class StockRepositoryTest {
         // Then
         assertThat(foundStock).isPresent();
         assertThat(foundStock.get().getId()).isEqualTo(savedStock.getId());
-        assertThat(foundStock.get().getProductId()).isEqualTo("test-product-456");
+        assertThat(foundStock.get().getSku()).isEqualTo("test-product-456");
         assertThat(foundStock.get().getQuantity()).isEqualTo(200L);
         assertThat(foundStock.get().getStockStatus()).isEqualTo(StockStatus.AVAILABLE);
     }
@@ -144,7 +144,7 @@ class StockRepositoryTest {
         for (int i = 0; i < 5; i++) {
             Optional<Stock> foundStock = stockRepository.findBySku(savedStocks[i].getId());
             assertThat(foundStock).isPresent();
-            assertThat(foundStock.get().getProductId()).isEqualTo("bulk-product-" + i);
+            assertThat(foundStock.get().getSku()).isEqualTo("bulk-product-" + i);
             assertThat(foundStock.get().getQuantity()).isEqualTo((long) (i + 1) * 10);
         }
     }
@@ -164,7 +164,7 @@ class StockRepositoryTest {
         // Then
         Optional<Stock> foundStock = stockRepository.findBySku(savedStock.getId());
         assertThat(foundStock).isPresent();
-        assertThat(foundStock.get().getProductId()).isEqualTo(specialProductId);
+        assertThat(foundStock.get().getSku()).isEqualTo(specialProductId);
     }
 
     @Test
@@ -200,8 +200,8 @@ class StockRepositoryTest {
 
         // Then
         assertThat(savedStock1.getId()).isNotEqualTo(savedStock2.getId());
-        assertThat(savedStock1.getProductId()).isEqualTo(sameProductId);
-        assertThat(savedStock2.getProductId()).isEqualTo(sameProductId);
+        assertThat(savedStock1.getSku()).isEqualTo(sameProductId);
+        assertThat(savedStock2.getSku()).isEqualTo(sameProductId);
         assertThat(savedStock1.getQuantity()).isEqualTo(100L);
         assertThat(savedStock2.getQuantity()).isEqualTo(200L);
     }

@@ -43,7 +43,7 @@ class StockServiceTest {
 
         // 1. 재고 등록
         Stock registeredStock = stockService.register(productId, initialQuantity);
-        assertThat(registeredStock.getProductId()).isEqualTo(productId);
+        assertThat(registeredStock.getSku()).isEqualTo(productId);
         assertThat(registeredStock.getQuantity()).isEqualTo(initialQuantity);
 
         // 2. 재고 조회

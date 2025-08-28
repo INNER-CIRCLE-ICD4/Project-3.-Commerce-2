@@ -36,7 +36,7 @@ class StockRegisterTest {
         // Then
         assertThat(registeredStock).isNotNull();
         assertThat(registeredStock.getId()).isNotNull();
-        assertThat(registeredStock.getProductId()).isEqualTo(productId);
+        assertThat(registeredStock.getSku()).isEqualTo(productId);
         assertThat(registeredStock.getQuantity()).isEqualTo(quantity);
         assertThat(registeredStock.getStockStatus()).isEqualTo(StockStatus.AVAILABLE);
         assertThat(registeredStock.getCreatedAt()).isNotNull();
@@ -45,7 +45,7 @@ class StockRegisterTest {
         // DB에 실제로 저장되었는지 확인
         Optional<Stock> savedStock = stockRepository.findBySku(registeredStock.getId());
         assertThat(savedStock).isPresent();
-        assertThat(savedStock.get().getProductId()).isEqualTo(productId);
+        assertThat(savedStock.get().getSku()).isEqualTo(productId);
         assertThat(savedStock.get().getQuantity()).isEqualTo(quantity);
     }
 
