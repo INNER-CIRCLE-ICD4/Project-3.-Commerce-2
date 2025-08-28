@@ -3,7 +3,7 @@ package org.icd4.commerce.adapter.external;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.icd4.commerce.adapter.external.exception.ProductServiceException;
-import org.icd4.commerce.application.required.common.InventoryReducer;
+import org.icd4.commerce.application.required.common.InventoryManager;
 import org.icd4.commerce.domain.common.StockKeepingUnit;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -11,7 +11,7 @@ import org.springframework.web.client.RestClient;
 
 @Component
 @RequiredArgsConstructor
-public class InventoryReducerAdapter implements InventoryReducer {
+public class InventoryManagerAdapter implements InventoryManager {
     private RestClient restClient;
     @Value("${external.stock-service.base-url:http://localhost:8082}")
     private String stockServiceBaseUrl;
@@ -39,6 +39,26 @@ public class InventoryReducerAdapter implements InventoryReducer {
         } catch (Exception e) {
             throw new ProductServiceException(
                     "Failed to reduce stock: " + sku, e
+            );
+        }
+    }
+
+    @Override
+    public String restoreStock(StockKeepingUnit sku, int quantity) {
+        try {
+            StockDecreaseRequest request = new StockDecreaseRequest(quantity);
+            String response = restClient
+                    .patch()
+                    .uri("/api/stocks/{stockId}/increase", sku.value())
+                    .body(request)
+                    .retrieve()
+                    .body(String.class);
+
+            return response;
+
+        } catch (Exception e) {
+            throw new ProductServiceException(
+                    "Failed to restore stock: " + sku, e
             );
         }
     }
