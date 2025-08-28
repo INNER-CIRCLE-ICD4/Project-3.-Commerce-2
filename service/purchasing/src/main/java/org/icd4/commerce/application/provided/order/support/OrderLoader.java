@@ -14,7 +14,7 @@ public class OrderLoader {
 
     private final OrderRepositoryPort orderRepository;
 
-    public Order loadOrThrow(OrderId orderId) {
+    public Order findById(OrderId orderId) {
        return orderRepository.findById(orderId)
                 .orElseThrow(() -> new IllegalArgumentException("주문을 찾을 수 없습니다."));
     }

@@ -18,6 +18,7 @@ dependencies {
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0")
     
     // Database drivers
+    runtimeOnly("com.h2database:h2")
     runtimeOnly("com.mysql:mysql-connector-j")  // MySQL for dev/prod
 
     // Test dependencies

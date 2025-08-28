@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 public class StockResponse {
 
     private String stockId;
-    private String productId;
+    private String sku;
     private Long quantity;
     private StockStatus stockStatus;
     private LocalDateTime createdAt;
@@ -26,7 +26,7 @@ public class StockResponse {
     public static StockResponse from(Stock stock) {
         return StockResponse.builder()
                 .stockId(stock.getId())
-                .productId(stock.getProductId())
+                .sku(stock.getSku())
                 .quantity(stock.getQuantity())
                 .stockStatus(stock.getStockStatus())
                 .createdAt(stock.getCreatedAt())

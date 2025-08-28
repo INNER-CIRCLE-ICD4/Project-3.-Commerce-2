@@ -3,8 +3,10 @@ package org.icd4.commerce.adapter.external;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.icd4.commerce.adapter.external.exception.ProductNotFoundException;
+import org.icd4.commerce.application.required.common.ProductServiceClient;
 import org.icd4.commerce.domain.cart.ProductPriceProvider;
 import org.icd4.commerce.domain.common.ProductId;
+import org.icd4.commerce.domain.common.StockKeepingUnit;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
@@ -26,7 +28,7 @@ public class ProductPriceProviderAdapter implements ProductPriceProvider {
     private final ProductServiceClient productServiceClient;
     
     @Override
-    public BigDecimal getPrice(ProductId productId) {
+    public BigDecimal getPrice(ProductId productId, StockKeepingUnit sku) {
         if (productId == null) {
             throw new NullPointerException("ProductId cannot be null");
         }
@@ -35,7 +37,7 @@ public class ProductPriceProviderAdapter implements ProductPriceProvider {
             log.debug("Getting price for product: {}", productId);
             
             ProductServiceClient.ProductInfo product = 
-                productServiceClient.getProduct(productId);
+                productServiceClient.getProduct(productId, sku);
             
             if (!product.isActive()) {
                 throw new IllegalArgumentException(

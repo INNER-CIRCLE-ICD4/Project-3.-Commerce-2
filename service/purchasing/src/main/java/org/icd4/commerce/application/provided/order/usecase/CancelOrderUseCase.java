@@ -1,6 +1,7 @@
 package org.icd4.commerce.application.provided.order.usecase;
 
 import lombok.RequiredArgsConstructor;
+import org.icd4.commerce.adapter.webapi.dto.order.response.OrderStatusResponse;
 import org.icd4.commerce.application.provided.order.command.CancelOrderCommand;
 import org.icd4.commerce.application.provided.order.support.OrderLoader;
 import org.icd4.commerce.application.required.order.OrderRepositoryPort;
@@ -16,9 +17,9 @@ public class CancelOrderUseCase {
     private final OrderRepositoryPort orderRepository;
     private final OrderLoader orderLoader;
 
-    public void cancelOrder(CancelOrderCommand command) {
-        Order order = orderLoader.loadOrThrow(command.orderId());
+    public OrderStatusResponse cancelOrder(CancelOrderCommand command) {
+        Order order = orderLoader.findById(command.orderId());
         order.cancel();
-        orderRepository.save(order);
+        return OrderStatusResponse.from(orderRepository.save(order));
     }
 }

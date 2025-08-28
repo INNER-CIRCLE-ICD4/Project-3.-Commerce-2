@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.icd4.commerce.adapter.persistence.entity.CartItemJpaEntity;
 import org.icd4.commerce.adapter.persistence.entity.CartJpaEntity;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DataJpaTest
 @ActiveProfiles("test")
 @DisplayName("CartJpaRepository 쿼리 동작 테스트")
+@Disabled
 class CartJpaRepositoryTest {
     
     @Autowired

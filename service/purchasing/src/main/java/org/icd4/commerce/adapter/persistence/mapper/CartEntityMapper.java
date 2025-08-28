@@ -6,6 +6,7 @@ import org.icd4.commerce.adapter.persistence.entity.CartItemJpaEntity;
 import org.icd4.commerce.adapter.persistence.entity.CartJpaEntity;
 import org.icd4.commerce.domain.cart.*;
 import org.icd4.commerce.domain.common.ProductId;
+import org.icd4.commerce.domain.common.StockKeepingUnit;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
@@ -85,20 +86,14 @@ public class CartEntityMapper {
             timeProvider
         );
     }
-    
-    /**
-     * 도메인 CartItem을 JPA 엔티티로 변환합니다.
-     * 
-     * @param item 도메인 CartItem
-     * @param cart 부모 CartJpaEntity
-     * @return CartItemJpaEntity
-     */
+
     private CartItemJpaEntity toItemEntity(CartItem item, CartJpaEntity cart) {
         String optionsJson = serializeOptions(item.getOptions());
         
         CartItemJpaEntity entity = new CartItemJpaEntity(
             item.getId().value(),
-            item.getProductId().value().toString(),
+            item.getProductId().value(),
+            item.getSku().value(),
             optionsJson,
             item.getQuantity(),
             item.getAddedAt(),
@@ -107,23 +102,16 @@ public class CartEntityMapper {
             item.getUnavailableReason()
         );
         
-        entity.setCart(cart);
-        
+        entity.cartReferenceMapping(cart);
         return entity;
     }
-    
-    /**
-     * JPA 엔티티를 도메인 CartItem으로 변환합니다.
-     * 
-     * @param entity CartItemJpaEntity
-     * @return 도메인 CartItem
-     */
+
     private CartItem toItemDomain(CartItemJpaEntity entity) {
         ProductOptions options = deserializeOptions(entity.getOptions());
-        
         return new CartItem(
             new CartItemId(entity.getId()),
             new ProductId(entity.getProductId()),
+            new StockKeepingUnit(entity.getSku()),
             options,
             entity.getQuantity(),
             entity.getAddedAt(),

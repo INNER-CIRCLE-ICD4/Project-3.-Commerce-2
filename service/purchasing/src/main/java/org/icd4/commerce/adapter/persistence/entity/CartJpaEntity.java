@@ -85,7 +85,7 @@ public class CartJpaEntity {
      */
     public void addItem(CartItemJpaEntity item) {
         items.add(item);
-        item.setCart(this);
+        item.cartReferenceMapping(this);
     }
     
     /**
@@ -95,7 +95,7 @@ public class CartJpaEntity {
      */
     public void removeItem(CartItemJpaEntity item) {
         items.remove(item);
-        item.setCart(null);
+        item.cartReferenceMapping(null);
     }
     
     // Getters and Setters

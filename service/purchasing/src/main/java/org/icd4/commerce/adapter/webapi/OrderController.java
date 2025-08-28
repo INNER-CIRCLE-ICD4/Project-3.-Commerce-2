@@ -3,6 +3,7 @@ package org.icd4.commerce.adapter.webapi;
 import lombok.RequiredArgsConstructor;
 import org.icd4.commerce.adapter.webapi.dto.order.request.*;
 import org.icd4.commerce.adapter.webapi.dto.order.response.OrderResponse;
+import org.icd4.commerce.adapter.webapi.dto.order.response.OrderStatusResponse;
 import org.icd4.commerce.adapter.webapi.spec.OrderApi;
 import org.icd4.commerce.application.provided.order.command.ConfirmPurchaseCommand;
 import org.icd4.commerce.application.provided.order.usecase.*;
@@ -28,40 +29,38 @@ public class OrderController implements OrderApi {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public OrderResponse createOrder(@RequestBody CreateOrderRequest request) {
-        Order order = createOrderUseCase.createOrder(request.toCommand());
+        Order order = createOrderUseCase.createOrder2(request.toCommand());
         return OrderResponse.from(order);
     }
 
     // 주문 취소
-    @PostMapping("/{orderId}/cancel")
-    public ResponseEntity<Void> cancelOrder(@PathVariable String orderId, @RequestBody CancelOrderRequest request) {
-        cancelOrderUseCase.cancelOrder(request.toCommand(orderId));
-        return ResponseEntity.ok().build();
+    @PatchMapping("/{orderId}/cancel")
+    public ResponseEntity<OrderStatusResponse> cancelOrder(@PathVariable String orderId,
+                                                            @RequestBody CancelOrderRequest request) {
+        return ResponseEntity.ok().body(cancelOrderUseCase.cancelOrder(request.toCommand(orderId)));
     }
 
     // 결제 성공
-    @PostMapping("/{orderId}/confirmPayment")
-    public ResponseEntity<Void> confirmPayment(@PathVariable String orderId, @RequestBody ConfirmPaymentRequest request) {
-        confirmPaymentUseCase.confirmPayment(request.toCommand(orderId));
-        return ResponseEntity.ok().build();
+    @PatchMapping("/{orderId}/confirmPayment")
+    public ResponseEntity<OrderStatusResponse> confirmPayment(@PathVariable String orderId, @RequestBody ConfirmPaymentRequest request) {
+        return ResponseEntity.ok().body(confirmPaymentUseCase.confirmPayment(request.toCommand(orderId)));
     }
 
     // 결제 실패
-    @PostMapping("/{orderId}/failPayment")
-    public ResponseEntity<Void> failPayment(@PathVariable String orderId, @RequestBody FailPaymentRequest request) {
-        failPaymentUseCase.failPayment(request.toCommand(orderId));
-        return ResponseEntity.ok().build();
+    @PatchMapping("/{orderId}/failPayment")
+    public ResponseEntity<OrderStatusResponse> failPayment(@PathVariable String orderId, @RequestBody FailPaymentRequest request) {
+        return ResponseEntity.ok().body(failPaymentUseCase.failPayment(request.toCommand(orderId)));
     }
 
     // 구매 확정
-    @PostMapping("/{orderId}/confirmPurchase")
+    @PatchMapping("/{orderId}/confirmPurchase")
     public ResponseEntity<Void> confirmPurchase(@PathVariable String orderId) {
         confirmPurchaseUseCase.confirmPurchase(new ConfirmPurchaseCommand(OrderId.from(orderId)));
         return ResponseEntity.ok().build();
     }
 
     // 환불 요청
-    @PostMapping("/{orderId}/refund")
+    @PatchMapping("/{orderId}/refund")
     public ResponseEntity<Void> requestRefund(@PathVariable String orderId, @RequestBody RequestRefundRequest request) {
         requestRefundUseCase.requestRefund(request.toCommand(orderId));
         return ResponseEntity.ok().build();

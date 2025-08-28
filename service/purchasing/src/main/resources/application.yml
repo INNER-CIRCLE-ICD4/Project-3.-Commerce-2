@@ -19,7 +19,7 @@ spring:
         order_updates: true  # UPDATE 문을 테이블별로 정렬하여 배치 효율성 증가
 
 server:
-  port: 8080  # 서버 기본 포트
+  port: 8081  # 서버 기본 포트
 
 # OpenAPI/Swagger 설정 (API 문서 자동 생성)
 springdoc:
@@ -35,7 +35,9 @@ springdoc:
 # 외부 서비스 설정
 external:
   product-service:
-    base-url: ${PRODUCT_SERVICE_URL:http://localhost:8081}  # 상품 서비스 URL (환경변수 우선, 기본값 제공)
+    base-url: ${PRODUCT_SERVICE_URL:http://localhost:8080}  # 상품 서비스 URL (환경변수 우선, 기본값 제공)
+  stock-service:
+    base-url: ${PRODUCT_SERVICE_URL:http://localhost:8082}
 
 # 비동기 처리 설정
 async:
@@ -51,22 +53,23 @@ spring:
       on-profile: dev  # --spring.profiles.active=dev
       
   datasource:
-    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:purchasing_dev}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul&characterEncoding=UTF-8
-    username: ${DB_USERNAME:root}
-    password: ${DB_PASSWORD:password}
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    hikari:  # HikariCP 커넥션 풀 설정
-      maximum-pool-size: 10  # 최대 커넥션 수 (개발 환경이므로 적절히 제한)
-      minimum-idle: 5  # 최소 유휴 커넥션 수
-      connection-timeout: 30000  # 커넥션 타임아웃 (30초)
-
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:purchasing
+    username: sa
+    password:
+  h2:
+    console:
+      path: /h2-console
+      enabled: true
   jpa:
-    hibernate:
-      ddl-auto: validate  # 엔티티와 DB 스키마 검증만 수행 (자동 변경 방지)
-    show-sql: false  # SQL 로깅 비활성화 (성능 고려)
+    show-sql: true
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.MySQLDialect  # MySQL 전용 SQL 생성
+        format_sql: true
+        highlight_sql: true
+        dialect: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: create
         
 logging:
   level:

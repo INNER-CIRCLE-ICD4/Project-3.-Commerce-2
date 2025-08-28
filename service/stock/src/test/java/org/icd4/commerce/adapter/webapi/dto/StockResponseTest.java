@@ -22,7 +22,7 @@ class StockResponseTest {
 
         // Then
         assertThat(response.getStockId()).isEqualTo(stock.getId());
-        assertThat(response.getProductId()).isEqualTo("PRODUCT-001");
+        assertThat(response.getSku()).isEqualTo("PRODUCT-001");
         assertThat(response.getQuantity()).isEqualTo(100L);
         assertThat(response.getStockStatus()).isEqualTo(StockStatus.AVAILABLE);
         assertThat(response.getCreatedAt()).isEqualTo(stock.getCreatedAt());
@@ -34,7 +34,7 @@ class StockResponseTest {
     void createWithBuilder() {
         // Given
         String stockId = "test-stock-id";
-        String productId = "PRODUCT-002";
+        String sku = "PRODUCT-002";
         Long quantity = 50L;
         StockStatus status = StockStatus.AVAILABLE;
         LocalDateTime now = LocalDateTime.now();
@@ -42,7 +42,7 @@ class StockResponseTest {
         // When
         StockResponse response = StockResponse.builder()
                 .stockId(stockId)
-                .productId(productId)
+                .sku(sku)
                 .quantity(quantity)
                 .stockStatus(status)
                 .createdAt(now)
@@ -51,7 +51,7 @@ class StockResponseTest {
 
         // Then
         assertThat(response.getStockId()).isEqualTo(stockId);
-        assertThat(response.getProductId()).isEqualTo(productId);
+        assertThat(response.getSku()).isEqualTo(sku);
         assertThat(response.getQuantity()).isEqualTo(quantity);
         assertThat(response.getStockStatus()).isEqualTo(status);
         assertThat(response.getCreatedAt()).isEqualTo(now);
@@ -67,7 +67,7 @@ class StockResponseTest {
         // Then
         assertThat(response).isNotNull();
         assertThat(response.getStockId()).isNull();
-        assertThat(response.getProductId()).isNull();
+        assertThat(response.getSku()).isNull();
         assertThat(response.getQuantity()).isNull();
         assertThat(response.getStockStatus()).isNull();
         assertThat(response.getCreatedAt()).isNull();
@@ -79,18 +79,18 @@ class StockResponseTest {
     void createWithAllArgsConstructor() {
         // Given
         String stockId = "test-stock-id";
-        String productId = "PRODUCT-003";
+        String sku = "PRODUCT-003";
         Long quantity = 75L;
         StockStatus status = StockStatus.OUT_OF_STOCK;
         LocalDateTime createdAt = LocalDateTime.now().minusDays(1);
         LocalDateTime updatedAt = LocalDateTime.now();
 
         // When
-        StockResponse response = new StockResponse(stockId, productId, quantity, status, createdAt, updatedAt);
+        StockResponse response = new StockResponse(stockId, sku, quantity, status, createdAt, updatedAt);
 
         // Then
         assertThat(response.getStockId()).isEqualTo(stockId);
-        assertThat(response.getProductId()).isEqualTo(productId);
+        assertThat(response.getSku()).isEqualTo(sku);
         assertThat(response.getQuantity()).isEqualTo(quantity);
         assertThat(response.getStockStatus()).isEqualTo(status);
         assertThat(response.getCreatedAt()).isEqualTo(createdAt);
@@ -110,6 +110,6 @@ class StockResponseTest {
         // Then
         assertThat(response.getQuantity()).isEqualTo(0L);
         assertThat(response.getStockStatus()).isEqualTo(StockStatus.OUT_OF_STOCK);
-        assertThat(response.getProductId()).isEqualTo("PRODUCT-004");
+        assertThat(response.getSku()).isEqualTo("PRODUCT-004");
     }
 } 

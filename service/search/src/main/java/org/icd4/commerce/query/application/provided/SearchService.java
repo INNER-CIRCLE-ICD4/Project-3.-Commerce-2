@@ -26,35 +26,35 @@ public class SearchService {
 
     public List<SearchResultResponse> search(ProductSearchRequest request, int page, int size) throws IOException {
         BoolQuery.Builder boolQueryBuilder = new BoolQuery.Builder();
-        if (request.getKeyword() != null && !request.getKeyword().isEmpty()) {
+        if (request.keyword() != null && !request.keyword().isEmpty()) {
             boolQueryBuilder.must(m -> m
                     .multiMatch(t -> t
                             .fields("name", "categoryId", "description")
-                            .query(request.getKeyword())
+                            .query(request.keyword())
                     )
             );
         }
 
         // 2. 가격 필터 (range 쿼리)
-        if (request.getMinPrice() > 0 || request.getMaxPrice() > 0) {
+        if (request.minPrice() > 0 || request.maxPrice() > 0) {
             boolQueryBuilder.filter(f -> f.range(
                     r -> r.number(
                             n -> n.field("base_price")
-                                    .gte((double) request.getMinPrice())
-                                    .lte((double) request.getMaxPrice()))
+                                    .gte((double) request.minPrice())
+                                    .lte((double) request.maxPrice()))
             ));
         }
 
         // 3. 일반 필터 (brand)
-        if (request.getBrand() != null && !request.getBrand().isEmpty()) {
-            boolQueryBuilder.filter(f -> f.term(t -> t.field("brand").value(request.getBrand())));
+        if (request.brand() != null && !request.brand().isEmpty()) {
+            boolQueryBuilder.filter(f -> f.term(t -> t.field("brand").value(request.brand())));
         }
 
         // 4. 상품 옵션 필터 (nested 쿼리)
-        if (request.getOptions() != null && !request.getOptions().isEmpty()) {
+        if (request.options() != null && !request.options().isEmpty()) {
             BoolQuery.Builder nestedBoolQueryBuilder = new BoolQuery.Builder();
 
-            request.getOptions().forEach((key, values) -> {
+            request.options().forEach((key, values) -> {
 
                 List<FieldValue> fieldValues = values.stream()
                         .map(FieldValue::of)
@@ -79,10 +79,10 @@ public class SearchService {
                 .size(size)
                 .query(boolQueryBuilder.build()._toQuery());
 
-        String sortField = request.getSortField();
+        String sortField = request.sortField();
 
         if (sortField != null && !sortField.isEmpty()) {
-            if ("DESC".equalsIgnoreCase(request.getSortOrder())) {
+            if ("DESC".equalsIgnoreCase(request.sortOrder())) {
                 requestBuilder.sort(s -> s.field(f -> f
                         .field(sortField)
                         .order(SortOrder.Desc)));

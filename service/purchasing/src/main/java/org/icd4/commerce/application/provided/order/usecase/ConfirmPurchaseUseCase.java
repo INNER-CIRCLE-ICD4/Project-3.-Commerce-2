@@ -20,7 +20,7 @@ public class ConfirmPurchaseUseCase {
     private final OrderLoader orderLoader;
 
     public void confirmPurchase(ConfirmPurchaseCommand command) {
-        Order order = orderLoader.loadOrThrow(command.orderId());
+        Order order = orderLoader.findById(command.orderId());
         order.confirmPurchase();
         orderRepository.save(order);
     }

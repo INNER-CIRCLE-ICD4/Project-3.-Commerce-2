@@ -55,7 +55,7 @@ class StockApiTest {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.message").value("재고가 성공적으로 등록되었습니다."))
-                .andExpect(jsonPath("$.data.productId").value("test-product-123"))
+                .andExpect(jsonPath("$.data.sku").value("test-product-123"))
                 .andExpect(jsonPath("$.data.quantity").value(100))
                 .andExpect(jsonPath("$.data.stockStatus").value("AVAILABLE"));
     }
@@ -115,13 +115,13 @@ class StockApiTest {
         Stock savedStock = stockRepository.save(Stock.register("test-product-456", 200L));
 
         // When & Then
-        mockMvc.perform(get("/api/stocks/{stockId}", savedStock.getId()))
+        mockMvc.perform(get("/api/stocks/{stockId}", savedStock.getSku()))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.message").value("재고 조회 성공"))
                 .andExpect(jsonPath("$.data.stockId").value(savedStock.getId()))
-                .andExpect(jsonPath("$.data.productId").value("test-product-456"))
+                .andExpect(jsonPath("$.data.sku").value(savedStock.getSku()))
                 .andExpect(jsonPath("$.data.quantity").value(200))
                 .andExpect(jsonPath("$.data.stockStatus").value("AVAILABLE"));
     }
@@ -147,7 +147,7 @@ class StockApiTest {
         Stock savedStock = stockRepository.save(Stock.register("test-product-789", 300L));
 
         // When & Then
-        mockMvc.perform(get("/api/stocks/{stockId}/quantity", savedStock.getId()))
+        mockMvc.perform(get("/api/stocks/{stockId}/quantity", savedStock.getSku()))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
@@ -163,7 +163,7 @@ class StockApiTest {
         StockUpdateRequest request = new StockUpdateRequest(30L);
 
         // When & Then
-        mockMvc.perform(patch("/api/stocks/{stockId}/increase", savedStock.getId())
+        mockMvc.perform(patch("/api/stocks/{stockId}/increase", savedStock.getSku())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andDo(print())
@@ -172,7 +172,7 @@ class StockApiTest {
                 .andExpect(jsonPath("$.message").value("재고가 성공적으로 증가되었습니다."));
 
         // 실제로 재고가 증가했는지 확인
-        mockMvc.perform(get("/api/stocks/{stockId}/quantity", savedStock.getId()))
+        mockMvc.perform(get("/api/stocks/{stockId}/quantity", savedStock.getSku()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data").value(80)); // 50 + 30 = 80
     }
@@ -185,7 +185,7 @@ class StockApiTest {
         StockUpdateRequest request = new StockUpdateRequest(20L);
 
         // When & Then
-        mockMvc.perform(patch("/api/stocks/{stockId}/decrease", savedStock.getId())
+        mockMvc.perform(patch("/api/stocks/{stockId}/decrease", savedStock.getSku())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andDo(print())
@@ -194,7 +194,7 @@ class StockApiTest {
                 .andExpect(jsonPath("$.message").value("재고가 성공적으로 감소되었습니다."));
 
         // 실제로 재고가 감소했는지 확인
-        mockMvc.perform(get("/api/stocks/{stockId}/quantity", savedStock.getId()))
+        mockMvc.perform(get("/api/stocks/{stockId}/quantity", savedStock.getSku()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data").value(80)); // 100 - 20 = 80
     }
@@ -207,7 +207,7 @@ class StockApiTest {
         StockUpdateRequest request = new StockUpdateRequest(100L); // 50개보다 많이 감소 시도
 
         // When & Then
-        mockMvc.perform(patch("/api/stocks/{stockId}/decrease", savedStock.getId())
+        mockMvc.perform(patch("/api/stocks/{stockId}/decrease", savedStock.getSku())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andDo(print())

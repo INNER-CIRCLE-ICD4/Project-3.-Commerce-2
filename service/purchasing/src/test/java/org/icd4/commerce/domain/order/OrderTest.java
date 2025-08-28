@@ -1,6 +1,7 @@
 package org.icd4.commerce.domain.order;
 
 import org.icd4.commerce.domain.common.ProductId;
+import org.icd4.commerce.domain.common.StockKeepingUnit;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -26,6 +27,7 @@ class OrderTest {
                         new OrderItemId("1"),
                         orderId,
                         new ProductId("1"),
+                        new StockKeepingUnit("1"),
                         "테스트상품",
                         10_000L, // unitPrice
                         3,      // quantity
@@ -71,6 +73,7 @@ class OrderTest {
                 new OrderItemId("1"),
                 orderId,
                 new ProductId("1"),
+                new StockKeepingUnit("1"),
                 "테스트상품",
                 10_000L,
                 3,
@@ -80,6 +83,7 @@ class OrderTest {
                 new OrderItemId("1"),
                 orderId,
                 new ProductId("1"),
+                new StockKeepingUnit("1"),
                 "테스트상품",
                 10_000L,
                 3,
@@ -114,7 +118,6 @@ class OrderTest {
     void cancel_afterFailPayment() {
         Order order = createOrder(OrderStatus.PENDING, null);
         order.failPayment();
-
         order.cancel();
 
         assertThat(order.getOrderStatus()).isEqualTo(OrderStatus.CANCELED);

@@ -4,7 +4,7 @@ import org.icd4.commerce.domain.cart.exception.CartAlreadyConvertedException;
 import org.icd4.commerce.domain.cart.exception.CartItemLimitExceededException;
 import org.icd4.commerce.domain.cart.exception.InvalidCartStateException;
 import org.icd4.commerce.domain.common.ProductId;
-import org.icd4.commerce.domain.common.ProductPriceProvider;
+import org.icd4.commerce.domain.common.StockKeepingUnit;
 import org.icd4.commerce.support.TestTimeProvider;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -30,6 +30,7 @@ class CartTest {
     private Cart cart;
     private CartId cartId;
     private CustomerId customerId;
+    private StockKeepingUnit sku;
     private TimeProvider timeProvider;
     
     @BeforeEach
@@ -37,6 +38,7 @@ class CartTest {
         MockitoAnnotations.openMocks(this);
         cartId = CartId.generate();
         customerId = CustomerId.of("customer-123");
+        sku = StockKeepingUnit.of("SKU-001");
         TestTimeProvider testTimeProvider = new TestTimeProvider(LocalDateTime.of(2024, 1, 1, 10, 0));
         testTimeProvider.enableAutoAdvance();
         timeProvider = testTimeProvider;
@@ -53,7 +55,7 @@ class CartTest {
         ProductOptions options = ProductOptions.of(optionMap);
         
         // when
-        cart.addItem(productId, 2, options);
+        cart.addItem(productId, sku, 2, options);
         
         // then
         assertThat(cart.getItemCount()).isEqualTo(1);
@@ -72,8 +74,8 @@ class CartTest {
         ProductOptions options = ProductOptions.of(optionMap);
         
         // when
-        cart.addItem(productId, 2, options);
-        cart.addItem(productId, 3, options);
+        cart.addItem(productId, sku,2, options);
+        cart.addItem(productId, sku, 3, options);
         
         // then
         assertThat(cart.getItemCount()).isEqualTo(1);
@@ -95,8 +97,8 @@ class CartTest {
         ProductOptions options2 = ProductOptions.of(optionMap2);
         
         // when
-        cart.addItem(productId, 2, options1);
-        cart.addItem(productId, 3, options2);
+        cart.addItem(productId, sku, 2, options1);
+        cart.addItem(productId, sku, 3, options2);
         
         // then
         assertThat(cart.getItemCount()).isEqualTo(2);
@@ -108,11 +110,11 @@ class CartTest {
     void throwExceptionWhenExceedItemTypeLimit() {
         // given
         for (int i = 1; i <= 50; i++) {
-            cart.addItem(ProductId.of(String.valueOf(i)), 1, ProductOptions.empty());
+            cart.addItem(ProductId.of(String.valueOf(i)), sku, 1, ProductOptions.empty());
         }
         
         // when & then
-        assertThatThrownBy(() -> cart.addItem(ProductId.of("TEST-001"), 1, ProductOptions.empty()))
+        assertThatThrownBy(() -> cart.addItem(ProductId.of("TEST-001"), sku, 1, ProductOptions.empty()))
             .isInstanceOf(CartItemLimitExceededException.class)
             .hasMessageContaining("Cannot add more than 50 different product types");
     }
@@ -122,7 +124,7 @@ class CartTest {
     void removeItem() {
         // given
         ProductId productId = ProductId.of("TEST-001");
-        cart.addItem(productId, 2, ProductOptions.empty());
+        cart.addItem(productId, sku, 2, ProductOptions.empty());
         CartItemId itemId = cart.getItems().get(0).getId();
         
         // when
@@ -149,7 +151,7 @@ class CartTest {
     void updateItemQuantity() {
         // given
         ProductId productId = ProductId.of("TEST-001");
-        cart.addItem(productId, 2, ProductOptions.empty());
+        cart.addItem(productId, sku, 2, ProductOptions.empty());
         CartItemId itemId = cart.getItems().get(0).getId();
         
         // when
@@ -163,8 +165,8 @@ class CartTest {
     @DisplayName("장바구니를 비울 수 있다")
     void clearCart() {
         // given
-        cart.addItem(ProductId.of("TEST-001"), 2, ProductOptions.empty());
-        cart.addItem(ProductId.of("TEST-001"), 3, ProductOptions.empty());
+        cart.addItem(ProductId.of("TEST-001"), sku, 2, ProductOptions.empty());
+        cart.addItem(ProductId.of("TEST-001"), sku, 3, ProductOptions.empty());
         
         // when
         cart.clear();
@@ -180,12 +182,16 @@ class CartTest {
         // given
         ProductId productId1 = ProductId.of("TEST-001");
         ProductId productId2 = ProductId.of("TEST-002");
+
+        StockKeepingUnit sku1 = StockKeepingUnit.of("SKU-001");
+        StockKeepingUnit sku2 = StockKeepingUnit.of("SKU-002");
+
         
-        cart.addItem(productId1, 2, ProductOptions.empty());
-        cart.addItem(productId2, 3, ProductOptions.empty());
+        cart.addItem(productId1, sku1, 2, ProductOptions.empty());
+        cart.addItem(productId2, sku2, 3, ProductOptions.empty());
         
-        when(priceProvider.getPrice(productId1)).thenReturn(new BigDecimal("10000"));
-        when(priceProvider.getPrice(productId2)).thenReturn(new BigDecimal("5000"));
+        when(priceProvider.getPrice(productId1, sku1)).thenReturn(new BigDecimal("10000"));
+        when(priceProvider.getPrice(productId2, sku2)).thenReturn(new BigDecimal("5000"));
         
         // when
         BigDecimal total = cart.calculateTotal(priceProvider);
@@ -203,9 +209,9 @@ class CartTest {
         ProductId productId1 = ProductId.of("TEST-001");
         ProductId productId2 = ProductId.of("TEST-002");
         
-        cart.addItem(productId1, 2, ProductOptions.empty());
-        otherCart.addItem(productId1, 3, ProductOptions.empty());
-        otherCart.addItem(productId2, 1, ProductOptions.empty());
+        cart.addItem(productId1, sku, 2, ProductOptions.empty());
+        otherCart.addItem(productId1, sku, 3, ProductOptions.empty());
+        otherCart.addItem(productId2, sku, 1, ProductOptions.empty());
         
         // when
         cart.merge(otherCart);
@@ -220,7 +226,7 @@ class CartTest {
     @DisplayName("장바구니를 주문으로 전환할 수 있다")
     void convertToOrder() {
         // given
-        cart.addItem(ProductId.of("TEST-001"), 2, ProductOptions.empty());
+        cart.addItem(ProductId.of("TEST-001"), sku, 2, ProductOptions.empty());
         
         // when
         cart.convertToOrder();
@@ -233,7 +239,7 @@ class CartTest {
     @DisplayName("이미 전환된 장바구니는 다시 전환할 수 없다")
     void cannotConvertAlreadyConvertedCart() {
         // given
-        cart.addItem(ProductId.of("TEST-001"), 2, ProductOptions.empty());
+        cart.addItem(ProductId.of("TEST-001"), sku, 2, ProductOptions.empty());
         cart.convertToOrder();
         
         // when & then
@@ -255,11 +261,11 @@ class CartTest {
     @DisplayName("전환된 장바구니는 수정할 수 없다")
     void cannotModifyConvertedCart() {
         // given
-        cart.addItem(ProductId.of("TEST-001"), 2, ProductOptions.empty());
+        cart.addItem(ProductId.of("TEST-001"), sku, 2, ProductOptions.empty());
         cart.convertToOrder();
         
         // when & then
-        assertThatThrownBy(() -> cart.addItem(ProductId.of("TEST-001"), 1, ProductOptions.empty()))
+        assertThatThrownBy(() -> cart.addItem(ProductId.of("TEST-001"), sku, 1, ProductOptions.empty()))
             .isInstanceOf(CartAlreadyConvertedException.class)
             .hasMessageContaining("Cannot modify a converted cart");
             
@@ -278,6 +284,7 @@ class CartTest {
         CartItem item1 = new CartItem(
             CartItemId.generate(),
             ProductId.of("TEST-001"),
+            sku,
             ProductOptions.empty(),
             2,
             timeProvider
@@ -285,6 +292,7 @@ class CartTest {
         CartItem item2 = new CartItem(
             CartItemId.generate(),
             ProductId.of("TEST-001"),
+            sku,
             ProductOptions.of(Map.of("color", "red")),
             1,
             timeProvider

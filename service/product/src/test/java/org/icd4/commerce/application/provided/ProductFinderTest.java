@@ -31,13 +31,13 @@ class ProductFinderTest {
     @Test
     void findProductById() {
         //Given
-        String productId = createTestProduct().getId();
+        String productId = createTestProduct().getSku();
         //When
         Product product = productFinder.findById(productId);
         entityManager.flush();
 
         //Then
-        assertThat(product.getId()).isEqualTo(productId);
+        assertThat(product.getSku()).isEqualTo(productId);
         assertThat(product.getName()).isEqualTo("name");
         assertThat(product.getBrand()).isEqualTo("brand");
         assertThat(product.getDescription()).isEqualTo("description");

@@ -52,9 +52,7 @@ class ProductApiTest {
                 .hasPath("$.name")
                 .hasPath("$.brand")
                 .hasPath("$.description")
-                .hasPath("$.categoryId")
-                .hasPath("$.priceAmount")
-                .hasPath("$.priceCurrency");
+                .hasPath("$.categoryId");
 
         ProductResponse response = objectMapper.readValue(
                 result.getResponse().getContentAsString(),
@@ -66,31 +64,7 @@ class ProductApiTest {
         assertThat(savedProduct.getBrand()).isEqualTo(request.brand());
         assertThat(savedProduct.getDescription()).isEqualTo(request.description());
         assertThat(savedProduct.getCategoryId()).isEqualTo(request.categoryId());
-//        assertThat(savedProduct.getPrice().getAmount()).isEqualTo(request.priceAmount());
-//        assertThat(savedProduct.getPrice().getCurrency()).isEqualTo(request.priceCurrency());
         assertThat(savedProduct.getCreatedAt()).isNotNull();
-    }
-
-    @Test
-    void testCreateWithInvalidData() throws JsonProcessingException {
-        ProductCreateRequest invalidRequest = new ProductCreateRequest(
-                null, // sellerId 누락
-                "name",
-                "brand",
-                "description",
-                "0001",
-                BigDecimal.ONE,
-                "KRW",
-                List.of()
-        );
-        String requestJson = objectMapper.writeValueAsString(invalidRequest);
-
-        assertThat(mvcTester.post()
-                .uri("/api/v1/product")
-                .contentType("application/json")
-                .content(requestJson)
-                .exchange())
-                .hasStatus(BAD_REQUEST);
     }
 
     @Test

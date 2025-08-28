@@ -1,9 +1,10 @@
 package org.icd4.commerce.application.provided.order.usecase;
 
 import lombok.RequiredArgsConstructor;
+import org.icd4.commerce.adapter.webapi.dto.order.response.OrderStatusResponse;
 import org.icd4.commerce.application.provided.order.command.ConfirmPaymentCommand;
 import org.icd4.commerce.application.provided.order.support.OrderLoader;
-import org.icd4.commerce.application.required.common.InventoryReducer;
+import org.icd4.commerce.application.required.common.InventoryManager;
 import org.icd4.commerce.application.required.order.OrderRepositoryPort;
 import org.icd4.commerce.domain.order.Order;
 import org.springframework.stereotype.Service;
@@ -16,17 +17,17 @@ public class ConfirmPaymentUseCase {
 
     private final OrderRepositoryPort orderRepository;
     private final OrderLoader orderLoader;
-    private final InventoryReducer inventoryReducer;
+    private final InventoryManager inventoryManager;
 
-    public void confirmPayment(ConfirmPaymentCommand command) {
-        Order order = orderLoader.loadOrThrow(command.orderId());
+    public OrderStatusResponse confirmPayment(ConfirmPaymentCommand command) {
+        Order order = orderLoader.findById(command.orderId());
 
         //재고 차감 요청
         order.getOrderItems().forEach(item -> {
-            inventoryReducer.reduceStock(item.getProductId(), item.getQuantity());
+            inventoryManager.reduceStock(item.getSku(), item.getQuantity());
         });
 
         order.confirmPayment(command.paymentId());
-        orderRepository.save(order);
+        return OrderStatusResponse.from(orderRepository.save(order));
     }
 }

@@ -11,6 +11,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 import java.util.Optional;
 
+import static java.lang.Thread.sleep;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
@@ -37,7 +38,7 @@ class StockRepositoryTest {
         // Then
         assertThat(savedStock).isNotNull();
         assertThat(savedStock.getId()).isNotNull();
-        assertThat(savedStock.getProductId()).isEqualTo(productId);
+        assertThat(savedStock.getSku()).isEqualTo(productId);
         assertThat(savedStock.getQuantity()).isEqualTo(quantity);
         assertThat(savedStock.getStockStatus()).isEqualTo(StockStatus.AVAILABLE);
         assertThat(savedStock.getCreatedAt()).isNotNull();
@@ -50,7 +51,7 @@ class StockRepositoryTest {
 
     @Test
     @DisplayName("재고 조회 - 성공")
-    void findById_Success() {
+    void findBySku_Success() {
         // Given
         Stock stock = Stock.register("test-product-456", 200L);
         Stock savedStock = stockRepository.save(stock);
@@ -58,24 +59,24 @@ class StockRepositoryTest {
         entityManager.clear();
 
         // When
-        Optional<Stock> foundStock = stockRepository.findById(savedStock.getId());
+        Optional<Stock> foundStock = stockRepository.findBySku(savedStock.getSku());
 
         // Then
         assertThat(foundStock).isPresent();
-        assertThat(foundStock.get().getId()).isEqualTo(savedStock.getId());
-        assertThat(foundStock.get().getProductId()).isEqualTo("test-product-456");
+        assertThat(foundStock.get().getSku()).isEqualTo(savedStock.getSku());
+        assertThat(foundStock.get().getSku()).isEqualTo("test-product-456");
         assertThat(foundStock.get().getQuantity()).isEqualTo(200L);
         assertThat(foundStock.get().getStockStatus()).isEqualTo(StockStatus.AVAILABLE);
     }
 
     @Test
     @DisplayName("재고 조회 - 실패 (존재하지 않는 ID)")
-    void findById_NotFound() {
+    void findBySku_NotFound() {
         // Given
         String nonExistentId = "non-existent-id";
 
         // When
-        Optional<Stock> foundStock = stockRepository.findById(nonExistentId);
+        Optional<Stock> foundStock = stockRepository.findBySku(nonExistentId);
 
         // Then
         assertThat(foundStock).isEmpty();
@@ -83,20 +84,21 @@ class StockRepositoryTest {
 
     @Test
     @DisplayName("재고 업데이트 - 수량 변경")
-    void update_QuantityChange() {
+    void update_QuantityChange() throws InterruptedException {
         // Given
         Stock stock = Stock.register("test-product-789", 100L);
         Stock savedStock = stockRepository.save(stock);
         entityManager.flush();
 
         // When
+        sleep(1000);
         savedStock.increaseQuantity(50L);
         Stock updatedStock = stockRepository.save(savedStock);
         entityManager.flush();
         entityManager.clear();
 
         // Then
-        Optional<Stock> foundStock = stockRepository.findById(updatedStock.getId());
+        Optional<Stock> foundStock = stockRepository.findBySku(updatedStock.getSku());
         assertThat(foundStock).isPresent();
         assertThat(foundStock.get().getQuantity()).isEqualTo(150L); // 100 + 50
         assertThat(foundStock.get().getUpdatedAt()).isAfter(foundStock.get().getCreatedAt());
@@ -117,7 +119,7 @@ class StockRepositoryTest {
         entityManager.clear();
 
         // Then
-        Optional<Stock> foundStock = stockRepository.findById(updatedStock.getId());
+        Optional<Stock> foundStock = stockRepository.findBySku(updatedStock.getSku());
         assertThat(foundStock).isPresent();
         assertThat(foundStock.get().getQuantity()).isEqualTo(0L);
         assertThat(foundStock.get().getStockStatus()).isEqualTo(StockStatus.OUT_OF_STOCK);
@@ -142,9 +144,9 @@ class StockRepositoryTest {
 
         // Then - 대량 조회 및 검증
         for (int i = 0; i < 5; i++) {
-            Optional<Stock> foundStock = stockRepository.findById(savedStocks[i].getId());
+            Optional<Stock> foundStock = stockRepository.findBySku(savedStocks[i].getSku());
             assertThat(foundStock).isPresent();
-            assertThat(foundStock.get().getProductId()).isEqualTo("bulk-product-" + i);
+            assertThat(foundStock.get().getSku()).isEqualTo("bulk-product-" + i);
             assertThat(foundStock.get().getQuantity()).isEqualTo((long) (i + 1) * 10);
         }
     }
@@ -162,9 +164,9 @@ class StockRepositoryTest {
         entityManager.clear();
 
         // Then
-        Optional<Stock> foundStock = stockRepository.findById(savedStock.getId());
+        Optional<Stock> foundStock = stockRepository.findBySku(savedStock.getSku());
         assertThat(foundStock).isPresent();
-        assertThat(foundStock.get().getProductId()).isEqualTo(specialProductId);
+        assertThat(foundStock.get().getSku()).isEqualTo(specialProductId);
     }
 
     @Test
@@ -180,7 +182,7 @@ class StockRepositoryTest {
         entityManager.clear();
 
         // Then
-        Optional<Stock> foundStock = stockRepository.findById(savedStock.getId());
+        Optional<Stock> foundStock = stockRepository.findBySku(savedStock.getSku());
         assertThat(foundStock).isPresent();
         assertThat(foundStock.get().getQuantity()).isEqualTo(maxQuantity);
     }
@@ -200,8 +202,8 @@ class StockRepositoryTest {
 
         // Then
         assertThat(savedStock1.getId()).isNotEqualTo(savedStock2.getId());
-        assertThat(savedStock1.getProductId()).isEqualTo(sameProductId);
-        assertThat(savedStock2.getProductId()).isEqualTo(sameProductId);
+        assertThat(savedStock1.getSku()).isEqualTo(sameProductId);
+        assertThat(savedStock2.getSku()).isEqualTo(sameProductId);
         assertThat(savedStock1.getQuantity()).isEqualTo(100L);
         assertThat(savedStock2.getQuantity()).isEqualTo(200L);
     }
@@ -232,7 +234,7 @@ class StockRepositoryTest {
         savedStock.increaseQuantity(50L);
 
         // entityManager flush 없이도 변경사항이 반영되어야 함
-        Optional<Stock> foundStock = stockRepository.findById(savedStock.getId());
+        Optional<Stock> foundStock = stockRepository.findBySku(savedStock.getSku());
 
         // Then
         assertThat(foundStock).isPresent();

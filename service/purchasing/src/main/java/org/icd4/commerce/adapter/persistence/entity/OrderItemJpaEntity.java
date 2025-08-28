@@ -22,6 +22,9 @@ public class OrderItemJpaEntity {
     private String productId;
 
     @Column(nullable = false)
+    private String sku;
+
+    @Column(nullable = false)
     private String productName;
 
     @Column(nullable = false)
@@ -41,6 +44,7 @@ public class OrderItemJpaEntity {
     public OrderItemJpaEntity(
             String id,
             String productId,
+            String sku,
             String productName,
             Long unitPrice,
             int quantity,
@@ -49,6 +53,7 @@ public class OrderItemJpaEntity {
     ) {
         this.id = id;
         this.productId = productId;
+        this.sku = sku;
         this.productName = productName;
         this.unitPrice = unitPrice;
         this.quantity = quantity;

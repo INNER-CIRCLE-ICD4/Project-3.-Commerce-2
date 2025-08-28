@@ -2,11 +2,12 @@ package org.icd4.commerce.application.provided.order.usecase;
 
 
 import lombok.RequiredArgsConstructor;
+import org.icd4.commerce.adapter.webapi.dto.order.response.OrderStatusResponse;
 import org.icd4.commerce.application.provided.order.command.FailPaymentCommand;
 import org.icd4.commerce.application.provided.order.support.OrderLoader;
+import org.icd4.commerce.application.required.common.InventoryManager;
 import org.icd4.commerce.application.required.order.OrderRepositoryPort;
 import org.icd4.commerce.domain.order.Order;
-import org.icd4.commerce.domain.order.OrderId;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,10 +21,16 @@ public class FailPaymentUseCase {
 
     private final OrderRepositoryPort orderRepository;
     private final OrderLoader orderLoader;
+    private final InventoryManager inventoryManager;
 
-    public void failPayment(FailPaymentCommand command) {
-        Order order = orderLoader.loadOrThrow(command.orderId());
+    public OrderStatusResponse failPayment(FailPaymentCommand command) {
+        Order order = orderLoader.findById(command.orderId());
+
+        //재고 증가 요청
+        order.getOrderItems().forEach(item -> {
+            inventoryManager.restoreStock(item.getSku(), item.getQuantity());
+        });
         order.failPayment();
-        orderRepository.save(order);
+        return OrderStatusResponse.from(orderRepository.save(order));
     }
 }
