@@ -1,5 +1,6 @@
 package org.icd4.commerce.adapter.external;
 
+import jakarta.annotation.PostConstruct;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,14 +27,15 @@ import org.springframework.web.client.RestClientException;
 @Component
 @RequiredArgsConstructor
 public class ProductServiceRestClient implements ProductServiceClient {
-
+    private RestClient restClient;
     private final RestClient.Builder restClientBuilder;
 
     @Value("${external.product-service.base-url:http://localhost:8081}")
     private String productServiceBaseUrl;
 
-    private RestClient getRestClient() {
-        return restClientBuilder
+    @PostConstruct
+    public void init() {
+        this.restClient = RestClient.builder()
                 .baseUrl(productServiceBaseUrl)
                 .build();
     }
@@ -41,7 +43,7 @@ public class ProductServiceRestClient implements ProductServiceClient {
     @Override
     public ProductInfo getProduct(ProductId productId, StockKeepingUnit sku) {
         try {
-            ProductResponse response = getRestClient()
+            ProductResponse response = restClient
                     .get()
                     .uri("/api/v1/product/{productId}/{sku}", productId.value(), sku.value())
                     .retrieve()

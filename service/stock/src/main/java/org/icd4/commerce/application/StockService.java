@@ -27,7 +27,7 @@ public class StockService implements StockRegister, StockFinder {
 
     @Override
     public Long increaseQuantity(String stockId, Long quantity) {
-        return stockRepository.findById(stockId)
+        return stockRepository.findBySku(stockId)
                 .map(entity -> increaseQuantityAndSave(quantity, entity))
                 .orElseThrow(() -> new IllegalArgumentException("Stock not found: " + stockId));
     }
@@ -35,7 +35,7 @@ public class StockService implements StockRegister, StockFinder {
 
     @Override
     public Long decreaseQuantity(String stockId, Long quantity) {
-        return stockRepository.findById(stockId)
+        return stockRepository.findBySku(stockId)
                 .map(entity -> decreaseQuantityAndSave(quantity, entity))
                 .orElseThrow(() -> new IllegalArgumentException("Stock not found: " + stockId));
 
@@ -43,13 +43,13 @@ public class StockService implements StockRegister, StockFinder {
 
     @Override
     public Stock getStock(String stockId) {
-        return stockRepository.findById(stockId)
+        return stockRepository.findBySku(stockId)
                 .orElseThrow(() -> new NoSuchElementException("재고를 찾을 수 없습니다. stockId: " + stockId));
     }
 
     @Override
     public Long checkQuantity(String stockId) {
-        return stockRepository.findById(stockId)
+        return stockRepository.findBySku(stockId)
                 .map(Stock::checkQuantity)
                 .orElseThrow(() -> new NoSuchElementException("재고를 찾을 수 없습니다. stockId: " + stockId));
     }

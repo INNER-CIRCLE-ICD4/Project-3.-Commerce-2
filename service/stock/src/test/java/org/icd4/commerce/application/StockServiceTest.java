@@ -11,14 +11,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.temporal.ChronoUnit;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.assertj.core.data.Offset.offset;
-import static org.assertj.core.data.Percentage.withPercentage;
-import static java.time.temporal.ChronoUnit.MILLIS;
 
 @SpringBootTest
 @Transactional
@@ -109,7 +105,7 @@ class StockServiceTest {
         assertThat(finalQuantity).isEqualTo(110L); // 100 + 30 - 20
 
         // DB에서 직접 확인
-        Optional<Stock> dbStock = stockRepository.findById(stockId);
+        Optional<Stock> dbStock = stockRepository.findBySku(stockId);
         assertThat(dbStock).isPresent();
         assertThat(dbStock.get().getQuantity()).isEqualTo(110L);
     }

@@ -9,16 +9,10 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.icd4.commerce.adapter.webapi.common.ErrorResponse;
 import org.icd4.commerce.adapter.webapi.dto.order.request.*;
 import org.icd4.commerce.adapter.webapi.dto.order.response.OrderResponse;
-import org.icd4.commerce.application.provided.order.command.ConfirmPurchaseCommand;
-import org.icd4.commerce.domain.order.Order;
-import org.springframework.http.HttpStatus;
+import org.icd4.commerce.adapter.webapi.dto.order.response.OrderStatusResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
-
-import java.util.UUID;
 
 @Tag(name = "Order API", description = "주문 관련 API")
 public interface OrderApi {
@@ -37,7 +31,7 @@ public interface OrderApi {
             @ApiResponse(responseCode = "400", description = "잘못된 요청",
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
-    ResponseEntity<Void> cancelOrder(@PathVariable String id, @RequestBody CancelOrderRequest request);
+    ResponseEntity<OrderStatusResponse> cancelOrder(@PathVariable String id, @RequestBody CancelOrderRequest request);
 
     @Operation(summary = "결제 완료", description = "결제 완료된 주문 상태로 전환합니다.")
     @ApiResponses({
@@ -45,7 +39,7 @@ public interface OrderApi {
             @ApiResponse(responseCode = "400", description = "잘못된 요청",
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
-    ResponseEntity<Void> confirmPayment(@PathVariable String id, @RequestBody ConfirmPaymentRequest request);
+    ResponseEntity<OrderStatusResponse> confirmPayment(@PathVariable String id, @RequestBody ConfirmPaymentRequest request);
 
     @Operation(summary = "결제 실패", description = "결제 실패로 주문 상태를 전환합니다.")
     @ApiResponses({
@@ -53,7 +47,7 @@ public interface OrderApi {
             @ApiResponse(responseCode = "400", description = "잘못된 요청",
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
-    ResponseEntity<Void> failPayment(@PathVariable String id, @RequestBody FailPaymentRequest request);
+    ResponseEntity<OrderStatusResponse> failPayment(@PathVariable String id, @RequestBody FailPaymentRequest request);
 
     @Operation(summary = "구매 확정", description = "주문을 구매 확정 상태로 전환합니다.")
     @ApiResponses({

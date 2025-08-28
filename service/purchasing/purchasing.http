@@ -12,14 +12,14 @@ Content-Type: application/json
   "customerId": "CUST-001",
   "orderItems": [
     {
-      "productId": "f3a864fb-d3a2-47a4-b5a2-81c6d0f9d6b7",
-      "sku": "f3a864fb-d3a2-47a4-b5a2-81c6d0f9d6b7_E4463C7",
+      "productId": "770f0006-d7ed-41f3-bd9b-389c1a0f0db5",
+      "sku": "770f0006-d7ed-41f3-bd9b-389c1a0f0db5_E4463C7",
       "unitPrice": 29900,
       "quantity": 1
     },
     {
-      "productId": "f3a864fb-d3a2-47a4-b5a2-81c6d0f9d6b7",
-      "sku": "f3a864fb-d3a2-47a4-b5a2-81c6d0f9d6b7_E4463C1",
+      "productId": "770f0006-d7ed-41f3-bd9b-389c1a0f0db5",
+      "sku": "770f0006-d7ed-41f3-bd9b-389c1a0f0db5_E4463C1",
       "unitPrice": 15000,
       "quantity": 1
     }
@@ -39,4 +39,13 @@ Content-Type: application/json
 
 {
   "status": "CANCELED"
+}
+
+
+### 결제 확정
+PATCH {{baseUrl}}/api/v1/orders/{{orderId}}/confirmPayment
+Content-Type: application/json
+
+{
+  "paymentId": ""
 }

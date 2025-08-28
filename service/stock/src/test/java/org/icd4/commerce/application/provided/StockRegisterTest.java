@@ -7,7 +7,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
@@ -44,7 +43,7 @@ class StockRegisterTest {
         assertThat(registeredStock.getUpdatedAt()).isNotNull();
 
         // DB에 실제로 저장되었는지 확인
-        Optional<Stock> savedStock = stockRepository.findById(registeredStock.getId());
+        Optional<Stock> savedStock = stockRepository.findBySku(registeredStock.getId());
         assertThat(savedStock).isPresent();
         assertThat(savedStock.get().getProductId()).isEqualTo(productId);
         assertThat(savedStock.get().getQuantity()).isEqualTo(quantity);
@@ -87,7 +86,7 @@ class StockRegisterTest {
         stockRegister.increaseQuantity(stock.getId(), increaseAmount);
 
         // Then
-        Optional<Stock> updatedStock = stockRepository.findById(stock.getId());
+        Optional<Stock> updatedStock = stockRepository.findBySku(stock.getId());
         assertThat(updatedStock).isPresent();
         assertThat(updatedStock.get().getQuantity()).isEqualTo(80L); // 50 + 30
     }
@@ -106,7 +105,7 @@ class StockRegisterTest {
                 .hasMessageContaining("재고는 0 이하의 값이 될 수 없습니다");
         
         // 예외로 인해 재고 수량은 변하지 않아야 함
-        Optional<Stock> unchangedStock = stockRepository.findById(stock.getId());
+        Optional<Stock> unchangedStock = stockRepository.findBySku(stock.getId());
         assertThat(unchangedStock).isPresent();
         assertThat(unchangedStock.get().getQuantity()).isEqualTo(50L); // 변경되지 않음
     }
@@ -122,7 +121,7 @@ class StockRegisterTest {
         stockRegister.decreaseQuantity(stock.getId(), decreaseAmount);
 
         // Then
-        Optional<Stock> updatedStock = stockRepository.findById(stock.getId());
+        Optional<Stock> updatedStock = stockRepository.findBySku(stock.getId());
         assertThat(updatedStock).isPresent();
         assertThat(updatedStock.get().getQuantity()).isEqualTo(70L); // 100 - 30
     }
@@ -141,7 +140,7 @@ class StockRegisterTest {
                 .hasMessageContaining("현재 재고보다 많습니다");
         
         // 예외로 인해 재고는 변하지 않아야 함
-        Optional<Stock> unchangedStock = stockRepository.findById(stock.getId());
+        Optional<Stock> unchangedStock = stockRepository.findBySku(stock.getId());
         assertThat(unchangedStock).isPresent();
         assertThat(unchangedStock.get().getQuantity()).isEqualTo(30L); // 변경되지 않음
     }
@@ -187,7 +186,7 @@ class StockRegisterTest {
         // Then
         assertThat(registeredStock.getQuantity()).isEqualTo(largeQuantity);
         
-        Optional<Stock> savedStock = stockRepository.findById(registeredStock.getId());
+        Optional<Stock> savedStock = stockRepository.findBySku(registeredStock.getId());
         assertThat(savedStock).isPresent();
         assertThat(savedStock.get().getQuantity()).isEqualTo(largeQuantity);
     }

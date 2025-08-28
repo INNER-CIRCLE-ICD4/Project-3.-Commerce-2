@@ -61,7 +61,6 @@ public class ProductDetailsProviderAdapter implements ProductPriceProvider, Prod
     @Override
     public ProductDetails getProductInfo(ProductId productId, StockKeepingUnit sku) {
         ProductServiceClient.ProductInfo product = productServiceClient.getProduct(productId, sku);
-        System.out.println("info"+ product);
         if (!product.isActive()) {
             throw new IllegalArgumentException("비활성 상품입니다: " + productId.value());
         }

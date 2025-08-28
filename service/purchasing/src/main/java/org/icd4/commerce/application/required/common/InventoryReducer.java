@@ -4,6 +4,7 @@ import org.icd4.commerce.adapter.external.exception.NotEnoughStockException;
 import org.icd4.commerce.adapter.external.exception.ProductServiceException;
 import org.icd4.commerce.adapter.external.exception.StockNotFoundException;
 import org.icd4.commerce.domain.common.ProductId;
+import org.icd4.commerce.domain.common.StockKeepingUnit;
 
 /**
  * 재고 차감 인터페이스.
@@ -17,5 +18,5 @@ public interface InventoryReducer {
      * @throws NotEnoughStockException 수량 부족
      * @throws ProductServiceException 서비스 통신 오류
      */
-    void reduceStock(ProductId productId, int quantity);
+    String reduceStock(StockKeepingUnit productId, int quantity);
 }

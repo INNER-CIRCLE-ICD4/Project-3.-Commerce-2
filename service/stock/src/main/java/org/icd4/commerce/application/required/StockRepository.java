@@ -7,5 +7,5 @@ import java.util.Optional;
 
 public interface StockRepository extends Repository<Stock, String> {
     Stock save(Stock stock);
-    Optional<Stock> findById(String stockId);
+    Optional<Stock> findBySku(String stockId);
 }
