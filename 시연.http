@@ -74,7 +74,13 @@ Content-Type: application/json
   "brand": "변경된 브랜드"
 }
 
+### 상품 삭제 사전 작업
+PATCH http://localhost:8080/api/v1/product/{{productId}}/inactivate
+X-Seller-Id: {{sellerId}}
+
 ### 3. 상품 삭제
+DELETE http://localhost:8080/api/v1/product/{{productId}}
+X-Seller-Id: {{sellerId}}
 
 ### 4. 키워드 검색
 ### 5. 카테고리 검색

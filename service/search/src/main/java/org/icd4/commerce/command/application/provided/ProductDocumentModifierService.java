@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 
 @Service
@@ -41,5 +40,11 @@ public class ProductDocumentModifierService implements ProductDocumentModifier {
         // product validation()
         String testTime = LocalDateTime.now(ZoneOffset.UTC).toString();
         return productCommandRepository.updateVariantStatus(productId, sku, variantStatus, testTime);
+    }
+
+    @Override
+    public String changeStatus(String productId, String status) throws IOException {
+        Product product = productDocumentFinder.findById(productId);
+        return productCommandRepository.updateStatus(productId, status);
     }
 }

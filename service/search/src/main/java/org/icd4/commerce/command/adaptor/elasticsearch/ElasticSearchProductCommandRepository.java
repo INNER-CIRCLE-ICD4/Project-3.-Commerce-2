@@ -78,7 +78,7 @@ public class ElasticSearchProductCommandRepository implements ProductCommandRepo
 
     @Transactional
     @Override
-    public String updateVariantStatus(String productId, String sku, String variantStatus, String updateAt) throws IOException {
+    public String updateVariantStatus(String productId, String sku, String variantStatus, String updatedAt) throws IOException {
         UpdateRequest<Product, Object> updateRequest = UpdateRequest.of(u -> u
                 .index("product_index")
                 .id(productId)
@@ -90,8 +90,21 @@ public class ElasticSearchProductCommandRepository implements ProductCommandRepo
                                 "break; } }")
                         .params("sku", JsonData.of(sku))
                         .params("variantStatus", JsonData.of(variantStatus))
-                        .params("updatedAt", JsonData.of(updateAt))
+                        .params("updatedAt", JsonData.of(updatedAt))
                 )
+        );
+
+        UpdateResponse<Product> response = esClient.update(updateRequest, Product.class);
+        return response.id();
+    }
+
+    @Transactional
+    @Override
+    public String updateStatus(String productId, String status) throws IOException {
+        UpdateRequest<Product, Object> updateRequest = UpdateRequest.of(u -> u
+                .index("product_index")
+                .id(productId)
+                .doc(Map.of("status", status))
         );
 
         UpdateResponse<Product> response = esClient.update(updateRequest, Product.class);

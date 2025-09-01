@@ -42,4 +42,32 @@ public class SearchClient implements ProductSearchClient {
         }
         return null;
     }
+
+    @Override
+    public String deleteProduct(String productId) {
+        try {
+            // 재고 등록을 위한 요청 객체 생성
+            return restClient.delete()
+                    .uri("/api/v1/product/{productId}", productId)
+                    .retrieve()
+                    .body(String.class);
+        } catch (Exception e) {
+            log.error("[SearchClinet.deleteProduct()] product: {}", productId, e);
+        }
+        return null;
+    }
+
+    @Override
+    public String updateStatus(String productId, String status) {
+        try {
+            // 재고 등록을 위한 요청 객체 생성
+            return restClient.patch()
+                    .uri("/api/v1/product/{productId}/status?status={status}", productId, status)
+                    .retrieve()
+                    .body(String.class);
+        } catch (Exception e) {
+            log.error("[SearchClinet.deleteProduct()] product: {}", productId, e);
+        }
+        return null;
+    }
 }

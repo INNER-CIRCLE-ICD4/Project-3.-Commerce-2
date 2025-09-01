@@ -6,6 +6,7 @@ import org.icd4.commerce.adapter.stock.StockClient;
 import org.icd4.commerce.adapter.webapi.dto.ProductResponse;
 import org.icd4.commerce.adapter.webapi.dto.ProductVariantResponse;
 import org.icd4.commerce.domain.product.model.Product;
+import org.icd4.commerce.domain.product.model.ProductStatus;
 import org.icd4.commerce.domain.product.request.*;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -59,10 +60,12 @@ public class ProductCommandService {
     }
 
     public ProductResponse inactivate(String productId, String sellerId) {
+        searchClient.updateStatus(productId, ProductStatus.INACTIVE.name());
         return ProductResponse.fromDomain(productModifierService.inactivate(productId, sellerId));
     }
 
     public ProductResponse deleteProduct(String productId, String sellerId) {
+        searchClient.deleteProduct(productId);
         return ProductResponse.fromDomain(productModifierService.deleteProduct(productId, sellerId));
     }
 }
