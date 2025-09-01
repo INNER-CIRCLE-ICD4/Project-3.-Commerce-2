@@ -15,7 +15,7 @@ public record ProductVariantResponse(
         String productId,
         String sellerId,
         String optionCombination,
-        BigDecimal price,
+        BigDecimal sellingPrice,
         VariantStatus status,
         LocalDateTime createdAt,
         LocalDateTime updatedAt

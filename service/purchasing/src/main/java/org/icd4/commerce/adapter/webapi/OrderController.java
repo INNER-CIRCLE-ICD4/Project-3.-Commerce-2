@@ -54,9 +54,8 @@ public class OrderController implements OrderApi {
 
     // 구매 확정
     @PatchMapping("/{orderId}/confirmPurchase")
-    public ResponseEntity<Void> confirmPurchase(@PathVariable String orderId) {
-        confirmPurchaseUseCase.confirmPurchase(new ConfirmPurchaseCommand(OrderId.from(orderId)));
-        return ResponseEntity.ok().build();
+    public ResponseEntity<OrderStatusResponse> confirmPurchase(@PathVariable String orderId) {
+        return ResponseEntity.ok().body(confirmPurchaseUseCase.confirmPurchase(orderId));
     }
 
     // 환불 요청

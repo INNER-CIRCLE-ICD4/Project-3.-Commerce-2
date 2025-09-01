@@ -105,7 +105,6 @@ public class OrderJpaEntity {
     public void setOrderItems(List<OrderItemJpaEntity> itemEntities) {
         if (this.orderItems == null) this.orderItems = new ArrayList<>();
         //역방향 끊기
-        for (var it : this.orderItems) it.setOrder(null);
         this.orderItems.clear();
 
         if (itemEntities == null) return;

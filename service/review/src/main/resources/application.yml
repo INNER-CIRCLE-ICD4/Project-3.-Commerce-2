@@ -2,7 +2,7 @@ spring:
   application:
     name: commerce-review-service # Name of the application
 server:
-  port: 8082
+  port: 8084
 ---
 spring:
   profiles:

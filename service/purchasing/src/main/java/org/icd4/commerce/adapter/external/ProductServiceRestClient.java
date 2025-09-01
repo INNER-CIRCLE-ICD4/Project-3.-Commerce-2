@@ -17,6 +17,8 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
 
+import java.math.BigDecimal;
+
 /**
  * REST API를 통한 상품 서비스 클라이언트 구현.
  *
@@ -57,7 +59,7 @@ public class ProductServiceRestClient implements ProductServiceClient {
                     response.productId,
                     response.sku,
                     "상품명 조회",
-                    response.sellingPrice.getAmount(),
+                    response.sellingPrice,
                     response.status == ProductResponse.ProductStatus.ACTIVE
             );
 
@@ -83,7 +85,7 @@ public class ProductServiceRestClient implements ProductServiceClient {
         String productId;
         String sku;
         String name;
-        Money sellingPrice;
+        BigDecimal sellingPrice;
         ProductStatus status;
 
         private enum ProductStatus {
