@@ -63,11 +63,12 @@ Content-Type: application/json
     client.global.set("productId", response.body.productId);
     client.global.set("sellerId", response.body.sellerId);
     client.global.set("name", response.body.name)
+    client.global.set("sku", response.body.variants[0].sku)
 %}
 
 
 ### 2. 상품 정보 수정
-PATCH http://localhost:8080/api/v1/product/{{productId}}
+PATCH {{productUrl}}/api/v1/product/{{productId}}
 Content-Type: application/json
 
 {
@@ -76,11 +77,11 @@ Content-Type: application/json
 }
 
 ### 상품 삭제 사전 작업
-PATCH http://localhost:8080/api/v1/product/{{productId}}/inactivate
+PATCH {{productUrl}}/api/v1/product/{{productId}}/inactivate
 X-Seller-Id: {{sellerId}}
 
 ### 3. 상품 삭제
-DELETE http://localhost:8080/api/v1/product/{{productId}}
+DELETE {{productUrl}}/api/v1/product/{{productId}}
 X-Seller-Id: {{sellerId}}
 
 ### 4. 키워드 검색
@@ -89,7 +90,30 @@ X-Seller-Id: {{sellerId}}
 
 GET {{searchUrl}}/api/v1/product/search_2?keyword={{name}}&sortField=basePrice&sortOrder=asc&page=0&size=10
 
+### 장바구니 사전 작업
+POST {{purchaseUrl}}/api/v1/carts
+Content-Type: application/json
+
+{
+  "customerId": "CUSTOMER_001"
+}
+
+> {%
+    // 응답에서 productId 추출
+    client.global.set("cartId", response.body.data.cartId);
+%}
+
+
 ### 5. 장바구니 담기
+POST {{purchaseUrl}}/api/v1/carts/{{cartId}}/items
+Content-Type: application/json
+
+{
+  "productId": "{{productId}}",
+  "sku": "{{sku}}",
+  "quantity": 1
+}
+
 ### 6. 장바구니 상품 주문
 
 ### 7. 주문 상태 확인
