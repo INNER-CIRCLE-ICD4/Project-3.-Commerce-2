@@ -16,7 +16,6 @@ public record ProductVariantQueryModel(
         String sellerId,
         List<ProductOptionQueryModel> optionCombination,
         BigDecimal price,
-        String stock,
         VariantStatus status,
         String createdAt,
         String updatedAt
@@ -31,7 +30,6 @@ public record ProductVariantQueryModel(
                         .map(entry -> new ProductOptionQueryModel(entry.getValue(), entry.getKey()))
                         .toList(),
                 variant.getSellingPrice().getAmount(),
-                variant.getStockQuantity().toString(),
                 variant.getStatus(),
                 variant.getCreatedAt().toString(),
                 variant.getUpdatedAt().toString()

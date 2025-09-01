@@ -81,9 +81,6 @@ Content-Type: application/json
           "price": {
             "type": "long"
           },
-          "stock": {
-            "type": "integer"
-          },
           "status": {
             "type": "keyword"
           },
@@ -147,7 +144,6 @@ Content-Type: application/json
     {
       "sku": "SHIRT-MODERN-M-WHITE",
       "price": 35000,
-      "stock": 50,
       "status": "ACTIVE",
       "optionCombination": [
         {
@@ -163,7 +159,6 @@ Content-Type: application/json
     {
       "sku": "SHIRT-MODERN-L-BLACK",
       "price": 35000,
-      "stock": 50,
       "status": "ACTIVE",
       "optionCombination": [
         {
@@ -179,7 +174,6 @@ Content-Type: application/json
     {
       "sku": "SHIRT-MODERN-XL-NAVY",
       "price": 35000,
-      "stock": 50,
       "status": "ACTIVE",
       "optionCombination": [
         {
@@ -231,7 +225,6 @@ Content-Type: application/json
     {
       "sku": "SHIRT-VINTAGE-M-RED",
       "price": 42000,
-      "stock": 40,
       "status": "ACTIVE",
       "optionCombination": [
         {
@@ -247,7 +240,6 @@ Content-Type: application/json
     {
       "sku": "SHIRT-VINTAGE-L-NAVY",
       "price": 42000,
-      "stock": 40,
       "status": "ACTIVE",
       "optionCombination": [
         {
@@ -298,7 +290,6 @@ Content-Type: application/json
     {
       "sku": "COAT-MODERN-M-BEIGE",
       "price": 125000,
-      "stock": 30,
       "status": "ACTIVE",
       "optionCombination": [
         {
@@ -314,7 +305,6 @@ Content-Type: application/json
     {
       "sku": "COAT-MODERN-L-BLACK",
       "price": 125000,
-      "stock": 30,
       "status": "ACTIVE",
       "optionCombination": [
         {
@@ -365,7 +355,6 @@ Content-Type: application/json
     {
       "sku": "SHIRT-SLIM-95-WHITE",
       "price": 30000,
-      "stock": 60,
       "status": "ACTIVE",
       "optionCombination": [
         {
@@ -381,7 +370,6 @@ Content-Type: application/json
     {
       "sku": "SHIRT-SLIM-100-GREY",
       "price": 30000,
-      "stock": 60,
       "status": "ACTIVE",
       "optionCombination": [
         {

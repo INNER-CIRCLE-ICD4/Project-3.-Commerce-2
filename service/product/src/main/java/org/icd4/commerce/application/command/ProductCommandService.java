@@ -35,6 +35,7 @@ public class ProductCommandService {
 
     public ProductResponse changeProductInfo(String productId, String sellerId, ProductInfoUpdateRequest request) {
         Product product = productRegisterService.updateInfo(productId, sellerId, request);
+        searchClient.registerProduct(product);
         return ProductResponse.fromDomain(product);
     }
 

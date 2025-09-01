@@ -60,5 +60,29 @@ Content-Type: application/json
 
 > {%
     // 응답에서 productId 추출
-    client.global.set("productId", response.body.id);
+    client.global.set("productId", response.body.productId);
+    client.global.set("sellerId", response.body.sellerId);
 %}
+
+
+### 2. 상품 정보 수정
+PATCH http://localhost:8080/api/v1/product/{{productId}}
+Content-Type: application/json
+
+{
+  "sellerId": "{{sellerId}}",
+  "brand": "변경된 브랜드"
+}
+
+### 3. 상품 삭제
+
+### 4. 키워드 검색
+### 5. 카테고리 검색
+
+### 6. 장바구니 담기
+### 7. 장바구니 상품 주문
+
+### 8. 주문 상태 확인
+### 9. 구매 확정
+### 10. 리뷰 작성
+### 11. 다른 사용자의 리뷰 조회

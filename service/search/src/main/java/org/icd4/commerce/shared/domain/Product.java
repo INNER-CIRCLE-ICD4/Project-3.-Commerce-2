@@ -76,9 +76,6 @@ public class Product {
         @Field(type = FieldType.Long)
         private Long price;
 
-        @Field(type = FieldType.Integer)
-        private Integer stock;
-
         @Field(type = FieldType.Keyword)
         private String status;
 

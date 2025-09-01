@@ -17,7 +17,6 @@ Content-Type: application/json
     {
       "sku": "SHIRT-MODERN-M-WHITE",
       "price": 35000,
-      "stock": 50,
       "status": "INACTIVE",
       "optionCombination": [
         { "name": "color", "value": "white" },
@@ -27,7 +26,6 @@ Content-Type: application/json
     {
       "sku": "SHIRT-MODERN-L-BLACK",
       "price": 35000,
-      "stock": 50,
       "status": "ACTIVE",
       "optionCombination": [
         { "name": "color", "value": "black" },
@@ -37,7 +35,6 @@ Content-Type: application/json
     {
       "sku": "SHIRT-MODERN-XL-NAVY",
       "price": 35000,
-      "stock": 50,
       "status": "ACTIVE",
       "optionCombination": [
         { "name": "color", "value": "navy" },
@@ -49,10 +46,6 @@ Content-Type: application/json
 
 ### 상품 가격 업데이트
 PATCH http://localhost:8081/api/v1/product/7a8c3d9b-2e6f-4c8d-8a2b-3c4e5f6d7a8e/price?price=45000
-Content-Type: application/json
-
-### 특정 변형(Variant)의 재고 업데이트
-PATCH http://localhost:8081/api/v1/product/7a8c3d9b-2e6f-4c8d-8a2b-3c4e5f6d7a8e/stock?sku=SHIRT-MODERN-M-WHITE&stock=25
 Content-Type: application/json
 
 ### 특정 변형(Variant)의 상태 업데이트

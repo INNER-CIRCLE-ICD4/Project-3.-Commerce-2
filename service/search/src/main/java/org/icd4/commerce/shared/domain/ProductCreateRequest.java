@@ -23,7 +23,6 @@ public record ProductCreateRequest(
     public record ProductVariantDto(
             String sku,
             Long price,
-            Integer stock,
             String status,
             List<ProductOptionDto> optionCombination
     ) {

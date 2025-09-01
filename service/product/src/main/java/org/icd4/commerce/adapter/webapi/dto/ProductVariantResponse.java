@@ -16,7 +16,6 @@ public record ProductVariantResponse(
         String sellerId,
         String optionCombination,
         BigDecimal price,
-        String stock,
         VariantStatus status,
         LocalDateTime createdAt,
         LocalDateTime updatedAt
@@ -29,7 +28,6 @@ public record ProductVariantResponse(
                 variant.getSellerId(),
                 variant.getOptionCombination(),
                 variant.getSellingPrice().getAmount(),
-                variant.getStockQuantity().toString(),
                 variant.getStatus(),
                 variant.getCreatedAt(),
                 variant.getUpdatedAt()

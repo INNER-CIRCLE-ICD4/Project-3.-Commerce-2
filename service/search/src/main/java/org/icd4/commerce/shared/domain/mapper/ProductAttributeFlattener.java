@@ -26,6 +26,6 @@ public class ProductAttributeFlattener {
     }
 
     private boolean isActiveWithStock(ProductCreateRequest.ProductVariantDto variant) {
-        return "ACTIVE".equals(variant.status()) && variant.stock() > 0;
+        return "ACTIVE".equals(variant.status());
     }
 }

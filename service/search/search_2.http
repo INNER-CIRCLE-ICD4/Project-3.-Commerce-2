@@ -80,9 +80,6 @@ Content-Type: application/json
           "price": {
             "type": "long"
           },
-          "stock": {
-            "type": "integer"
-          },
           "status": {
             "type": "keyword"
           },
@@ -132,7 +129,6 @@ Content-Type: application/json
     {
       "sku": "SHIRT-MODERN-M-WHITE",
       "price": 35000,
-      "stock": 50,
       "status": "INACTIVE",
       "optionCombination": [
         { "name": "color", "value": "white" },
@@ -142,7 +138,6 @@ Content-Type: application/json
     {
       "sku": "SHIRT-MODERN-L-BLACK",
       "price": 35000,
-      "stock": 50,
       "status": "ACTIVE",
       "optionCombination": [
         { "name": "color", "value": "black" },
@@ -152,7 +147,6 @@ Content-Type: application/json
     {
       "sku": "SHIRT-MODERN-XL-NAVY",
       "price": 35000,
-      "stock": 50,
       "status": "ACTIVE",
       "optionCombination": [
         { "name": "color", "value": "navy" },
@@ -181,7 +175,6 @@ Content-Type: application/json
     {
       "sku": "SALAD-S",
       "price": 12000,
-      "stock": 50,
       "status": "INACTIVE",
       "optionCombination": [
         { "name": "weight", "value": "120g" }
@@ -190,7 +183,6 @@ Content-Type: application/json
     {
       "sku": "SALAD-M",
       "price": 15000,
-      "stock": 50,
       "status": "ACTIVE",
       "optionCombination": [
         { "name": "weight", "value": "150g" }
@@ -199,7 +191,6 @@ Content-Type: application/json
     {
       "sku": "SALAD-L",
       "price": 18000,
-      "stock": 50,
       "status": "ACTIVE",
       "optionCombination": [
         { "name": "weight", "value": "180g" }

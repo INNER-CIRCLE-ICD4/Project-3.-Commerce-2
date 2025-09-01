@@ -57,7 +57,7 @@ Content-Type: {{contentType}}
 
 > {%
     // 응답에서 productId 추출
-    client.global.set("productId", response.body.id);
+    client.global.set("productId", response.body.productId);
 %}
 
 ### 2. 상품 단건 조회 (Product Get by ID)
