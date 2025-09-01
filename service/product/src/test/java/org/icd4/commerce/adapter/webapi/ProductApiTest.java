@@ -47,8 +47,8 @@ class ProductApiTest {
         assertThat(result)
                 .hasStatus(CREATED)
                 .bodyJson()
-                .hasPathSatisfying("$.id", id -> assertThat(id).isNotNull())
-                .hasPathSatisfying("$.id", notNull())
+                .hasPathSatisfying("$.productId", id -> assertThat(id).isNotNull())
+                .hasPathSatisfying("$.productId", notNull())
                 .hasPath("$.name")
                 .hasPath("$.brand")
                 .hasPath("$.description")
@@ -59,7 +59,7 @@ class ProductApiTest {
                 ProductResponse.class
         );
 
-        Product savedProduct = productRepository.findById(response.id()).orElseThrow();
+        Product savedProduct = productRepository.findById(response.productId()).orElseThrow();
         assertThat(savedProduct.getName()).isEqualTo(request.name());
         assertThat(savedProduct.getBrand()).isEqualTo(request.brand());
         assertThat(savedProduct.getDescription()).isEqualTo(request.description());

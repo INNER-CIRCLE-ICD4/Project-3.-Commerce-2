@@ -1,0 +1,64 @@
+### 시연 Collection
+### Base URL 설정
+@productUrl = http://localhost:8080
+@purchaseUrl = http://localhost:8081
+@stockUrl = http://localhost:8082
+@searchUrl = http://localhost:8083
+
+### 시나리오1. 상품 등록 -> 재고 모듈 재고 등록 / 검색 모듈 색인
+### 1. 상품 생성 (Product Create)
+POST {{productUrl}}/api/v1/product
+Content-Type: application/json
+
+{
+  "sellerId": "SELLER_FASHION_001",
+  "categoryId": "CATEGORY_CLOTHING_001",
+  "name": "코튼 티셔츠",
+  "brand": "베이직웨어",
+  "description": "100% 면 소재의 편안한 착용감을 제공하는 베이직 티셔츠입니다.",
+  "priceAmount": 29000,
+  "priceCurrency": "KRW",
+  "variants": [
+    {
+      "optionCombination": "{\"color\":\"white\",\"size\":\"S\"}",
+      "price": 29000,
+      "currency": "KRW",
+      "stockQuantity": 100
+    },
+    {
+      "optionCombination": "{\"color\":\"white\",\"size\":\"M\"}",
+      "price": 29000,
+      "currency": "KRW",
+      "stockQuantity": 150
+    },
+    {
+      "optionCombination": "{\"color\":\"white\",\"size\":\"L\"}",
+      "price": 29000,
+      "currency": "KRW",
+      "stockQuantity": 120
+    },
+    {
+      "optionCombination": "{\"color\":\"black\",\"size\":\"S\"}",
+      "price": 29000,
+      "currency": "KRW",
+      "stockQuantity": 80
+    },
+    {
+      "optionCombination": "{\"color\":\"black\",\"size\":\"M\"}",
+      "price": 29000,
+      "currency": "KRW",
+      "stockQuantity": 200
+    },
+    {
+      "optionCombination": "{\"color\":\"black\",\"size\":\"L\"}",
+      "price": 29000,
+      "currency": "KRW",
+      "stockQuantity": 180
+    }
+  ]
+}
+
+> {%
+    // 응답에서 productId 추출
+    client.global.set("productId", response.body.id);
+%}

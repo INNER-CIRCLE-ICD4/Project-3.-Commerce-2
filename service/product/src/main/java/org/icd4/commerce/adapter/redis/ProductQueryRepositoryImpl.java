@@ -41,7 +41,7 @@ public class ProductQueryRepositoryImpl implements ProductQueryRepository {
     }
 
     private String generateKey(ProductResponse response) {
-        return generateKey(response.id());
+        return generateKey(response.productId());
     }
 
     private String generateKey(String productId) {

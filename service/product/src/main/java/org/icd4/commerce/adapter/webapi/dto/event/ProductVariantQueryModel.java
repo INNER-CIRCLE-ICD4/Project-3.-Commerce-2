@@ -1,38 +1,40 @@
-package org.icd4.commerce.adapter.webapi.dto;
+package org.icd4.commerce.adapter.webapi.dto.event;
 
 import org.icd4.commerce.domain.product.model.ProductVariant;
 import org.icd4.commerce.domain.product.model.VariantStatus;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * DTO for {@link ProductVariant}
  */
-public record ProductVariantResponse(
+public record ProductVariantQueryModel(
         String sku,
         String productId,
         String sellerId,
-        String optionCombination,
+        List<ProductOptionQueryModel> optionCombination,
         BigDecimal price,
         String stock,
         VariantStatus status,
-        LocalDateTime createdAt,
-        LocalDateTime updatedAt
+        String createdAt,
+        String updatedAt
 ) implements Serializable {
 
-    public static ProductVariantResponse fromDomain(ProductVariant variant) {
-        return new ProductVariantResponse(
+    public static ProductVariantQueryModel fromDomain(ProductVariant variant) {
+        return new ProductVariantQueryModel(
                 variant.getSku(),
                 variant.getProductId(),
                 variant.getSellerId(),
-                variant.getOptionCombination(),
+                variant.getOptionCombinationMap().entrySet().stream()
+                        .map(entry -> new ProductOptionQueryModel(entry.getValue(), entry.getKey()))
+                        .toList(),
                 variant.getSellingPrice().getAmount(),
                 variant.getStockQuantity().toString(),
                 variant.getStatus(),
-                variant.getCreatedAt(),
-                variant.getUpdatedAt()
+                variant.getCreatedAt().toString(),
+                variant.getUpdatedAt().toString()
         );
     }
 

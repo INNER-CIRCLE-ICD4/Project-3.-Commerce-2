@@ -1,5 +1,5 @@
 ### 상품 도큐먼트 생성
-POST http://localhost:8081/api/v1/product
+POST http://localhost:8083/api/v1/product
 Content-Type: application/json
 
 {

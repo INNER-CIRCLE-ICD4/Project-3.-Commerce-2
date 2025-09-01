@@ -64,7 +64,7 @@ class ProductModifierTest {
 
     @Test
     void changeCategoryFail() {
-        assertThatThrownBy(() -> productModifier.changeCategory("invalid-id", SELLER_ID, "0002"))
+        assertThatThrownBy(() -> productModifier.changeCategory("invalid-productId", SELLER_ID, "0002"))
                 .isInstanceOf(EntityNotFoundException.class);
         assertThatThrownBy(() -> productModifier.changeCategory("", SELLER_ID, "0002"))
                 .isInstanceOf(IllegalArgumentException.class);

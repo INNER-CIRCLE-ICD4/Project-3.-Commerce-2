@@ -194,7 +194,7 @@ class ProductRegisterTest {
                     "sellerId", "name1", "brand1", "description1");
 
             // when & then
-            assertThatThrownBy(() -> productRegister.updateInfo("non-existent-id",
+            assertThatThrownBy(() -> productRegister.updateInfo("non-existent-productId",
                     updateRequest.sellerId(), updateRequest))
                     .isInstanceOf(EntityNotFoundException.class);
         }
@@ -319,7 +319,7 @@ class ProductRegisterTest {
 
             // when & then
             assertThatThrownBy(() -> productRegister.updateVariant(
-                    "non-existent-product-id", updateRequest.sellerId(), targetSku, updateRequest
+                    "non-existent-product-productId", updateRequest.sellerId(), targetSku, updateRequest
             ))
                     .isInstanceOf(EntityNotFoundException.class);
         }
