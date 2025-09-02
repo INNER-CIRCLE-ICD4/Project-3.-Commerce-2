@@ -6,6 +6,109 @@
 @searchUrl = http://localhost:8083
 @reviewUrl = http://localhost:8084
 
+### 0. elasticsearch index 등록 (docker에 엘라스틱 + 노리 플러그인 설치 후 실행)
+PUT http://localhost:9200/product_index
+Content-Type: application/json
+
+{
+  "settings": {
+    "index": {
+      "analysis": {
+        "analyzer": {
+          "korean_analyzer": {
+            "type": "custom",
+            "tokenizer": "nori_tokenizer"
+          }
+        }
+      }
+    }
+  },
+  "mappings": {
+    "properties": {
+      "id": {
+        "type": "keyword"
+      },
+      "sellerId": {
+        "type": "keyword"
+      },
+      "name": {
+        "type": "text",
+        "analyzer": "korean_analyzer"
+      },
+      "brand": {
+        "type": "text",
+        "analyzer": "korean_analyzer",
+        "fields": {
+          "keyword": {
+            "type": "keyword",
+            "ignore_above": 256
+          }
+        }
+      },
+      "description": {
+        "type": "text",
+        "analyzer": "korean_analyzer"
+      },
+      "basePrice": {
+        "type": "keyword"
+      },
+      "categoryId": {
+        "type": "keyword"
+      },
+      "status": {
+        "type": "keyword"
+      },
+      "createdAt": {
+        "type": "date",
+        "format": "strict_date_optional_time"
+      },
+      "updatedAt": {
+        "type": "date",
+        "format": "strict_date_optional_time"
+      },
+      "isDeleted": {
+        "type": "boolean"
+      },
+      "productAttributes": {
+        "type": "keyword"
+      },
+      "autoCompleteSuggestions": {
+        "type": "completion",
+        "analyzer": "korean_analyzer"
+      },
+      "variants": {
+        "type": "nested",
+        "properties": {
+          "sku": {
+            "type": "keyword"
+          },
+          "price": {
+            "type": "long"
+          },
+          "status": {
+            "type": "keyword"
+          },
+          "optionCombination": {
+            "type": "nested",
+            "properties": {
+              "name": {
+                "type": "keyword"
+              },
+              "value": {
+                "type": "keyword"
+              }
+            }
+          }
+        }
+      },
+      "rawOptions": {
+        "type": "object",
+        "enabled": false
+      }
+    }
+  }
+}
+
 ### 시나리오1. 상품 등록 -> 재고 모듈 재고 등록 / 검색 모듈 색인
 ### 1. 상품 생성 (Product Create)
 POST {{productUrl}}/api/v1/product
