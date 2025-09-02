@@ -33,4 +33,8 @@ public class ProductCommandService {
     public String updateVariantStatus(String productId, String sku, String variantStatus) throws IOException {
         return productDocumentModifierService.changeVariantStatus(productId, sku, variantStatus);
     }
+
+    public String updateStatus(String productId, String status) throws IOException {
+        return productDocumentModifierService.changeStatus(productId, status);
+    }
 }

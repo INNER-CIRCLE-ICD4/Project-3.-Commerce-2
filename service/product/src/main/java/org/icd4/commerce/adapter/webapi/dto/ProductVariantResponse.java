@@ -1,10 +1,10 @@
 package org.icd4.commerce.adapter.webapi.dto;
 
-import org.icd4.commerce.domain.product.model.ProductMoney;
 import org.icd4.commerce.domain.product.model.ProductVariant;
 import org.icd4.commerce.domain.product.model.VariantStatus;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 /**
@@ -15,7 +15,7 @@ public record ProductVariantResponse(
         String productId,
         String sellerId,
         String optionCombination,
-        ProductMoney sellingPrice,
+        BigDecimal sellingPrice,
         VariantStatus status,
         LocalDateTime createdAt,
         LocalDateTime updatedAt
@@ -27,7 +27,7 @@ public record ProductVariantResponse(
                 variant.getProductId(),
                 variant.getSellerId(),
                 variant.getOptionCombination(),
-                variant.getSellingPrice(),
+                variant.getSellingPrice().getAmount(),
                 variant.getStatus(),
                 variant.getCreatedAt(),
                 variant.getUpdatedAt()

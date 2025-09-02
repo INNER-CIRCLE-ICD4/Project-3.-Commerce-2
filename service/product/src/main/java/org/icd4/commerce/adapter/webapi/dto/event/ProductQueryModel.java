@@ -1,13 +1,12 @@
-package org.icd4.commerce.adapter.webapi.dto;
+package org.icd4.commerce.adapter.webapi.dto.event;
 
 import org.icd4.commerce.domain.product.model.Product;
 import org.icd4.commerce.domain.product.model.ProductStatus;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.List;
 
-public record ProductResponse(
+public record ProductQueryModel(
         String productId,
         String sellerId,
         String name,
@@ -16,15 +15,14 @@ public record ProductResponse(
         String description,
         String categoryId,
         ProductStatus status,
-        List<ProductVariantResponse> variants,
+        List<ProductVariantQueryModel> variants,
         Boolean isDeleted,
-        LocalDateTime createdAt,
-        LocalDateTime updatedAt,
-        LocalDateTime deletedAt
+        String createdAt,
+        String updatedAt
 ) {
-    public static ProductResponse fromDomain(Product product) {
-        return new ProductResponse(
-                product.getSku(),
+    public static ProductQueryModel fromDomain(Product product) {
+        return new ProductQueryModel(
+                product.getId(),
                 product.getSellerId(),
                 product.getName(),
                 product.getBrand(),
@@ -33,12 +31,11 @@ public record ProductResponse(
                 product.getCategoryId(),
                 product.getStatus(),
                 product.getVariants().stream()
-                        .map(ProductVariantResponse::fromDomain)
+                        .map(ProductVariantQueryModel::fromDomain)
                         .toList(),
                 product.getIsDeleted(),
-                product.getCreatedAt(),
-                product.getUpdatedAt(),
-                product.getDeletedAt()
+                product.getCreatedAt().toString(),
+                product.getUpdatedAt().toString()
 
         );
     }

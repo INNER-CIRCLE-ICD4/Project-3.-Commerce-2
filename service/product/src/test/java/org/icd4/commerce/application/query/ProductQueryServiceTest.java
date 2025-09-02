@@ -2,8 +2,6 @@ package org.icd4.commerce.application.query;
 
 import org.icd4.commerce.adapter.webapi.dto.ProductResponse;
 import org.icd4.commerce.adapter.webapi.dto.ProductVariantResponse;
-import org.icd4.commerce.domain.ProductFixture;
-import org.icd4.commerce.domain.ProductVariantFixture;
 import org.icd4.commerce.domain.product.model.Product;
 import org.icd4.commerce.domain.product.model.ProductVariant;
 import org.junit.jupiter.api.DisplayName;
@@ -47,7 +45,7 @@ class ProductQueryServiceTest {
         ProductResponse response = productQueryService.findById(productId);
 
         // Then
-        assertThat(response.id()).isEqualTo(productId);
+        assertThat(response.productId()).isEqualTo(productId);
         assertThat(response.name()).isEqualTo(mockProduct.name());
         verify(productCacheService).findByIdFromCache(productId);
     }

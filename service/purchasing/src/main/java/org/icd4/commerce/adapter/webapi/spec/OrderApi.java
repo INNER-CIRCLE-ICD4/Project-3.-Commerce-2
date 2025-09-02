@@ -55,7 +55,7 @@ public interface OrderApi {
             @ApiResponse(responseCode = "400", description = "잘못된 요청",
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
-    ResponseEntity<Void> confirmPurchase(@PathVariable String id);
+    ResponseEntity<OrderStatusResponse> confirmPurchase(@PathVariable String id);
 
     @Operation(summary = "환불 요청", description = "주문 환불을 요청합니다.")
     @ApiResponses({

@@ -36,6 +36,11 @@ public class ProductCommandApi {
         return productCommandService.updateStock(productId, sku, stock);
     }
 
+    @PatchMapping("/{productId}/status")
+    public String updateProductStatus(@PathVariable String productId, @RequestParam String status) throws IOException {
+        return productCommandService.updateStatus(productId, status);
+    }
+
     @PatchMapping("/{productId}/variant_status")
     public String updateVariantStatus(@PathVariable String productId,
                                     @RequestParam String sku,

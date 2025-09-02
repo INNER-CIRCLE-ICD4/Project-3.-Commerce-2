@@ -1,6 +1,5 @@
 package org.icd4.commerce.application.provided.order;
 
-import org.icd4.commerce.application.provided.order.command.ConfirmPurchaseCommand;
 import org.icd4.commerce.application.provided.order.usecase.ConfirmPurchaseUseCase;
 import org.icd4.commerce.application.required.order.OrderRepositoryPort;
 import org.icd4.commerce.domain.order.Order;
@@ -37,10 +36,9 @@ class ConfirmPurchaseUseCaseTest {
         Order mockOrder = mock(Order.class);
 
         when(orderRepository.findById(orderId)).thenReturn(Optional.of(mockOrder));
-        ConfirmPurchaseCommand command = new ConfirmPurchaseCommand(orderId);
 
         // when
-        confirmPurchaseUseCase.confirmPurchase(command);
+        confirmPurchaseUseCase.confirmPurchase(orderId.value());
 
         // then
         verify(mockOrder).confirmPurchase();
@@ -54,10 +52,9 @@ class ConfirmPurchaseUseCaseTest {
         OrderId orderId = OrderId.generate();
 
         when(orderRepository.findById(orderId)).thenReturn(Optional.empty());
-        ConfirmPurchaseCommand command = new ConfirmPurchaseCommand(orderId);
 
         // when & then
-        assertThatThrownBy(() -> confirmPurchaseUseCase.confirmPurchase(command))
+        assertThatThrownBy(() -> confirmPurchaseUseCase.confirmPurchase(orderId.value()))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("주문을 찾을 수 없습니다.");
     }

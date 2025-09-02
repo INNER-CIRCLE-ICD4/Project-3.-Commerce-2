@@ -1,0 +1,276 @@
+### 시연 Collection
+### Base URL 설정
+@productUrl = http://localhost:8080
+@purchaseUrl = http://localhost:8081
+@stockUrl = http://localhost:8082
+@searchUrl = http://localhost:8083
+@reviewUrl = http://localhost:8084
+
+### 0. elasticsearch index 등록 (docker에 엘라스틱 + 노리 플러그인 설치 후 실행)
+PUT http://localhost:9200/product_index
+Content-Type: application/json
+
+{
+  "settings": {
+    "index": {
+      "analysis": {
+        "analyzer": {
+          "korean_analyzer": {
+            "type": "custom",
+            "tokenizer": "nori_tokenizer"
+          }
+        }
+      }
+    }
+  },
+  "mappings": {
+    "properties": {
+      "id": {
+        "type": "keyword"
+      },
+      "sellerId": {
+        "type": "keyword"
+      },
+      "name": {
+        "type": "text",
+        "analyzer": "korean_analyzer"
+      },
+      "brand": {
+        "type": "text",
+        "analyzer": "korean_analyzer",
+        "fields": {
+          "keyword": {
+            "type": "keyword",
+            "ignore_above": 256
+          }
+        }
+      },
+      "description": {
+        "type": "text",
+        "analyzer": "korean_analyzer"
+      },
+      "basePrice": {
+        "type": "keyword"
+      },
+      "categoryId": {
+        "type": "keyword"
+      },
+      "status": {
+        "type": "keyword"
+      },
+      "createdAt": {
+        "type": "date",
+        "format": "strict_date_optional_time"
+      },
+      "updatedAt": {
+        "type": "date",
+        "format": "strict_date_optional_time"
+      },
+      "isDeleted": {
+        "type": "boolean"
+      },
+      "productAttributes": {
+        "type": "keyword"
+      },
+      "autoCompleteSuggestions": {
+        "type": "completion",
+        "analyzer": "korean_analyzer"
+      },
+      "variants": {
+        "type": "nested",
+        "properties": {
+          "sku": {
+            "type": "keyword"
+          },
+          "price": {
+            "type": "long"
+          },
+          "status": {
+            "type": "keyword"
+          },
+          "optionCombination": {
+            "type": "nested",
+            "properties": {
+              "name": {
+                "type": "keyword"
+              },
+              "value": {
+                "type": "keyword"
+              }
+            }
+          }
+        }
+      },
+      "rawOptions": {
+        "type": "object",
+        "enabled": false
+      }
+    }
+  }
+}
+
+### 시나리오1. 상품 등록 -> 재고 모듈 재고 등록 / 검색 모듈 색인
+### 1. 상품 생성 (Product Create)
+POST {{productUrl}}/api/v1/product
+Content-Type: application/json
+
+{
+  "sellerId": "SELLER_FASHION_001",
+  "categoryId": "CATEGORY_CLOTHING_001",
+  "name": "코튼 티셔츠",
+  "brand": "베이직웨어",
+  "description": "100% 면 소재의 편안한 착용감을 제공하는 베이직 티셔츠입니다.",
+  "priceAmount": 29000,
+  "priceCurrency": "KRW",
+  "variants": [
+    {
+      "optionCombination": "{\"color\":\"white\",\"size\":\"S\"}",
+      "price": 29000,
+      "currency": "KRW",
+      "stockQuantity": 100
+    },
+    {
+      "optionCombination": "{\"color\":\"white\",\"size\":\"M\"}",
+      "price": 29000,
+      "currency": "KRW",
+      "stockQuantity": 150
+    },
+    {
+      "optionCombination": "{\"color\":\"white\",\"size\":\"L\"}",
+      "price": 29000,
+      "currency": "KRW",
+      "stockQuantity": 120
+    },
+    {
+      "optionCombination": "{\"color\":\"black\",\"size\":\"S\"}",
+      "price": 29000,
+      "currency": "KRW",
+      "stockQuantity": 80
+    },
+    {
+      "optionCombination": "{\"color\":\"black\",\"size\":\"M\"}",
+      "price": 29000,
+      "currency": "KRW",
+      "stockQuantity": 200
+    },
+    {
+      "optionCombination": "{\"color\":\"black\",\"size\":\"L\"}",
+      "price": 29000,
+      "currency": "KRW",
+      "stockQuantity": 180
+    }
+  ]
+}
+
+> {%
+    // 응답에서 productId 추출
+    client.global.set("productId", response.body.productId);
+    client.global.set("sellerId", response.body.sellerId);
+    client.global.set("name", response.body.name)
+    client.global.set("sku", response.body.variants[0].sku)
+%}
+
+
+### 2. 상품 정보 수정
+PATCH {{productUrl}}/api/v1/product/{{productId}}
+Content-Type: application/json
+
+{
+  "sellerId": "{{sellerId}}",
+  "brand": "변경된 브랜드"
+}
+
+### 상품 삭제 사전 작업
+PATCH {{productUrl}}/api/v1/product/{{productId}}/inactivate
+X-Seller-Id: {{sellerId}}
+
+### 3. 상품 삭제
+DELETE {{productUrl}}/api/v1/product/{{productId}}
+X-Seller-Id: {{sellerId}}
+
+### 4. 키워드 검색
+### 검색 & 정렬 & 필터링
+// name에 키워드 입력
+
+GET {{searchUrl}}/api/v1/product/search_2?keyword={{name}}&sortField=basePrice&sortOrder=asc&page=0&size=10
+
+### 장바구니 사전 작업
+POST {{purchaseUrl}}/api/v1/carts
+Content-Type: application/json
+
+{
+  "customerId": "CUSTOMER_001"
+}
+
+> {%
+    // 응답에서 productId 추출
+    client.global.set("cartId", response.body.data.cartId);
+%}
+
+
+### 5. 장바구니 담기
+POST {{purchaseUrl}}/api/v1/carts/{{cartId}}/items
+Content-Type: application/json
+
+{
+  "productId": "{{productId}}",
+  "sku": "{{sku}}",
+  "quantity": 1
+}
+
+### 6. 장바구니 상품 주문
+POST {{purchaseUrl}}/api/v1/orders
+Content-Type: application/json
+
+{
+  "customerId": "CUSTOMER_001",
+  "orderItems": [
+    {
+      "productId": "{{productId}}",
+      "sku": "{{sku}}",
+      "unitPrice": 29900,
+      "quantity": 1
+    }
+  ],
+  "orderMessage": "배송 전 연락 부탁드립니다.",
+  "orderChannel": "WEB"
+}
+
+> {%
+    // 응답에서 orderId 추출
+    client.global.set("orderId", response.body.orderId);
+%}
+
+### 7. 주문 상태 확인
+GET {{purchaseUrl}}/api/v1/orders/{{orderId}}/status
+
+
+### 8-1. 결제 완료
+PATCH {{purchaseUrl}}/api/v1/orders/{{orderId}}/confirmPayment
+Content-Type: application/json
+
+{
+  "paymentId": ""
+}
+
+### 8-2. 구매 확정
+PATCH {{purchaseUrl}}/api/v1/orders/{{orderId}}/confirmPurchase
+
+### 9. 리뷰 작성
+POST {{reviewUrl}}/api/v1/review
+Content-Type: application/json
+
+{
+  "orderId": "{{orderId}}",
+  "productId": "{{productId}}",
+  "sku": "{{sku}}",
+  "userId": "CUSTOMER_001",
+  "title": "리뷰 남겨요",
+  "content": ":)",
+  "rating": 5
+}
+
+### 10. 다른 사용자의 리뷰 조회
+GET {{reviewUrl}}/api/v1/review/{{productId}}/{{sku}}?
+    page=1&
+    size=10

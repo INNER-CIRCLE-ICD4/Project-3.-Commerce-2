@@ -12,5 +12,6 @@ public interface ProductCommandRepository {
     String createProductDocument(ProductCreateRequest product) throws IOException;
     String updatePrice(String productId, BigDecimal price, String updateAt) throws IOException;
     String updateStock(String productId, String sku, int stock, String updateAt) throws IOException;
-    String updateVariantStatus(String productId, String sku, String variantStatus, String updateAt) throws IOException;
+    String updateVariantStatus(String productId, String sku, String variantStatus, String updatedAt) throws IOException;
+    String updateStatus(String productId, String status) throws IOException;
 }

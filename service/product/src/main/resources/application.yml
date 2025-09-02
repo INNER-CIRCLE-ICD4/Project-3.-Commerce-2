@@ -33,3 +33,5 @@ spring:
 endpoints:
   stock-service:
     url: http://localhost:8082
+  search-service:
+    url: http://localhost:8083

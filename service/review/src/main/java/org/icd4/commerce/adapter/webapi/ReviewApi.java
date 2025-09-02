@@ -12,8 +12,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/api/v1/review")
 @RequiredArgsConstructor
@@ -24,8 +22,8 @@ public class ReviewApi {
     @GetMapping("/{productId}/{sku}")
     public ResponseEntity<ReviewPageResponse> findByProductIdAndSku(@PathVariable String productId,
                                                                     @PathVariable String sku,
-                                                                    @RequestParam(name = "page") Long page,
-                                                                    @RequestParam(name = "size") Long size) {
+                                                                    @RequestParam(name = "page", required = false) Long page,
+                                                                    @RequestParam(name = "size", required = false) Long size) {
         return ResponseEntity.ok(reviewQueryService.findAll(productId, sku, page, size));
     }
 

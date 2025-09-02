@@ -45,7 +45,6 @@ public class ProductDocumentMapper {
         return Product.ProductVariant.builder()
                 .sku(variantDto.sku())
                 .price(variantDto.price())
-                .stock(variantDto.stock())
                 .status(variantDto.status())
                 .optionCombination(variantDto.optionCombination() != null ?
                         variantDto.optionCombination().stream()

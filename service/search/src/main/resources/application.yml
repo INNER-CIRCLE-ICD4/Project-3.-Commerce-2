@@ -2,7 +2,7 @@ spring:
   application:
     name: commerce-search-service
 server:
-  port: 8081
+  port: 8083
 ---
 spring:
   config:
@@ -37,9 +37,6 @@ spring:
       write-dates-as-timestamps: false
     modules:
       jsr310: true
-  docker:
-    compose:
-      lifecycle-management: start_only
 
 logging:
   level:

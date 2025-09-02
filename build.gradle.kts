@@ -15,7 +15,7 @@ allprojects {
     group = projectGroup
 
     // if u needs to change the subproject version then override it in each subproject
-    version = "0.0.1-SNAPSHOT"
+    version = "2.0.0"
 
     repositories {
         mavenCentral()
