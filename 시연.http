@@ -139,6 +139,8 @@ Content-Type: application/json
 %}
 
 ### 7. 주문 상태 확인
+GET {{purchaseUrl}}/api/v1/orders/{{orderId}}/status
+
 
 ### 8-1. 결제 완료
 PATCH {{purchaseUrl}}/api/v1/orders/{{orderId}}/confirmPayment

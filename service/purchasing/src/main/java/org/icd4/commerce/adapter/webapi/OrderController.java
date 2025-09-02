@@ -5,10 +5,9 @@ import org.icd4.commerce.adapter.webapi.dto.order.request.*;
 import org.icd4.commerce.adapter.webapi.dto.order.response.OrderResponse;
 import org.icd4.commerce.adapter.webapi.dto.order.response.OrderStatusResponse;
 import org.icd4.commerce.adapter.webapi.spec.OrderApi;
-import org.icd4.commerce.application.provided.order.command.ConfirmPurchaseCommand;
+import org.icd4.commerce.application.provided.order.usecase.GetOrderUseCase;
 import org.icd4.commerce.application.provided.order.usecase.*;
 import org.icd4.commerce.domain.order.Order;
-import org.icd4.commerce.domain.order.OrderId;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,6 +23,7 @@ public class OrderController implements OrderApi {
     private final ConfirmPurchaseUseCase confirmPurchaseUseCase;
     private final FailPaymentUseCase failPaymentUseCase;
     private final RequestRefundUseCase requestRefundUseCase;
+    private final GetOrderUseCase getOrderUseCase;
 
     // 주문 생성
     @PostMapping
@@ -63,6 +63,12 @@ public class OrderController implements OrderApi {
     public ResponseEntity<Void> requestRefund(@PathVariable String orderId, @RequestBody RequestRefundRequest request) {
         requestRefundUseCase.requestRefund(request.toCommand(orderId));
         return ResponseEntity.ok().build();
+    }
+
+    // 주문 상태 조회
+    @GetMapping("/{orderId}/status")
+    public ResponseEntity<OrderStatusResponse> getOrderStatus(@PathVariable String orderId) {
+        return ResponseEntity.ok(getOrderUseCase.getOrderStatus(orderId));
     }
 
 }
