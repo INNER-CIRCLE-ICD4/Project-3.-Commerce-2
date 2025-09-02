@@ -31,14 +31,7 @@ public class OrderRepositoryAdapter implements OrderRepositoryPort {
 
     @Override
     public Optional<Order> findById(OrderId id){return orderRepository.findById(id);};
-    /**
-     * 특정 주문이 존재하는지 확인합니다.
-     */
-    @Override
-    public boolean existsById(OrderId id){return orderRepository.existsById(id);};
-    /**
-     * 주문을 삭제합니다.
-     */
+
     @Override
     public void deleteById(OrderId id){orderRepository.deleteById(id);};
 }
