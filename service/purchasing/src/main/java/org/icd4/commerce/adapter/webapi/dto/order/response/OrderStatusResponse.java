@@ -1,7 +1,6 @@
 package org.icd4.commerce.adapter.webapi.dto.order.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import org.icd4.commerce.adapter.webapi.dto.cart.response.CartItemResponse;
 import org.icd4.commerce.domain.order.Order;
 
 import java.time.LocalDateTime;

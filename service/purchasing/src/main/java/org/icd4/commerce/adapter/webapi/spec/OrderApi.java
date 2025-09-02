@@ -10,7 +10,6 @@ import org.icd4.commerce.adapter.webapi.common.ErrorResponse;
 import org.icd4.commerce.adapter.webapi.dto.order.request.*;
 import org.icd4.commerce.adapter.webapi.dto.order.response.OrderResponse;
 import org.icd4.commerce.adapter.webapi.dto.order.response.OrderStatusResponse;
-import org.icd4.commerce.application.provided.order.command.ConfirmPurchaseCommand;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
