@@ -73,9 +73,6 @@
           "price": {
             "type": "long"
           },
-          "stock": {
-            "type": "integer"
-          },
           "status": {
             "type": "keyword"
           },
